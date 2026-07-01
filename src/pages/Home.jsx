@@ -14,7 +14,6 @@ import {
   Mail,
   Medal,
   Menu,
-  Quote,
   Rocket,
   Sprout,
   Trophy,
@@ -30,6 +29,7 @@ import shrimpPondImg from '../assets/shrimp_pond.jpg';
 import proposalPdf from '../assets/inspo/Cultivator Project Proposal V5.pdf';
 import heroVideo from '../assets/thailand_shrimp_farm_video.mp4';
 import logoImg from '../assets/Orange_Shrimp.png';
+import heroTitleImg from '../assets/Orange_No BG.png';
 import { ContactSection } from '../components/ContactSection';
 
 import sdg1Img from '../assets/sdg_1.png';
@@ -39,7 +39,6 @@ import sdg3Img from '../assets/sdg_3.png';
 import field1 from '../assets/asia/S__238305289_0.jpg';
 import field2 from '../assets/jason/DSC05264.JPG';
 import field3 from '../assets/asia/S__238305296_0.jpg';
-import field4 from '../assets/jason/DSC05323.JPG';
 
 import aeratorsImg from '../assets/aerators.jpg';
 import electricityImg from '../assets/electricity.jpg';
@@ -92,6 +91,26 @@ const LogoMarquee = ({ compact = false }) => (
   </div>
 );
 
+const LogoBand = () => (
+  <div className="pointer-events-auto relative w-full space-y-2 overflow-hidden py-2 [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]">
+    <div className="pointer-events-none absolute inset-0 z-10 bg-linear-to-b from-navy/12 via-tealblue/10 to-navy/14" aria-hidden="true"></div>
+    {[carouselLogos, [...carouselLogos].reverse()].map((rowLogos, rowIndex) => (
+      <div
+        key={`sponsor-row-${rowIndex}`}
+        className={`relative flex w-max animate-marquee items-center gap-2 whitespace-nowrap hover:[animation-play-state:paused] md:gap-3 ${
+          rowIndex === 0 ? '[animation-duration:30s]' : '[animation-direction:reverse] [animation-duration:42s]'
+        }`}
+      >
+        {[...rowLogos, ...rowLogos].map((logo, index) => (
+          <div key={`${logo.name}-hero-${rowIndex}-${index}`} className="relative flex h-8 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white px-3 shadow-[0_10px_24px_rgba(0,0,0,0.12)] md:h-10 md:w-32">
+            <img src={logo.src} alt={`${logo.name} logo`} className="max-h-[70%] max-w-[86%] object-contain" loading="lazy" />
+            <span className="pointer-events-none absolute inset-0 bg-linear-to-br from-navy/34 via-tealblue/28 to-sunset-orange/20" aria-hidden="true"></span>
+          </div>
+        ))}
+      </div>
+    ))}
+  </div>
+);
 const CTAButton = ({ href, children, variant = 'primary', className = '' }) => {
   const base =
     'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-base font-bold transition hover:-translate-y-0.5 active:scale-[0.98] md:px-8 md:py-4 md:text-lg';
@@ -160,11 +179,11 @@ const Navbar = () => {
       }`}
     >
       <nav
-        className={`pointer-events-auto overflow-hidden border border-white/10 bg-darkblue/50 shadow-[0_8px_32px_0_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all duration-300 ease-out ${
+        className={`pointer-events-auto border border-white/10 bg-darkblue/50 shadow-[0_8px_32px_0_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all duration-300 ease-out ${
           isScrolled
             ? 'w-auto rounded-2xl px-3 py-3'
             : 'w-full max-w-md rounded-3xl px-5 py-4 md:w-auto md:max-w-none md:rounded-full md:px-12'
-        }`}
+        } ${isOpen && isScrolled ? 'overflow-visible' : 'overflow-hidden'}`}
       >
         <div className={`relative flex items-center gap-3 ${isScrolled ? 'justify-start' : 'justify-center'}`}>
           {/* Logo - clickable to scroll to top */}
@@ -319,6 +338,9 @@ const Navbar = () => {
 
 const Hero = () => {
   const [activeMetric, setActiveMetric] = useState(0);
+  const [heroLogoOpacity, setHeroLogoOpacity] = useState(1);
+  const [isHovered, setIsHovered] = useState(false);
+  const [wavePosition, setWavePosition] = useState({ x: 0, y: 0 });
 
   const metrics = [
     { label: 'Pilot Farms', value: '3+', text: 'Committed farm partners' },
@@ -336,8 +358,31 @@ const Hero = () => {
     return () => window.clearInterval(timer);
   }, [metrics.length]);
 
+  useEffect(() => {
+    let frame = 0;
+
+    const updateLogoFade = () => {
+      frame = 0;
+      const nextOpacity = Math.max(0, Math.min(1, 1 - window.scrollY / 260));
+      setHeroLogoOpacity(nextOpacity);
+    };
+
+    const handleScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(updateLogoFade);
+    };
+
+    updateLogoFade();
+    window.addEventListener('scroll', handleScroll, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (frame) window.cancelAnimationFrame(frame);
+    };
+  }, []);
+
   return (
-    <section id="home" className="relative min-h-screen overflow-hidden px-4 pb-20 pt-28 md:pb-24">
+    <section id="home" className="relative min-h-screen overflow-hidden px-4 pb-16 pt-28 md:pb-20">
       <video
         autoPlay
         loop
@@ -356,30 +401,57 @@ const Hero = () => {
         <FadeIn className="mx-auto w-full max-w-xs space-y-7 sm:max-w-none md:space-y-9">
           <div className="space-y-5 md:space-y-6">
             <h1
-              className="mx-auto text-[2.35rem] font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:max-w-none md:text-6xl lg:text-7xl"
-              style={{ textShadow: '0 4px 30px rgba(0,0,0,0.62)' }}
+              className="mx-auto will-change-[opacity,transform,filter] relative"
+              style={{
+                opacity: heroLogoOpacity,
+                transform: `translateY(${-18 * (1 - heroLogoOpacity)}px) scale(${0.98 + heroLogoOpacity * 0.02})`,
+                filter: `blur(${(1 - heroLogoOpacity) * 2}px)`,
+              }}
             >
-              <span className="md:hidden">
-                Support the
-                <br />
-                Next
-                <br />
-                Generation
-                <br />
-                <span className="text-sunset-orange">
-                  of Smart
-                  <br />
-                  Aquaculture
-                  <br />
-                  Technology.
-                </span>
-              </span>
-              <span className="hidden md:inline">
-                Support the Next Generation <br />
-                <span className="text-sunset-orange">of Smart Aquaculture Technology.</span>
-              </span>
+              <img
+                src={heroTitleImg}
+                alt="Cultivator"
+                className={`mx-auto h-auto w-[min(86vw,22rem)] drop-shadow-[0_12px_35px_rgba(0,0,0,0.5)] sm:w-[min(78vw,30rem)] md:w-[min(72vw,42rem)] lg:w-[min(66vw,48rem)] transition-transform duration-300 ease-out`}
+                fetchPriority="high"
+                onMouseMove={(e) => {
+                  const rect = e.currentTarget.getBoundingClientRect();
+                  setWavePosition({
+                    x: e.clientX - rect.left,
+                    y: e.clientY - rect.top
+                  });
+                }}
+                onMouseEnter={() => setIsHovered(true)}
+                onMouseLeave={() => setIsHovered(false)}
+                style={{
+                  transform: isHovered && wavePosition.x !== 0
+                    ? `perspective(500px) rotateX(${(wavePosition.y - 150) / 15}deg) rotateY(${(wavePosition.x - 150) / -15}deg) scale(1.05)`
+                    : 'scale(1)'
+                }}
+              />
+              {isHovered && (
+                <>
+                  {[...Array(3)].map((_, i) => (
+                    <span
+                      key={i}
+                      className="absolute inset-0 rounded-full border-2 border-sunset-orange/30 animate-ping pointer-events-none"
+                      style={{
+                        animationDelay: `${i * 150}ms`,
+                        animationDuration: '1s',
+                        left: '50%',
+                        top: '50%',
+                        transform: 'translate(-50%, -50%)',
+                        width: '100%',
+                        height: '100%'
+                      }}
+                    />
+                  ))}
+                </>
+              )}
             </h1>
-            <p className="mx-auto max-w-[25ch] text-base font-medium leading-relaxed text-white/88 sm:max-w-[34ch] sm:text-lg md:max-w-3xl md:text-2xl">
+            <p className="mx-auto max-w-[22ch] text-xl font-extrabold leading-tight tracking-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)] sm:max-w-[32ch] sm:text-2xl md:max-w-4xl md:text-4xl">
+              The Next Generation <span className="text-sunset-orange">of Smart Aquaculture Technology.</span>
+            </p>
+            <p className="mx-auto max-w-[25ch] text-base font-medium leading-relaxed text-white/88 sm:max-w-[34ch] sm:text-lg md:max-w-3xl md:text-xl">
               Cultivator helps shrimp farms prevent aerator failure, protect harvest value, and turn emergency maintenance into predictable operating savings.
             </p>
           </div>
@@ -394,26 +466,15 @@ const Hero = () => {
             </div>
           </div>
 
-          <div className="mx-auto w-full max-w-4xl">
-            <LogoMarquee compact />
-          </div>
-
           <div className="mx-auto flex w-full max-w-xs flex-col gap-3 pt-1 sm:max-w-none sm:flex-row sm:justify-center">
-            <CTAButton href="#contact" className="w-full sm:w-auto">
-              Contact Us <ChevronRight className="h-5 w-5" />
-            </CTAButton>
-            <CTAButton href={proposalPdf} variant="secondary" className="w-full backdrop-blur-xl sm:w-auto">
-              <Download className="h-5 w-5" />
-              Download Pitch Deck
+            <CTAButton href="#problem" className="w-full sm:w-auto">
+              Learn more <ChevronRight className="h-5 w-5" />
             </CTAButton>
           </div>
 
-          <a href="#problem" className="mx-auto mt-2 flex w-fit flex-col items-center gap-2 text-white/85 transition hover:text-white active:scale-[0.98]" aria-label="Scroll to problem section">
-            <span className="h-9 w-px rounded-full bg-white/40">
-              <span className="mx-auto block h-4 w-px rounded-full bg-sunset-orange animate-scroll-cue"></span>
-            </span>
-           
-          </a>
+          <div className="mx-[calc(50%-50vw)] mt-2 w-screen">
+            <LogoBand />
+          </div>
         </FadeIn>
       </div>
     </section>
@@ -597,8 +658,8 @@ export const Team = () => {
                     <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/8 p-3">
                       <img src={nthuLogo} alt="NTHU" className="h-9 w-9 shrink-0 rounded-full bg-white object-cover" />
                       <div>
-                        <p className="text-base font-bold text-white">{active.major}</p>
-                        <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-lightgrey">University / major</p>
+                        <p className="text-base font-bold text-white">NTHU, National Tsing Hua University</p>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-lightgrey">{active.major}</p>
                       </div>
                     </div>
 
@@ -795,39 +856,7 @@ const CultivatorSolution = () => {
   );
 };
 
-const SocialProof = () => {
-  const [activeTestimonial, setActiveTestimonial] = useState(0);
-  const testimonials = [
-    {
-      quote: 'A failed aerator at night can decide the whole harvest. Earlier alerts would change how we manage risk.',
-      name: 'Taiwan shrimp farm operator',
-      meta: 'Pilot discovery interview',
-      image: field2,
-    },
-    {
-      quote: 'The device fits our current workflow because it checks the machine instead of asking farmers to change everything.',
-      name: 'Partner farm manager',
-      meta: 'Field feedback',
-      image: field3,
-    },
-    {
-      quote: 'A simple warning before oxygen drops is the kind of tool small farms can actually use.',
-      name: 'Southeast Asia farm partner',
-      meta: 'Expansion feedback',
-      image: field4,
-    },
-  ];
-  const currentTestimonial = testimonials[activeTestimonial];
-
-  useEffect(() => {
-    const timer = window.setInterval(() => {
-      setActiveTestimonial((current) => (current + 1) % testimonials.length);
-    }, 5800);
-
-    return () => window.clearInterval(timer);
-  }, [testimonials.length]);
-
-  return (
+const SocialProof = () => (
     <section id="traction" className="relative border-y border-white/5 bg-navy/45 px-4 py-20">
       <div className="mx-auto max-w-7xl">
         <FadeIn>
@@ -859,28 +888,12 @@ const SocialProof = () => {
               <p className="text-lg leading-relaxed text-lightgrey">
                 Two partners in Indonesia are ready to adopt after MVP finalization, while a Taiwan partner is working with us for localized field testing.
               </p>
-              <div className="mt-8 min-h-44">
-                <div key={currentTestimonial.name} className="animate-ghost-comment">
-                  <Quote className="mb-4 h-7 w-7 text-sunset-orange" />
-                  <p className="text-lg leading-relaxed text-white/90">"{currentTestimonial.quote}"</p>
-                  <div className="mt-5 flex items-center gap-3">
-                    <img src={currentTestimonial.image} alt={`${currentTestimonial.name} - ${currentTestimonial.meta}`} className="h-11 w-11 rounded-full object-cover" />
-                    <div>
-                      <p className="font-bold text-white">{currentTestimonial.name}</p>
-                      <p className="text-sm text-lightgrey">{currentTestimonial.meta}</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row">
-                <CTAButton href={proposalPdf} className="w-full sm:w-auto">
-                  <Download className="h-5 w-5" />
-                  Pitch Deck
-                </CTAButton>
-                <CTAButton href="#contact" variant="secondary" className="w-full sm:w-auto">
-                  Partner With Us
-                </CTAButton>
-              </div>
+              <Link
+                to="/media"
+                className="mt-8 inline-flex w-full items-center justify-center gap-2 rounded-full bg-sunset-orange px-6 py-3 text-base font-bold text-navy shadow-[0_0_22px_rgba(255,145,16,0.35)] transition hover:-translate-y-0.5 hover:bg-sunset-orange/90 active:scale-[0.98] sm:w-auto"
+              >
+                See more media <ChevronRight className="h-5 w-5" />
+              </Link>
             </LiquidGlassCard>
           </FadeIn>
 
@@ -892,19 +905,12 @@ const SocialProof = () => {
                   <div className="absolute inset-0 bg-linear-to-t from-navy/65 via-transparent to-transparent"></div>
                 </div>
               ))}
-              <Link
-                to="/media"
-                className="inline-flex h-36 items-center justify-center gap-2 rounded-3xl border border-white/20 bg-white/5 px-5 text-center text-base font-bold text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-white/10 active:scale-[0.98] md:h-44"
-              >
-                See more media <ChevronRight className="h-5 w-5" />
-              </Link>
             </div>
           </FadeIn>
         </div>
       </div>
     </section>
-  );
-};
+);
 
 const Competitions = () => (
   <section id="competitions" className="relative border-y border-tealblue/20 bg-navy/60 px-4 py-20">
@@ -1356,8 +1362,15 @@ const StickyInvestorCTA = () => {
       style={{ transform: `translateX(${dragOffsetX}px)` }}
     >
       <div className="mx-auto flex max-w-4xl items-start gap-2 sm:items-center">
-        <div className="flex-1 rounded-3xl border border-white/15 bg-navy/85 p-4 shadow-[0_20px_70px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:flex sm:items-center sm:justify-between sm:p-3">
-          <div className="px-2 text-center sm:text-left pr-8 sm:pr-0">
+        <div className="relative flex-1 rounded-3xl border border-white/15 bg-navy/85 p-4 pr-14 shadow-[0_20px_70px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:flex sm:items-center sm:justify-between sm:p-3">
+          <button
+            onClick={handleDismiss}
+            className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full border border-white/10 bg-navy/90 p-2 text-white/70 shadow-lg transition-colors hover:bg-white/10 hover:text-white sm:hidden"
+            aria-label="Dismiss"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <div className="px-2 text-center sm:pr-4 sm:text-left">
             <p className="font-bold text-white">Ready to review Cultivator?</p>
             <p className="text-sm text-lightgrey">Download the deck or book a partner conversation.</p>
           </div>
@@ -1386,7 +1399,7 @@ const StickyInvestorCTA = () => {
         </div>
         <button
           onClick={handleDismiss}
-          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-navy/90 p-2 text-white/70 shadow-lg transition-colors hover:bg-white/10 hover:text-white"
+          className="hidden h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-navy/90 p-2 text-white/70 shadow-lg transition-colors hover:bg-white/10 hover:text-white sm:flex"
           aria-label="Dismiss"
         >
           <X className="h-4 w-4" />

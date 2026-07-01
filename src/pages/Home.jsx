@@ -1,22 +1,19 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useLayoutEffect, useState } from 'react';
 import {
   Activity,
   ArrowUp,
   BarChart3,
   Bell,
   Building2,
-  ChevronDown,
   ChevronRight,
   Cpu,
   Download,
   Globe2,
   Handshake,
   Mail,
-  Medal,
   Menu,
   Rocket,
   Sprout,
-  Trophy,
   Waves,
   X,
 } from 'lucide-react';
@@ -44,6 +41,9 @@ import aeratorsImg from '../assets/aerators.jpg';
 import electricityImg from '../assets/electricity.jpg';
 import smallerShrimpImg from '../assets/smaller_shrimp.jpg';
 import problemFragileOps from '../assets/problem_fragile_ops.png';
+import shrimpFarmImg from '../assets/shrimp_farm.jpg';
+import graphTimelineImg from '../assets/graph timeline.png';
+import pexelsQuangImg from '../assets/pexels-quang-nguyen-vinh-222549-6872322.jpg';
 
 import webImg1 from '../assets/web_img1.jpg';
 import webImg2 from '../assets/web_img2.jpg';
@@ -54,6 +54,8 @@ import nthuLogo from '../assets/nthu logo.jpg';
 import indonesiaFlag from '../assets/Flag-Indonesia.webp';
 import usFlag from '../assets/Flag_of_the_United_States.svg.webp';
 import thailandFlag from '../assets/thai_flag.jpg';
+import memberBg from '../assets/Hult Prize Taiwan/WhatsApp Image 2026-06-30 at 19.54.14 (1).jpeg';
+import hultWinnerImg from '../assets/Hult Winner.JPG';
 import teamFrans from '../assets/members/frans/frans_pic.jpg';
 import teamFransExperience from '../assets/members/frans/frans_experience.png';
 import teamJason from '../assets/members/jason/jason_pic.jpg';
@@ -404,12 +406,12 @@ const Hero = () => {
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-navy/10 via-navy/52 to-navy"></div>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-72 bg-linear-to-t from-navy via-navy/92 to-transparent md:h-96"></div>
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-navy/10 via-navy/60 to-navy"></div>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-96 bg-linear-to-t from-navy via-navy/95 to-transparent"></div>
 
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-7rem)] w-full max-w-6xl flex-col items-center justify-center text-center">
-        <FadeIn className="mx-auto w-full max-w-xs space-y-7 sm:max-w-none md:space-y-9">
-          <div className="space-y-5 md:space-y-6">
+        <FadeIn className="mx-auto w-full max-w-xs space-y-5 sm:max-w-none sm:space-y-7 md:space-y-9">
+          <div className="space-y-4 md:space-y-6">
             <h1 className="mx-auto relative">
               <button
                 onClick={handleLogoClick}
@@ -419,7 +421,7 @@ const Hero = () => {
                 <img
                   src={heroTitleImg}
                   alt="Cultivator"
-                  className={`mx-auto h-auto w-[min(86vw,22rem)] drop-shadow-[0_12px_35px_rgba(0,0,0,0.5)] sm:w-[min(78vw,30rem)] md:w-[min(72vw,42rem)] lg:w-[min(66vw,48rem)]`}
+                  className={`mx-auto h-auto w-[min(82vw,19rem)] drop-shadow-[0_12px_35px_rgba(0,0,0,0.5)] sm:w-[min(78vw,30rem)] md:w-[min(72vw,42rem)] lg:w-[min(66vw,48rem)]`}
                   fetchPriority="high"
                 />
                 {ripplePositions.map(ripple => (
@@ -437,22 +439,25 @@ const Hero = () => {
                 ))}
               </button>
             </h1>
-            <div className="mx-auto min-h-28 w-full max-w-xs sm:max-w-md md:min-h-32">
+            <p className="mx-auto max-w-[21ch] text-[1.35rem] font-extrabold leading-tight tracking-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)] sm:max-w-[32ch] sm:text-2xl md:max-w-4xl md:text-4xl">
+              The Next Generation <span className="text-sunset-orange">of Smart Aquaculture Technology.</span>
+            </p>
+            <div className="mx-auto min-h-24 w-full max-w-xs sm:min-h-28 sm:max-w-md md:min-h-32">
               <div key={currentMetric.label} className="animate-ghost-metric text-center">
                 <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-200/90">{currentMetric.label}</p>
-                <p className="mt-2 text-5xl font-extrabold tracking-tight text-white drop-shadow-[0_8px_30px_rgba(0,0,0,0.45)] sm:text-6xl md:text-7xl">
+                <p className="mt-1 text-4xl font-extrabold tracking-tight text-white drop-shadow-[0_8px_30px_rgba(0,0,0,0.45)] sm:mt-2 sm:text-6xl md:text-7xl">
                   {currentMetric.value}
                 </p>
-                <p className="mt-2 text-sm font-semibold text-white/78 md:text-base">{currentMetric.text}</p>
+                <p className="mt-3 text-sm font-light text-white/60 tracking-wide md:text-base">{currentMetric.text}</p>
               </div>
             </div>
           </div>
 
-          <div className="mx-auto min-h-28 w-full max-w-xs space-y-3 sm:max-w-none md:min-h-32">
-            <p className="mx-auto max-w-[22ch] text-xl font-extrabold leading-tight tracking-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)] sm:max-w-[32ch] sm:text-2xl md:max-w-4xl md:text-4xl">
-              The Next Generation <span className="text-sunset-orange">of Smart Aquaculture Technology.</span>
+          <div className="mx-auto min-h-10 w-full max-w-xs sm:min-h-16 sm:max-w-none md:min-h-20">
+            <p className="mx-auto max-w-[26ch] text-sm font-semibold leading-snug text-white/88 drop-shadow-[0_4px_18px_rgba(0,0,0,0.35)] sm:hidden">
+              Prevent aerator failure before it costs a harvest.
             </p>
-            <p className="mx-auto max-w-[25ch] text-base font-medium leading-relaxed text-white/88 sm:max-w-[34ch] sm:text-lg md:max-w-3xl md:text-xl">
+            <p className="mx-auto hidden max-w-[34ch] text-lg font-medium leading-relaxed text-white/88 sm:block md:max-w-3xl md:text-xl">
               Cultivator helps shrimp farms prevent aerator failure, protect harvest value, and turn emergency maintenance into predictable operating savings.
             </p>
           </div>
@@ -474,10 +479,11 @@ const Hero = () => {
 
 export const Problem = () => (
   <section id="problem" className="relative px-4 py-20 overflow-hidden">
-    {/* Background image */}
+    {/* Background image with smooth gradient fade top and bottom */}
     <div className="absolute inset-0 z-0">
-      <img src={problemFragileOps} alt="" className="h-full w-full object-cover opacity-[0.08] mix-blend-luminosity" loading="lazy" />
-      <div className="absolute inset-0 bg-gradient-to-b from-navy/80 via-navy/60 to-navy/80" />
+      <img src={problemFragileOps} alt="" className="h-full w-full object-cover opacity-[0.15] mix-blend-luminosity" loading="lazy" />
+      <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-navy to-transparent"></div>
+      <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-navy to-transparent"></div>
     </div>
 
     <div className="mx-auto max-w-7xl relative z-10">
@@ -580,7 +586,9 @@ export const Team = () => {
   return (
     <section id="team" className="relative overflow-hidden px-4 py-20">
       <div className="absolute inset-0 z-0">
-        <img src={hardwareImg} alt="Background" className="h-full w-full object-cover opacity-[0.03] mix-blend-luminosity" loading="lazy" />
+        <img src={memberBg} alt="Background" className="h-full w-full object-cover opacity-[0.15] mix-blend-luminosity" loading="lazy" />
+        <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-navy to-transparent"></div>
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-navy to-transparent"></div>
       </div>
       <div className="relative z-10 mx-auto max-w-6xl">
         <FadeIn>
@@ -697,7 +705,7 @@ export const Gallery = () => {
   const images = [webImg1, webImg2, webImg4, webImg5];
   
   return (
-    <section className="relative overflow-hidden py-24">
+    <section className="relative overflow-hidden py-24 bg-linear-to-b from-navy/95 to-navy/90">
       <div className="mb-12 text-center px-4 relative z-10">
         <h2 className="text-3xl font-bold text-white md:text-5xl">Real Operations, <span className="text-sunset-orange">Real Impact.</span></h2>
         <p className="mt-4 text-xl text-lightgrey">A glimpse into our pilot testing and field deployments across Asia.</p>
@@ -723,115 +731,144 @@ export const Gallery = () => {
 const CultivatorSolution = () => {
   const [activeTab, setActiveTab] = useState('hardware');
 
+  const hardwareFeatures = [
+    {
+      icon: Activity,
+      title: 'Electrical Current',
+      desc: 'Instantly detect power loss, overloads, or motor interruptions before they escalate into complete failures.',
+    },
+    {
+      icon: Cpu,
+      title: 'Mechanical Vibration',
+      desc: 'Continuously monitor for abnormal movement, excessive wear, or impending mechanical failure.',
+    },
+  ];
+
+  const softwareFeatures = [
+    {
+      icon: BarChart3,
+      title: 'Real-time Anomaly Detection',
+      desc: 'Analysis flags unusual operational patterns seconds after they occur.',
+    },
+    {
+      icon: Bell,
+      title: 'Instant Fault Notifications',
+      desc: 'Receive critical alerts via SMS or push notification immediately when intervention is needed.',
+    },
+    {
+      icon: Waves,
+      title: 'Historical Analytics',
+      desc: 'Track equipment lifespan and performance degradation over time to optimize maintenance schedules.',
+    },
+  ];
+
+  const currentFeatures = activeTab === 'hardware' ? hardwareFeatures : softwareFeatures;
+  const currentImage = activeTab === 'hardware' ? hardwareImg : appUiImg;
+  const imageAlt = activeTab === 'hardware' ? 'Cultivator hardware on aerator' : 'Cultivator dashboard interface';
+  const overlayText = activeTab === 'hardware' ? 'Works with what you have.' : 'See everything at a glance.';
+  const badgeText = activeTab === 'hardware' ? 'Retrofit module' : 'Mobile dashboard';
+
   return (
-    <section id="solution" className="relative px-4 py-20">
+    <section id="solution" className="relative overflow-hidden px-4 py-20">
+      <div className="absolute inset-0 z-0">
+        <img src={shrimpPondImg} alt="" className="h-full w-full object-cover opacity-[0.12] mix-blend-luminosity" loading="lazy" />
+        <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-navy to-transparent"></div>
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-navy to-transparent"></div>
+      </div>
+
       <div className="relative z-10 mx-auto max-w-7xl">
         <FadeIn>
-          <div className="mx-auto mb-12 max-w-3xl text-center">
-            <h2 className="mb-6 text-3xl font-bold text-white md:text-5xl">The Cultivator Solution.</h2>
-            <p className="text-xl text-lightgrey">Real-time aerator health monitoring for aquaculture systems. Installed directly on existing paddlewheel aerators.</p>
+          <div className="mx-auto mb-14 max-w-3xl text-center">
+            <h2 className="mb-5 text-3xl font-bold text-white md:text-5xl">Solution</h2>
+            <p className="text-lg leading-relaxed text-lightgrey md:text-xl">
+              Hardware monitors your aerators. Software alerts you to problems.
+            </p>
           </div>
         </FadeIn>
 
-        <div className="mb-10 flex justify-center md:mb-12">
-          <div className="grid w-full max-w-md grid-cols-2 rounded-full border border-white/10 bg-white/5 p-1 backdrop-blur-md sm:w-auto">
+        <FadeIn delay={80}>
+          <div className="mx-auto mb-10 flex w-fit justify-center rounded-full border border-white/20 bg-white/5 p-1 backdrop-blur-xl">
             <button
               onClick={() => setActiveTab('hardware')}
-              className={`rounded-full px-5 py-3 text-base font-bold transition active:scale-[0.98] md:px-8 md:text-lg ${
-                activeTab === 'hardware' ? 'bg-sunset-orange text-navy shadow-[0_0_8px_rgba(85,212,255,0.2)]' : 'text-white/70 hover:text-white'
+              className={`rounded-full px-6 py-2.5 text-sm font-bold transition ${
+                activeTab === 'hardware'
+                  ? 'bg-sunset-orange text-navy shadow-[0_0_20px_rgba(255,120,40,0.3)]'
+                  : 'text-white/70 hover:text-white hover:bg-white/5'
               }`}
             >
               Hardware
             </button>
             <button
               onClick={() => setActiveTab('software')}
-              className={`rounded-full px-5 py-3 text-base font-bold transition active:scale-[0.98] md:px-8 md:text-lg ${
-                activeTab === 'software' ? 'bg-sunset-orange text-navy shadow-[0_0_8px_rgba(85,212,255,0.2)]' : 'text-white/70 hover:text-white'
+              className={`rounded-full px-6 py-2.5 text-sm font-bold transition ${
+                activeTab === 'software'
+                  ? 'bg-sunset-orange text-navy shadow-[0_0_20px_rgba(255,120,40,0.3)]'
+                  : 'text-white/70 hover:text-white hover:bg-white/5'
               }`}
             >
               Software
             </button>
           </div>
-        </div>
+        </FadeIn>
 
-        <div className="relative min-h-[400px]">
-          <div className={`transition-all duration-300 ease-out ${activeTab === 'hardware' ? 'relative z-10 translate-y-0 opacity-100' : 'pointer-events-none absolute inset-0 translate-y-5 opacity-0'}`}>
-            <div className="grid items-center gap-8 md:grid-cols-2">
-              <div className="space-y-6">
-                <LiquidGlassCard className="border-l-4 border-l-sunset-orange">
-                  <div className="flex items-start gap-4">
-                    <div className="mt-1 rounded-2xl bg-sunset-orange/20 p-3 text-sunset-orange">
-                      <Cpu className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <h3 className="mb-2 text-xl font-bold text-white">Electrical Current</h3>
-                      <p className="leading-relaxed text-lightgrey">Instantly detect power loss, overloads, or motor interruptions before they escalate into complete failures.</p>
-                    </div>
+        <div className="grid items-center gap-10 lg:grid-cols-[1.05fr_0.95fr]">
+          <FadeIn delay={120}>
+            <div className="relative">
+              <div className="relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-[0_24px_80px_rgba(0,0,0,0.35)]">
+                <img src={currentImage} alt={imageAlt} className="aspect-[4/3] w-full object-cover" loading="lazy" />
+                <div className="absolute inset-0 bg-linear-to-t from-navy/88 via-navy/20 to-transparent"></div>
+                <div className="absolute bottom-0 left-0 right-0 p-5 md:p-7">
+                  <div className="inline-flex rounded-full bg-sunset-orange px-4 py-2 text-sm font-bold text-navy">
+                    {badgeText}
                   </div>
-                </LiquidGlassCard>
-                <LiquidGlassCard className="border-l-4 border-l-sunset-skyblue">
-                  <div className="flex items-start gap-4">
-                    <div className="mt-1 rounded-2xl bg-sunset-skyblue/20 p-3 text-sunset-skyblue">
-                      <Activity className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <h3 className="mb-2 text-xl font-bold text-white">Mechanical Vibration</h3>
-                      <p className="leading-relaxed text-lightgrey">Continuously monitor for abnormal movement, excessive wear, or impending mechanical failure.</p>
-                    </div>
-                  </div>
-                </LiquidGlassCard>
-              </div>
-              <div className="relative aspect-[4/3] overflow-hidden rounded-4xl border border-white/10 shadow-2xl">
-                <img src={hardwareImg} alt="Hardware on aerator" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
-                <div className="absolute inset-0 bg-linear-to-t from-navy/90 via-navy/20 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 p-8">
-                  <p className="text-xl font-bold text-white">Plug and Play Installation</p>
-                  <p className="mt-2 text-lightgrey">Retrofits easily onto standard paddlewheel aerators.</p>
+                  <p className="mt-4 max-w-md text-lg font-semibold leading-relaxed text-white">
+                    {overlayText}
+                  </p>
                 </div>
               </div>
-            </div>
-          </div>
 
-          <div className={`transition-all duration-300 ease-out ${activeTab === 'software' ? 'relative z-10 translate-y-0 opacity-100' : 'pointer-events-none absolute inset-0 translate-y-5 opacity-0'}`}>
-            <div className="grid items-center gap-8 md:grid-cols-2">
-              <div className="relative aspect-[4/3] overflow-hidden rounded-4xl border border-white/10 shadow-2xl">
-                <img src={appUiImg} alt="Cultivator dashboard" className="absolute inset-0 h-full w-full object-cover object-top" loading="lazy" />
-                <div className="absolute inset-0 bg-linear-to-t from-navy/90 via-navy/10 to-transparent"></div>
-                <div className="absolute bottom-0 left-0 p-8">
-                  <p className="text-xl font-bold text-white">Cultivator Dashboard</p>
-                  <p className="mt-2 text-lightgrey">Clear, actionable data in the palm of your hand.</p>
+              {activeTab === 'hardware' && (
+                <div className="mt-5 grid gap-3 sm:grid-cols-2">
+                  {[
+                    { label: 'Installation', value: 'No rewiring' },
+                    { label: 'Connectivity', value: 'LoRaWAN' },
+                  ].map((item) => (
+                    <div key={item.label} className="rounded-2xl bg-white/8 px-4 py-3 text-center backdrop-blur-md">
+                      <p className="text-sm font-bold text-white">{item.value}</p>
+                      <p className="mt-1 text-xs text-lightgrey">{item.label}</p>
+                    </div>
+                  ))}
                 </div>
-              </div>
-              <div className="space-y-6">
-                <LiquidGlassCard>
-                  <div className="mb-3 flex items-center gap-4">
-                    <div className="rounded-xl bg-sunset-skyblue/20 p-2 text-sunset-skyblue">
-                      <Activity className="h-5 w-5" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white">Real-time Anomaly Detection</h3>
-                  </div>
-                  <p className="text-lightgrey">AI-assisted analysis flags unusual operational patterns seconds after they occur.</p>
-                </LiquidGlassCard>
-                <LiquidGlassCard>
-                  <div className="mb-3 flex items-center gap-4">
-                    <div className="rounded-xl bg-sunset-orange/20 p-2 text-sunset-orange">
-                      <Bell className="h-5 w-5" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white">Instant Fault Notifications</h3>
-                  </div>
-                  <p className="text-lightgrey">Receive critical alerts via SMS or push notification immediately when intervention is needed.</p>
-                </LiquidGlassCard>
-                <LiquidGlassCard>
-                  <div className="mb-3 flex items-center gap-4">
-                    <div className="rounded-xl bg-white/10 p-2 text-white">
-                      <BarChart3 className="h-5 w-5" />
-                    </div>
-                    <h3 className="text-xl font-bold text-white">Historical Analytics</h3>
-                  </div>
-                  <p className="text-lightgrey">Track equipment lifespan and performance degradation over time to optimize maintenance schedules.</p>
-                </LiquidGlassCard>
-              </div>
+              )}
             </div>
+          </FadeIn>
+
+          <div className="space-y-4">
+            {currentFeatures.map((item, index) => {
+              const Icon = item.icon;
+
+              return (
+                <FadeIn key={item.title} delay={180 + index * 60}>
+                  <div className="rounded-2xl border border-white/10 bg-white/5 p-5 transition hover:border-sunset-orange/30 hover:bg-white/8">
+                    <div className="flex gap-3">
+                      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-sunset-orange text-navy">
+                        <Icon className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <h3 className="text-base font-bold text-white sm:text-lg">{item.title}</h3>
+                        <p className="mt-1.5 text-sm leading-relaxed text-lightgrey">{item.desc}</p>
+                      </div>
+                    </div>
+                  </div>
+                </FadeIn>
+              );
+            })}
+
+            <FadeIn delay={480}>
+              <CTAButton href="#traction" variant="secondary" className="w-full">
+                See field validation <ChevronRight className="h-5 w-5" />
+              </CTAButton>
+            </FadeIn>
           </div>
         </div>
       </div>
@@ -840,7 +877,12 @@ const CultivatorSolution = () => {
 };
 
 const SocialProof = () => (
-    <section id="traction" className="relative border-y border-white/5 bg-navy/45 px-4 py-20">
+    <section id="traction" className="relative px-4 py-20">
+      <div className="absolute inset-0 z-0">
+        <img src={field3} alt="" className="h-full w-full object-cover opacity-[0.12] mix-blend-luminosity" loading="lazy" />
+        <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-navy to-transparent"></div>
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-navy to-transparent"></div>
+      </div>
       <div className="mx-auto max-w-7xl">
         <FadeIn>
           <div className="mx-auto mb-12 max-w-3xl text-center">
@@ -896,7 +938,7 @@ const SocialProof = () => (
 );
 
 const Competitions = () => (
-  <section id="competitions" className="relative border-y border-tealblue/20 bg-navy/60 px-4 py-20">
+  <section id="competitions" className="relative px-4 py-20 bg-linear-to-b from-navy/80 to-navy/70">
     <div className="mx-auto max-w-7xl">
       <FadeIn>
         <div className="mx-auto mb-16 max-w-3xl text-center">
@@ -905,10 +947,12 @@ const Competitions = () => (
         </div>
       </FadeIn>
 
-      <div className="grid gap-8 md:grid-cols-2">
+      <div className="grid gap-8 md:grid-cols-1">
         <FadeIn delay={100}>
           <LiquidGlassCard className="h-full">
-            <Trophy className="relative z-10 mb-6 h-12 w-12 text-sunset-orange" />
+            <div className="mb-6 overflow-hidden rounded-2xl">
+              <img src={hultWinnerImg} alt="Hult Prize Winner" className="h-auto w-full object-cover" />
+            </div>
             <h3 className="relative z-10 mb-4 text-3xl font-bold text-white">Hult Prize Nationals Winner</h3>
             <p className="relative z-10 mb-6 text-lg leading-relaxed text-lightgrey">
               Cultivator advanced through Taiwan's national stage and is preparing for the Digital Incubator track.
@@ -918,179 +962,206 @@ const Competitions = () => (
             </div>
           </LiquidGlassCard>
         </FadeIn>
-
-        <FadeIn delay={180}>
-          <LiquidGlassCard className="h-full">
-            <Medal className="relative z-10 mb-6 h-12 w-12 text-sunset-skyblue" />
-            <h3 className="relative z-10 mb-4 text-3xl font-bold text-white">Startup World Cup Hsinchu</h3>
-            <p className="relative z-10 mb-6 text-lg leading-relaxed text-lightgrey">
-              Startup exposure in Hsinchu connects the team with mentors, investors, technical advisors, and potential channel partners.
-            </p>
-            <div className="relative z-10 inline-flex rounded-full bg-sunset-skyblue/15 px-4 py-2 text-sm font-bold text-sunset-skyblue">
-              Supported by NTHU Garage
-            </div>
-          </LiquidGlassCard>
-        </FadeIn>
       </div>
     </div>
   </section>
 );
 
 const Market = () => {
+  const [animatedStats, setAnimatedStats] = useState({ tam: 0, sam: 0, som: 0 });
+  const [inView, setInView] = useState(false);
+  const [activeTab, setActiveTab] = useState('overview');
+  const sectionRef = useState(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          setTimeout(() => {
+            setAnimatedStats({ tam: 800, sam: 300, som: 50 });
+          }, 300);
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   const stats = [
     {
       label: 'TAM',
-      value: '~$800M',
       full: 'Global aquaculture hardware',
-      text: 'Total global hardware aquaculture market excluding SaaS.',
+      text: 'Total global hardware market.',
       progress: 100,
       icon: Globe2,
+      value: 'tam',
     },
     {
       label: 'SAM',
-      value: '~$300M',
       full: 'Asia hardware opportunity',
       text: "Asia's hardware aquaculture market.",
       progress: 62,
       icon: Waves,
+      value: 'sam',
     },
     {
       label: 'SOM',
-      value: '~$50M',
       full: 'Taiwan plus SEA entry',
-      text: "Taiwan's pilot farms and 10% of the Southeast Asia market.",
+      text: "Taiwan's pilot farms and 10% of Southeast Asia.",
       progress: 28,
       icon: Sprout,
+      value: 'som',
     },
   ];
 
+  const insights = [
+    { label: 'Aerators per pond', value: '4-8', text: 'Creates repeated monitoring demand.' },
+    { label: 'Taiwan farms', value: '~12k', text: 'Nearby access for installation and testing.' },
+    { label: 'B2B2F launch', value: '2028', text: 'After pilot and MVP validation.' },
+  ];
+
   return (
-    <section id="market" className="relative overflow-hidden border-t border-white/5 px-4 py-20">
+    <section id="market" ref={sectionRef} className="relative overflow-hidden px-4 py-20">
+      <div className="absolute inset-0 z-0">
+        <img src={pexelsQuangImg} alt="" className="h-full w-full object-cover opacity-[0.12] mix-blend-luminosity" loading="lazy" />
+        <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-navy to-transparent"></div>
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-navy to-transparent"></div>
+      </div>
       <div className="relative z-10 mx-auto max-w-7xl">
         <FadeIn>
           <div className="mx-auto mb-16 max-w-3xl text-center">
             <h2 className="mb-6 text-3xl font-bold text-white md:text-5xl">A Scalable Solution.</h2>
-            <p className="text-xl text-lightgrey">The Taiwan shrimp market reached ~$507M USD in 2024. With ~12,000 farms using 4-8 aerators per pond, hardware optimization has room to scale.</p>
+            <p className="text-xl text-lightgrey">Taiwan shrimp market ~$507M. ~12,000 farms using 4-8 aerators per pond.</p>
           </div>
         </FadeIn>
 
-        <div className="grid gap-8 lg:grid-cols-[0.95fr_1.05fr]">
-          <FadeIn delay={80}>
-            <LiquidGlassCard className="h-full">
-              <div className="mb-8 flex items-center justify-between gap-4">
-                <div>
-                  <p className="text-sm font-bold uppercase tracking-[0.22em] text-sunset-orange">Market funnel</p>
-                  <h3 className="mt-2 text-2xl font-bold text-white md:text-3xl">TAM to SAM to SOM</h3>
-                </div>
-                <BarChart3 className="h-9 w-9 text-sunset-skyblue" />
-              </div>
+        <FadeIn delay={80}>
+          <div className="mx-auto mb-10 flex w-fit justify-center rounded-full border border-white/20 bg-white/5 p-1 backdrop-blur-xl">
+            <button
+              onClick={() => setActiveTab('overview')}
+              className={`rounded-full px-6 py-2.5 text-sm font-bold transition ${
+                activeTab === 'overview'
+                  ? 'bg-sunset-orange text-navy shadow-[0_0_20px_rgba(255,120,40,0.3)]'
+                  : 'text-white/70 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              Market Size
+            </button>
+            <button
+              onClick={() => setActiveTab('insights')}
+              className={`rounded-full px-6 py-2.5 text-sm font-bold transition ${
+                activeTab === 'insights'
+                  ? 'bg-sunset-orange text-navy shadow-[0_0_20px_rgba(255,120,40,0.3)]'
+                  : 'text-white/70 hover:text-white hover:bg-white/5'
+              }`}
+            >
+              Market Insights
+            </button>
+          </div>
+        </FadeIn>
 
-              <div className="space-y-4">
-                {stats.map((stat, index) => (
-                  <div key={stat.label} className="relative">
-                    <div
-                      className={`mx-auto rounded-3xl border border-white/12 bg-white/8 p-5 text-center shadow-xl ${
-                        index === 0 ? 'w-full' : index === 1 ? 'w-[86%]' : 'w-[68%]'
-                      }`}
-                    >
-                      <stat.icon className="mx-auto mb-2 h-6 w-6 text-sunset-orange" />
-                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-lightgrey">{stat.label}</p>
-                      <p className="mt-1 text-3xl font-extrabold text-white md:text-4xl">{stat.value}</p>
-                      <p className="mt-1 text-sm text-white/75">{stat.full}</p>
-                    </div>
-                    {index < stats.length - 1 && <div className="mx-auto h-6 w-px bg-linear-to-b from-sunset-skyblue to-sunset-orange"></div>}
-                  </div>
-                ))}
-              </div>
-            </LiquidGlassCard>
-          </FadeIn>
-
-          <FadeIn delay={140}>
-            <LiquidGlassCard className="h-full">
-              <div className="mb-8">
-                <div>
-                  <p className="text-sm font-bold uppercase tracking-[0.22em] text-sunset-skyblue">Market assumptions</p>
-                  <h3 className="mt-2 text-2xl font-bold text-white md:text-3xl">Focused by operating need</h3>
-                </div>
-              </div>
-
-              <div className="grid gap-4">
-                {[
-                  { label: 'Dense aerator usage', value: '4-8', text: 'Typical aerators per pond create repeated monitoring demand.' },
-                  { label: 'Validation base', value: '~12k', text: 'Taiwan farms give nearby access for installation and field testing.' },
-                  { label: 'Expansion trigger', value: '2028', text: 'B2B2F channel launch after pilot and MVP validation.' },
-                ].map((item) => (
-                  <div key={item.label} className="rounded-3xl border border-white/10 bg-white/6 p-5">
-                    <div className="flex items-start justify-between gap-4">
-                      <div>
-                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-lightgrey">{item.label}</p>
-                        <p className="mt-2 leading-relaxed text-white/78">{item.text}</p>
-                      </div>
-                      <p className="shrink-0 text-3xl font-extrabold text-sunset-orange">{item.value}</p>
+        {activeTab === 'overview' ? (
+          <div className="grid gap-6 lg:grid-cols-3">
+            {stats.map((stat, index) => (
+              <FadeIn key={stat.label} delay={index * 100}>
+                <div className="group relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 p-6 transition-all duration-500 hover:border-sunset-orange/40 hover:bg-white/8 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(255,120,40,0.15)]">
+                  <div className="mb-4 flex items-center justify-between">
+                    <stat.icon className={`h-7 w-7 text-sunset-orange transition-transform duration-500 ${inView ? 'scale-100' : 'scale-0'}`} style={{ transitionDelay: `${index * 100 + 200}ms` }} />
+                    <div className="inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-bold tracking-[0.18em] text-white/75">
+                      {stat.label}
                     </div>
                   </div>
-                ))}
 
-                <div className="rounded-3xl border border-sunset-orange/20 bg-sunset-orange/10 p-5">
-                  <p className="text-sm font-bold text-sunset-orange">Why this matters</p>
-                  <p className="mt-2 leading-relaxed text-white/82">
-                    Cultivator starts where aerator failure has immediate operational cost, then expands through partners who already serve pond operators.
+                  <div className="mb-2 flex items-baseline gap-1">
+                    <span className="text-4xl font-extrabold text-white md:text-5xl">
+                      {inView ? `$${Math.round(animatedStats[stat.value])}M` : '$0M'}
+                    </span>
+                  </div>
+
+                  <p className="mb-4 text-sm font-medium text-white/70">{stat.full}</p>
+
+                  <div className="relative">
+                    <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                      <div
+                        className="h-full rounded-full bg-linear-to-r from-sunset-orange to-sunset-skyblue transition-all duration-1000 ease-out"
+                        style={{ width: inView ? `${stat.progress}%` : '0%', transitionDelay: `${index * 100 + 400}ms` }}
+                      />
+                    </div>
+                    <img
+                      src={logoImg}
+                      alt=""
+                      className="absolute -top-3 h-7 w-7 rounded-full border-2 border-white/30 object-cover shadow-lg transition-all duration-1000 ease-out"
+                      style={{ left: inView ? `${stat.progress}%` : '0%', transform: 'translateX(-50%)', transitionDelay: `${index * 100 + 400}ms` }}
+                    />
+                  </div>
+
+                  <p className={`mt-4 text-sm leading-relaxed text-lightgrey transition-all duration-500 ${inView ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-2'}`} style={{ transitionDelay: `${index * 100 + 600}ms` }}>
+                    {stat.text}
                   </p>
                 </div>
+              </FadeIn>
+            ))}
+          </div>
+        ) : (
+          <div className="grid gap-4 lg:grid-cols-3">
+            {insights.map((item, index) => (
+              <FadeIn key={item.label} delay={index * 100}>
+                <div className="rounded-3xl border border-white/10 bg-white/5 p-6 transition-all duration-500 hover:border-sunset-orange/30 hover:bg-white/8 hover:-translate-y-1">
+                  <div className="mb-4 flex items-start justify-between">
+                    <div>
+                      <p className="text-xs font-bold uppercase tracking-[0.18em] text-lightgrey">{item.label}</p>
+                      <p className="mt-2 text-sm leading-relaxed text-white/78">{item.text}</p>
+                    </div>
+                    <p className="shrink-0 text-3xl font-extrabold text-sunset-orange">{item.value}</p>
+                  </div>
+                </div>
+              </FadeIn>
+            ))}
+            <FadeIn delay={300}>
+              <div className="rounded-3xl border border-sunset-orange/20 bg-sunset-orange/10 p-6">
+                <p className="mb-2 text-sm font-bold text-sunset-orange">Why this matters</p>
+                <p className="text-sm leading-relaxed text-white/82">
+                  Cultivator starts where aerator failure has immediate cost, then expands through partners serving pond operators.
+                </p>
               </div>
-            </LiquidGlassCard>
-          </FadeIn>
-        </div>
-
-        <div className="mt-8 grid gap-6 lg:grid-cols-3">
-          {stats.map((stat, index) => (
-            <FadeIn key={stat.label} delay={index * 100}>
-              <LiquidGlassCard className="h-full">
-                <div className="mb-4 flex items-center justify-between gap-3">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-white/10 px-3 py-1 text-xs font-bold tracking-[0.18em] text-white/75">
-                    {stat.label}
-                  </div>
-                  <stat.icon className="h-6 w-6 text-sunset-orange" />
-                </div>
-                <div className="mb-4 text-4xl font-extrabold tracking-tight text-white md:text-5xl">{stat.value}</div>
-                <p className="min-h-16 text-lg leading-relaxed text-white/80">{stat.text}</p>
-                <div className="relative">
-                  <div className="mt-6 h-2 overflow-hidden rounded-full bg-white/10">
-                    <div className="h-full rounded-full bg-linear-to-r from-sunset-orange to-sunset-skyblue" style={{ width: `${stat.progress}%` }}></div>
-                  </div>
-                  <img src={logoImg} alt="" className="absolute -top-3 h-7 w-7 rounded-full border-2 border-white/30 object-cover shadow-lg" style={{ left: `${stat.progress}%`, transform: 'translateX(-50%)' }} />
-                </div>
-              </LiquidGlassCard>
             </FadeIn>
-          ))}
-        </div>
+          </div>
+        )}
       </div>
     </section>
   );
 };
 
 const Roadmap = () => {
-  const [openPhases, setOpenPhases] = useState({ 0: true });
+  const [inView, setInView] = useState(false);
+  const [progress, setProgress] = useState(0);
+  const [activePhase, setActivePhase] = useState(null);
+  const sectionRef = useState(null);
 
   const phases = [
     {
-      label: 'Phase 1: Pilot',
+      label: 'Pilot',
       range: 'Months 1-3',
-      status: 'Current phase',
-      progress: 33,
+      status: 'Current',
+      farms: 3,
       icon: Rocket,
+      color: 'sunset-orange',
       items: [
         { time: 'Month 1', title: 'Prototype Finalization', text: 'Finalize device, build pilot units, waterproof case, confirm farms.' },
-        { time: 'Month 2', title: 'Field Deployment', text: 'Install devices, collect data, test alerts, and gather farmer feedback.' },
-        { time: 'Month 3', title: 'Validation and Hult', text: 'Analyze results, improve product, and prepare pilot report for scaling.' },
+        { time: 'Month 2', title: 'Field Deployment', text: 'Install devices, collect data, test alerts, gather farmer feedback.' },
+        { time: 'Month 3', title: 'Validation', text: 'Analyze results, improve product, prepare pilot report.' },
       ],
     },
     {
-      label: 'Phase 2: Expansion',
+      label: 'Expansion',
       range: '2026-2028',
-      status: 'Next milestone',
-      progress: 0,
+      status: 'Next',
+      farms: 200,
       icon: Handshake,
+      color: 'sunset-skyblue',
       items: [
         { time: '2026', title: 'Final MVP', text: 'Final MVP and pilot farms reaching 50 farmers.' },
         { time: '2027', title: 'Precision Prototype', text: 'Precision prototype deployed across 50 farms.' },
@@ -1098,97 +1169,119 @@ const Roadmap = () => {
       ],
     },
     {
-      label: 'Phase 3: Scale',
+      label: 'Scale',
       range: '2029-2030',
-      status: 'Long-term scale',
-      progress: 0,
+      status: 'Future',
+      farms: 5000,
       icon: Building2,
+      color: 'tealblue',
       items: [
-        { time: '2029', title: 'Operational BEP', text: '1,000 farmers, operational break-even, and 1,260 ponds.' },
+        { time: '2029', title: 'Operational BEP', text: '1,000 farmers, operational break-even, 1,260 ponds.' },
         { time: '2030', title: 'Asia Expansion', text: '5,000 farmers across Asia.' },
       ],
     },
   ];
 
-  const togglePhase = (index) => {
-    setOpenPhases((current) => ({ ...current, [index]: !current[index] }));
-  };
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setInView(true);
+          setTimeout(() => setProgress(18), 300);
+        }
+      },
+      { threshold: 0.2 }
+    );
+
+    if (sectionRef.current) observer.observe(sectionRef.current);
+    return () => observer.disconnect();
+  }, []);
 
   return (
-    <section id="roadmap" className="relative overflow-hidden border-y border-tealblue/20 bg-navy/60 px-4 py-20">
+    <section id="roadmap" ref={sectionRef} className="relative overflow-hidden px-4 py-24">
+      <div className="absolute inset-0 z-0">
+        <img src={shrimpFarmImg} alt="" className="h-full w-full object-cover opacity-[0.12] mix-blend-luminosity" loading="lazy" />
+        <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-navy to-transparent"></div>
+        <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-navy to-transparent"></div>
+      </div>
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(85,212,255,0.08),transparent_45%)]"></div>
 
-      <div className="relative z-10 mx-auto max-w-5xl">
+      <div className="relative z-10 mx-auto max-w-6xl">
         <FadeIn>
-          <div className="mx-auto mb-12 max-w-3xl text-center">
-            <h2 className="mb-6 text-3xl font-bold text-white md:text-5xl">The Path to 5,000 Farms.</h2>
-            <p className="text-xl text-lightgrey">Grouped milestones keep the operating plan readable from pilot validation to Asia-wide scale.</p>
+          <div className="mx-auto mb-16 max-w-3xl text-center">
+            <h2 className="mb-6 text-3xl font-bold text-white md:text-5xl">Path to 5,000 Farms</h2>
+            <p className="text-xl text-lightgrey">Pilot → Expansion → Scale across Asia</p>
           </div>
         </FadeIn>
 
-        <FadeIn delay={80}>
-          <div className="mb-10 rounded-3xl border border-white/10 bg-white/5 p-5 backdrop-blur-xl">
-            <div className="mb-3 flex items-center justify-between gap-4">
-              <p className="text-sm font-bold uppercase tracking-[0.2em] text-lightgrey">Current position</p>
-              <p className="text-sm font-bold text-sunset-orange">Pilot phase</p>
-            </div>
-            <div className="h-3 overflow-hidden rounded-full bg-white/10">
-              <div className="h-full w-[18%] rounded-full bg-linear-to-r from-sunset-orange to-sunset-skyblue"></div>
-            </div>
-            <div className="mt-3 grid grid-cols-3 text-xs font-bold uppercase tracking-[0.14em] text-lightgrey">
-              <span>Pilot</span>
-              <span className="text-center">Expansion</span>
-              <span className="text-right">Scale</span>
-            </div>
+        <div className="relative">
+          <div className="mb-8 h-1 rounded-full bg-white/10">
+            <div
+              className="h-full rounded-full bg-linear-to-r from-sunset-orange via-sunset-skyblue to-tealblue transition-all duration-1000 ease-out"
+              style={{ width: inView ? `${progress}%` : '0%' }}
+            />
+            <img
+              src={logoImg}
+              alt=""
+              className="absolute -top-3 h-8 w-8 rounded-full border-2 border-white/30 object-cover shadow-lg transition-all duration-1000 ease-out"
+              style={{ left: inView ? `${progress}%` : '0%', transform: 'translateX(-50%)' }}
+            />
           </div>
-        </FadeIn>
 
-        <div className="space-y-5">
-          {phases.map((phase, index) => (
-            <FadeIn key={phase.label} delay={index * 100}>
-              <div className="overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-xl backdrop-blur-xl">
-                <button
-                  onClick={() => togglePhase(index)}
-                  className="flex w-full items-center justify-between gap-4 p-5 text-left transition hover:bg-white/5 active:scale-[0.995] md:p-6"
-                  aria-expanded={Boolean(openPhases[index])}
-                >
-                  <div className="flex items-center gap-4">
-                    <div className={`rounded-2xl p-3 ${index === 0 ? 'bg-sunset-orange/20 text-sunset-orange' : 'bg-sunset-skyblue/15 text-sunset-skyblue'}`}>
-                      <phase.icon className="h-6 w-6" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-bold uppercase tracking-[0.18em] text-lightgrey">{phase.range}</p>
-                      <h3 className="mt-1 text-xl font-bold text-white md:text-2xl">{phase.label}</h3>
-                      <p className="mt-1 text-sm text-sunset-orange">{phase.status}</p>
-                    </div>
-                  </div>
-                  <ChevronDown className={`h-6 w-6 shrink-0 text-white transition duration-300 ${openPhases[index] ? 'rotate-180' : ''}`} />
-                </button>
+          <div className="grid gap-4 md:grid-cols-3">
+            {phases.map((phase, index) => {
+              const Icon = phase.icon;
+              const isActive = progress > index * 40;
+              const isExpanded = activePhase === index;
 
-                <div className={`grid transition-all duration-300 ease-out ${openPhases[index] ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
-                  <div className="overflow-hidden">
-                    <div className="border-t border-white/10 p-5 md:p-6">
-                      <div className="mb-6 relative">
-                        <div className="h-2 overflow-hidden rounded-full bg-white/10">
-                          <div className="h-full rounded-full bg-linear-to-r from-sunset-orange to-sunset-skyblue" style={{ width: `${phase.progress}%` }}></div>
+              return (
+                <FadeIn key={phase.label} delay={index * 150}>
+                  <button
+                    onClick={() => setActivePhase(isExpanded ? null : index)}
+                    className={`group relative h-full min-h-[240px] w-full overflow-hidden rounded-3xl border bg-white/5 p-4 text-left transition-all duration-500 ${
+                      isActive
+                        ? `border-${phase.color}/40 bg-white/8 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(85,212,255,0.15)]`
+                        : 'border-white/10'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4">
+                        <div className={`rounded-2xl p-3 transition-all duration-500 ${isActive ? `bg-${phase.color}/20 scale-110` : `bg-${phase.color}/10 scale-100`}`}>
+                          <Icon className={`h-6 w-6 text-${phase.color}`} />
                         </div>
-                        <img src={logoImg} alt="" className="absolute -top-3 h-7 w-7 rounded-full border-2 border-white/30 object-cover shadow-lg" style={{ left: `${phase.progress}%`, transform: 'translateX(-50%)' }} />
+                        <div>
+                          <p className="text-sm font-bold uppercase tracking-[0.18em] text-lightgrey">{phase.range}</p>
+                          <h3 className="text-xl font-bold text-white md:text-2xl">{phase.label}</h3>
+                        </div>
                       </div>
-                      <div className="grid gap-4 md:grid-cols-3">
-                        {phase.items.map((item) => (
-                          <div key={item.title} className="rounded-2xl border border-white/10 bg-navy/35 p-5">
-                            <p className="mb-3 inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-bold tracking-[0.14em] text-lightgrey">{item.time}</p>
-                            <h4 className="mb-2 text-lg font-bold text-white">{item.title}</h4>
-                            <p className="text-sm leading-relaxed text-lightgrey">{item.text}</p>
-                          </div>
-                        ))}
+                      <div className="text-right">
+                        <div className={`text-xl font-extrabold text-white transition-all duration-500 md:text-2xl ${isActive ? 'scale-110' : 'scale-100'}`}>
+                          {phase.farms.toLocaleString()}
+                        </div>
+                        <p className="text-xs text-lightgrey">farms</p>
                       </div>
                     </div>
-                  </div>
-                </div>
-              </div>
-            </FadeIn>
-          ))}
+
+                    <div className={`grid transition-all duration-300 ease-out ${isExpanded ? 'grid-rows-[1fr] opacity-100 mt-6' : 'grid-rows-[0fr] opacity-0'}`}>
+                      <div className="overflow-hidden">
+                        <div className="space-y-3">
+                          {phase.items.map((item) => (
+                            <div key={item.title} className="rounded-2xl border border-white/10 bg-navy/40 p-4">
+                              <p className="mb-2 inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-bold tracking-[0.14em] text-lightgrey">{item.time}</p>
+                              <h4 className="mb-2 text-lg font-bold text-white">{item.title}</h4>
+                              <p className="text-sm leading-relaxed text-lightgrey">{item.text}</p>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br from-${phase.color}/10 to-transparent transition-opacity duration-500 ${isActive ? 'opacity-100' : 'opacity-0'}`} />
+                  </button>
+                </FadeIn>
+              );
+            })}
+          </div>
         </div>
       </div>
     </section>
@@ -1248,7 +1341,7 @@ const SDGImpact = () => {
   ];
 
   return (
-    <section id="sdg" className="relative overflow-hidden border-t border-white/5 bg-navy/40 px-4 py-20">
+    <section id="sdg" className="relative overflow-hidden px-4 py-20 bg-linear-to-b from-navy/90 to-navy">
       <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_bottom,rgba(85,212,255,0.05),transparent_50%)]"></div>
       <div className="relative z-10 mx-auto max-w-7xl">
         <FadeIn>
@@ -1364,9 +1457,6 @@ const StickyInvestorCTA = () => {
             <p className="text-sm text-lightgrey">Download the deck or book a partner conversation.</p>
           </div>
           <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-0 sm:flex">
-            <p className="col-span-2 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-white/60 sm:hidden">
-              Swipe away to ignore
-            </p>
           <a
             href={proposalPdf}
             target="_blank"
@@ -1399,8 +1489,36 @@ const StickyInvestorCTA = () => {
 };
 
 export default function Home() {
-  useEffect(() => {
-    document.documentElement.style.scrollBehavior = 'smooth';
+  useLayoutEffect(() => {
+    const isMobile = window.matchMedia('(max-width: 767px)').matches;
+    const previousScrollRestoration = window.history.scrollRestoration;
+    const previousScrollBehavior = document.documentElement.style.scrollBehavior;
+
+    if (isMobile && 'scrollRestoration' in window.history) {
+      window.history.scrollRestoration = 'manual';
+    }
+
+    document.documentElement.style.scrollBehavior = 'auto';
+
+    const scrollToHero = () => window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    scrollToHero();
+
+    const frame = window.requestAnimationFrame(scrollToHero);
+    const shortTimer = window.setTimeout(scrollToHero, 60);
+    const restoreTimer = window.setTimeout(() => {
+      scrollToHero();
+      document.documentElement.style.scrollBehavior = 'smooth';
+    }, isMobile ? 260 : 0);
+
+    return () => {
+      window.cancelAnimationFrame(frame);
+      window.clearTimeout(shortTimer);
+      window.clearTimeout(restoreTimer);
+      document.documentElement.style.scrollBehavior = previousScrollBehavior;
+      if (isMobile && 'scrollRestoration' in window.history) {
+        window.history.scrollRestoration = previousScrollRestoration;
+      }
+    };
   }, []);
 
   return (

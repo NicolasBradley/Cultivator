@@ -1228,7 +1228,7 @@ const Roadmap = () => {
             />
           </div>
 
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="mx-auto grid max-w-4xl gap-4 md:grid-cols-3">
             {phases.map((phase, index) => {
               const Icon = phase.icon;
               const isActive = progress > index * 40;
@@ -1238,7 +1238,7 @@ const Roadmap = () => {
                 <FadeIn key={phase.label} delay={index * 150}>
                   <button
                     onClick={() => setActivePhase(isExpanded ? null : index)}
-                    className={`group relative h-full min-h-[240px] w-full overflow-hidden rounded-3xl border bg-white/5 p-4 text-left transition-all duration-500 ${
+                    className={`group relative h-full w-full overflow-hidden rounded-3xl border bg-white/4 p-3 text-left transition-all duration-500 ${
                       isActive
                         ? `border-${phase.color}/40 bg-white/8 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(85,212,255,0.15)]`
                         : 'border-white/10'

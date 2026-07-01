@@ -1226,17 +1226,17 @@ const Roadmap = () => {
             />
           </div>
 
-          <div className="mx-auto flex max-w-3xl flex-col gap-3 sm:gap-4 md:grid md:max-w-4xl md:auto-rows-fr md:grid-cols-3 md:items-stretch">
+          <div className="roadmap-phase-list mx-auto flex max-w-3xl flex-col gap-3 sm:gap-4 md:grid md:max-w-4xl md:auto-rows-fr md:grid-cols-3 md:items-stretch">
             {phases.map((phase, index) => {
               const Icon = phase.icon;
               const isActive = progress > index * 40;
               const isExpanded = activePhase === index;
 
               return (
-                <FadeIn key={phase.label} delay={index * 120} className="min-w-0 shrink-0 md:h-full">
+                <FadeIn key={phase.label} delay={index * 120} className="roadmap-phase-item min-w-0 shrink-0 md:h-full">
                   <button
                     onClick={() => setActivePhase(isExpanded ? null : index)}
-                    className={`group relative w-full overflow-hidden rounded-2xl border bg-white/4 p-4 text-left transition-[transform,border-color,background-color,box-shadow] duration-200 ease-out md:h-full md:rounded-3xl md:p-3 ${
+                    className={`roadmap-phase-card group relative w-full overflow-hidden rounded-2xl border bg-white/4 p-4 text-left transition-[transform,border-color,background-color,box-shadow] duration-200 ease-out md:h-full md:rounded-3xl md:p-3 ${
                       isActive
                         ? `border-${phase.color}/40 bg-white/8 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(85,212,255,0.15)]`
                         : 'border-white/10'

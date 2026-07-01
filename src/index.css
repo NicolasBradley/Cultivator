@@ -100,3 +100,23 @@ body {
 .perspective-1000 .perspective-container {
   transform-style: preserve-3d;
 }
+
+@media (max-width: 767px) {
+  #roadmap .roadmap-phase-list {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    justify-content: flex-start !important;
+    gap: 0.75rem !important;
+    grid-template-columns: none !important;
+    grid-template-rows: none !important;
+  }
+
+  #roadmap .roadmap-phase-item,
+  #roadmap .roadmap-phase-card {
+    flex: 0 0 auto !important;
+    height: auto !important;
+    min-height: 0 !important;
+    max-height: none !important;
+  }
+}

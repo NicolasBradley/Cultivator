@@ -401,11 +401,11 @@ const Hero = () => {
         playsInline
         preload="metadata"
         poster={shrimpPondImg}
-        className="absolute inset-0 h-full w-full object-cover opacity-[62%]"
+        className="absolute inset-0 h-full w-full object-cover"
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-96 bg-linear-to-t from-navy via-navy/95 to-transparent"></div>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-navy via-navy/55 to-transparent"></div>
 
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-7rem)] w-full max-w-6xl flex-col items-center justify-center text-center">
         <FadeIn className="mx-auto w-full max-w-xs space-y-5 sm:max-w-none sm:space-y-7 md:space-y-9">

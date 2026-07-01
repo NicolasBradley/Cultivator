@@ -80,19 +80,19 @@ export const Footer = () => (
           href="https://www.linkedin.com/company/cultivatortech/"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-white/70 transition hover:text-white hover:scale-110"
+          className="text-sm font-semibold text-white/70 transition hover:text-white hover:scale-105"
           aria-label="LinkedIn"
         >
-          <span className="text-sm font-bold">in</span>
+          LinkedIn
         </a>
         <a
           href="https://www.instagram.com/cultivatorteam/"
           target="_blank"
           rel="noopener noreferrer"
-          className="text-white/70 transition hover:text-white hover:scale-110"
+          className="text-sm font-semibold text-white/70 transition hover:text-white hover:scale-105"
           aria-label="Instagram"
         >
-          <span className="text-sm font-bold">ig</span>
+          Instagram
         </a>
       </div>
       <span>&copy; 2026 Cultivator. All rights reserved.</span>

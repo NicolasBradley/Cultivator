@@ -1,15 +1,25 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect } from 'react';
 import HomePage from './pages/Home';
+import MediaPage from './pages/Media';
 
 const SITE_URL = 'https://cultivator.vercel.app';
 
 const routeSeo = {
   '/': {
-    title: 'Cultivator | AeroTrust Smart Aquaculture IoT',
+    title: 'Cultivator | Cultivator Smart Aquaculture IoT',
     description:
-      'Cultivator builds AeroTrust, an IoT monitoring platform for shrimp farm aerators with pilot traction, partner momentum, and a clear smart aquaculture investment opportunity.',
-    keywords: 'Cultivator, AeroTrust, aquaculture IoT, shrimp farming, aerator monitoring, smart aquaculture, Taiwan startup, agritech investment',
+      'Cultivator builds Cultivator, an IoT monitoring platform for shrimp farm aerators with pilot traction, partner momentum, and a clear smart aquaculture investment opportunity.',
+    keywords: 'Cultivator, Cultivator, aquaculture IoT, shrimp farming, aerator monitoring, smart aquaculture, Taiwan startup, agritech investment',
+    image: `${SITE_URL}/cultivator-og.png`,
+    twitterCard: 'summary_large_image',
+    schemaType: 'organization',
+  },
+  '/media': {
+    title: 'Cultivator Media | Field Work, Prototypes, and Startup Moments',
+    description:
+      'Browse Cultivator media from farm discovery, Cultivator prototype work, team sessions, and smart aquaculture field validation.',
+    keywords: 'Cultivator media, Cultivator gallery, aquaculture startup photos, shrimp farm IoT, Taiwan startup gallery',
     image: `${SITE_URL}/cultivator-og.png`,
     twitterCard: 'summary_large_image',
     schemaType: 'organization',
@@ -24,7 +34,7 @@ const structuredData = {
     name: 'Cultivator',
     url: SITE_URL,
     logo: `${SITE_URL}/cultivator-og.png`,
-    description: 'Cultivator builds AeroTrust, an IoT monitoring platform for shrimp farm aerators and smart aquaculture operations.',
+    description: 'Cultivator builds Cultivator, an IoT monitoring platform for shrimp farm aerators and smart aquaculture operations.',
     foundingLocation: {
       '@type': 'Place',
       name: 'Taiwan'
@@ -46,7 +56,7 @@ const structuredData = {
   product: {
     '@context': 'https://schema.org',
     '@type': 'Product',
-    name: 'AeroTrust',
+    name: 'Cultivator',
     description: 'Real-time IoT monitoring system for shrimp farm aerators. Detects electrical current anomalies and mechanical vibrations to prevent equipment failure and protect harvest value.',
     brand: {
       '@type': 'Organization',
@@ -88,10 +98,10 @@ const structuredData = {
     mainEntity: [
       {
         '@type': 'Question',
-        name: 'What is AeroTrust?',
+        name: 'What is Cultivator?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'AeroTrust is an IoT monitoring device that attaches to paddlewheel aerators on shrimp farms. It tracks electrical current and mechanical vibration to detect failures early, preventing crop loss.'
+          text: 'Cultivator is an IoT monitoring device that attaches to paddlewheel aerators on shrimp farms. It tracks electrical current and mechanical vibration to detect failures early, preventing crop loss.'
         }
       },
       {
@@ -99,7 +109,7 @@ const structuredData = {
         name: 'How does the installation work?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'AeroTrust is plug-and-play. Our team installs the sensor directly onto your existing aerator equipment. No modification to your farm infrastructure is required.'
+          text: 'Cultivator is plug-and-play. Our team installs the sensor directly onto your existing aerator equipment. No modification to your farm infrastructure is required.'
         }
       },
       {
@@ -200,6 +210,7 @@ export default function App() {
       <SEOManager />
       <Routes>
         <Route path="/" element={<HomePage />} />
+        <Route path="/media" element={<MediaPage />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
     </BrowserRouter>

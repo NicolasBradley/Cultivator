@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import {
   Activity,
+  ArrowUp,
   BarChart3,
   Bell,
   Building2,
@@ -11,7 +12,6 @@ import {
   Globe2,
   Handshake,
   Mail,
-  MapPin,
   Medal,
   Menu,
   Quote,
@@ -21,7 +21,7 @@ import {
   Waves,
   X,
 } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { LiquidGlassCard, FadeIn, CursorGlow, Footer } from '../components/SharedUI';
 
 import hardwareImg from '../assets/product_img.jpeg';
@@ -29,7 +29,7 @@ import appUiImg from '../assets/software_img.png';
 import shrimpPondImg from '../assets/shrimp_pond.jpg';
 import proposalPdf from '../assets/inspo/Cultivator Project Proposal V5.pdf';
 import heroVideo from '../assets/thailand_shrimp_farm_video.mp4';
-import logoImg from '../assets/Orange_No BG.png';
+import logoImg from '../assets/Orange_Shrimp.png';
 import { ContactSection } from '../components/ContactSection';
 
 import sdg1Img from '../assets/sdg_1.png';
@@ -39,11 +39,12 @@ import sdg3Img from '../assets/sdg_3.png';
 import field1 from '../assets/asia/S__238305289_0.jpg';
 import field2 from '../assets/jason/DSC05264.JPG';
 import field3 from '../assets/asia/S__238305296_0.jpg';
-import field4 from '../assets/jason/DSC05282.JPG';
+import field4 from '../assets/jason/DSC05323.JPG';
 
 import aeratorsImg from '../assets/aerators.jpg';
 import electricityImg from '../assets/electricity.jpg';
 import smallerShrimpImg from '../assets/smaller_shrimp.jpg';
+import problemFragileOps from '../assets/problem_fragile_ops.png';
 
 import webImg1 from '../assets/web_img1.jpg';
 import webImg2 from '../assets/web_img2.jpg';
@@ -51,6 +52,9 @@ import webImg4 from '../assets/web_img4.jpeg';
 import webImg5 from '../assets/web_img5.jpeg';
 
 import nthuLogo from '../assets/nthu logo.jpg';
+import indonesiaFlag from '../assets/Flag-Indonesia.webp';
+import usFlag from '../assets/Flag_of_the_United_States.svg.webp';
+import thailandFlag from '../assets/thai_flag.jpg';
 import teamFrans from '../assets/members/frans/frans_pic.jpg';
 import teamFransExperience from '../assets/members/frans/frans_experience.png';
 import teamJason from '../assets/members/jason/jason_pic.jpg';
@@ -59,6 +63,34 @@ import teamDelon from '../assets/members/delon/delon_pic.jpg';
 import teamDelonExperience from '../assets/members/delon/delon_experience.png';
 import teamJai from '../assets/members/jai/jai_pic.jpg';
 import teamJaiExperience from '../assets/members/jai/jai_experience.png';
+
+const carouselLogos = Object.entries(import.meta.glob('../assets/carousel/*.{jpg,JPG,jpeg,JPEG,png,PNG,webp,svg}', { eager: true, import: 'default' }))
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([path, src]) => ({
+    src,
+    name: path
+      .split('/')
+      .pop()
+      .replace(/\.[^.]+$/, '')
+      .replace(/[_-]/g, ' '),
+  }));
+
+const LogoMarquee = ({ compact = false }) => (
+  <div className="overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_10%,black_90%,transparent)]">
+    <div className={`flex w-max animate-marquee items-center ${compact ? 'gap-3' : 'gap-4'} whitespace-nowrap hover:[animation-play-state:paused]`}>
+      {[...carouselLogos, ...carouselLogos, ...carouselLogos].map((logo, index) => (
+        <div
+          key={`${logo.name}-${index}`}
+          className={`flex shrink-0 items-center justify-center rounded-2xl border border-white/12 bg-white px-4 shadow-lg ${
+            compact ? 'h-14 w-32' : 'h-20 w-44 md:h-24 md:w-52'
+          }`}
+        >
+          <img src={logo.src} alt={`${logo.name} logo`} className="max-h-[72%] max-w-[86%] object-contain" loading="lazy" />
+        </div>
+      ))}
+    </div>
+  </div>
+);
 
 const CTAButton = ({ href, children, variant = 'primary', className = '' }) => {
   const base =
@@ -77,33 +109,78 @@ const CTAButton = ({ href, children, variant = 'primary', className = '' }) => {
 
 const Navbar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const navigate = useNavigate();
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [activeSection, setActiveSection] = useState('Home');
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 50);
+
+      // Track active section
+      const sections = ['problem', 'solution', 'traction', 'market', 'team', 'contact'];
+      const scrollPosition = window.scrollY + 150;
+
+      for (const section of sections) {
+        const element = document.getElementById(section);
+        if (element) {
+          const { offsetTop, offsetHeight } = element;
+          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
+            setActiveSection(section.charAt(0).toUpperCase() + section.slice(1));
+            break;
+          }
+        }
+      }
+
+      if (window.scrollY < 100) setActiveSection('Home');
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const navItems = [
-    { label: 'Home', action: () => navigate('/') },
+    { label: 'Home', href: '#home', action: scrollToTop },
     { label: 'Problem', href: '#problem' },
     { label: 'Solution', href: '#solution' },
     { label: 'Traction', href: '#traction' },
     { label: 'Market', href: '#market' },
     { label: 'Team', href: '#team' },
+    { label: 'Media', to: '/media' },
     { label: 'Contact', href: '#contact' },
   ];
 
   return (
-    <div className="pointer-events-none fixed top-6 z-50 flex w-full justify-center px-4">
+    <div
+      className={`pointer-events-none fixed top-6 z-50 flex w-full justify-center px-4 transition-all duration-300 ease-out ${
+        isScrolled ? 'top-4 left-4 px-0' : 'justify-center'
+      }`}
+    >
       <nav
-        className="pointer-events-auto w-full max-w-md overflow-hidden rounded-3xl border border-white/10 bg-darkblue/50 px-5 py-4 shadow-[0_8px_32px_0_rgba(0,0,0,0.45)] backdrop-blur-xl transition-[background-color,border-color] duration-200 ease-out md:w-auto md:max-w-none md:rounded-full md:px-12"
+        className={`pointer-events-auto overflow-hidden border border-white/10 bg-darkblue/50 shadow-[0_8px_32px_0_rgba(0,0,0,0.45)] backdrop-blur-xl transition-all duration-300 ease-out ${
+          isScrolled
+            ? 'w-auto rounded-2xl px-3 py-3'
+            : 'w-full max-w-md rounded-3xl px-5 py-4 md:w-auto md:max-w-none md:rounded-full md:px-12'
+        }`}
       >
-        <div className="relative flex items-center justify-center gap-4">
-          <div className="hidden items-center gap-6 border-r border-white/10 pr-6 md:flex">
-            <span className="flex items-center gap-2 text-xl font-bold tracking-wide text-white">
-              <img src={logoImg} alt="Cultivator Logo" className="h-8 w-8 rounded-full object-cover" />
-              Cultivator
-            </span>
-          </div>
-          <div className="hidden items-center space-x-8 pl-2 md:flex">
+        <div className={`relative flex items-center gap-3 ${isScrolled ? 'justify-start' : 'justify-center'}`}>
+          {/* Logo - clickable to scroll to top */}
+          <button onClick={scrollToTop} className="flex items-center gap-2 transition hover:scale-105 active:scale-95" aria-label="Scroll to top">
+            <img src={logoImg} alt="Cultivator Logo" className="h-7 w-7 rounded-full object-cover" />
+            {!isScrolled && <span className="hidden md:inline text-xl font-bold tracking-wide text-white">Cultivator</span>}
+          </button>
+
+          {/* Desktop: nav items (hidden when scrolled) */}
+          <div className={`hidden items-center space-x-8 pl-2 md:flex transition-all duration-300 ${isScrolled ? 'opacity-0 w-0 overflow-hidden' : 'opacity-100'}`}>
             {navItems.map((item) =>
-              item.action ? (
+              item.to ? (
+                <Link key={item.label} to={item.to} className="text-base font-medium text-white/80 transition hover:text-white">
+                  {item.label}
+                </Link>
+              ) : item.action ? (
                 <button
                   key={item.label}
                   onClick={item.action}
@@ -119,11 +196,30 @@ const Navbar = () => {
             )}
           </div>
 
-          <div className="flex w-full items-center justify-between px-2 md:hidden">
-            <span className="flex items-center gap-2 text-lg font-bold tracking-wide text-white">
-              <img src={logoImg} alt="Cultivator Logo" className="h-7 w-7 rounded-full object-cover" />
-              Cultivator
-            </span>
+          {/* Desktop: scrolled state - show active section + menu + scroll top */}
+          {isScrolled && (
+            <div className="hidden md:flex items-center gap-3 pl-3">
+              <span className="text-sm font-medium text-white/60">{activeSection}</span>
+              <div className="h-4 w-px bg-white/20" />
+              <button onClick={() => setIsOpen(!isOpen)} className="p-2 text-white/70 hover:text-white transition hover:scale-110" aria-label="Toggle menu">
+                {isOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+              </button>
+              <button onClick={scrollToTop} className="p-2 text-white/70 hover:text-white transition hover:scale-110 rounded-full hover:bg-white/10" aria-label="Scroll to top">
+                <ArrowUp className="h-4 w-4" />
+              </button>
+            </div>
+          )}
+
+          {/* Mobile: logo + menu button (no double logo) */}
+          <div className="flex w-full items-center justify-between md:hidden">
+            {/* Only show logo + name if NOT scrolled, otherwise logo is already visible above */}
+            {!isScrolled && (
+              <span className="flex items-center gap-2 text-lg font-bold tracking-wide text-white">
+                Cultivator
+              </span>
+            )}
+            {/* Spacer when scrolled to keep menu button on right */}
+            {isScrolled && <div className="flex-1" />}
             <button
               onClick={() => setIsOpen((value) => !value)}
               className="ml-4 text-white transition hover:text-sunset-orange active:scale-[0.96]"
@@ -135,6 +231,7 @@ const Navbar = () => {
           </div>
         </div>
 
+        {/* Mobile dropdown menu */}
         <div
           className={`grid transition-[grid-template-rows,opacity,margin-top] duration-200 ease-out md:hidden ${
             isOpen ? 'mt-6 grid-rows-[1fr] opacity-100' : 'mt-0 grid-rows-[0fr] opacity-0'
@@ -143,7 +240,16 @@ const Navbar = () => {
           <div className="min-h-0 overflow-hidden">
             <div className="flex flex-col items-center gap-5 pb-1 pt-2">
               {navItems.map((item) =>
-                item.action ? (
+                item.to ? (
+                  <Link
+                    key={item.label}
+                    to={item.to}
+                    onClick={() => setIsOpen(false)}
+                    className="text-lg font-medium text-white/80 transition hover:text-white"
+                  >
+                    {item.label}
+                  </Link>
+                ) : item.action ? (
                   <button
                     key={item.label}
                     onClick={() => {
@@ -168,12 +274,51 @@ const Navbar = () => {
             </div>
           </div>
         </div>
+
+        {/* Desktop dropdown menu (when scrolled + menu clicked) */}
+        {isOpen && isScrolled && (
+          <div className="absolute top-full left-0 mt-2 w-56 rounded-2xl border border-white/10 bg-navy/95 backdrop-blur-xl shadow-xl p-4 hidden md:block">
+            {navItems.map((item) =>
+              item.to ? (
+                <Link
+                  key={item.label}
+                  to={item.to}
+                  onClick={() => setIsOpen(false)}
+                  className="block w-full py-2 text-base font-medium text-white/80 transition hover:text-white hover:bg-white/5 rounded-lg px-3"
+                >
+                  {item.label}
+                </Link>
+              ) : item.action ? (
+                <button
+                  key={item.label}
+                  onClick={() => {
+                    item.action();
+                    setIsOpen(false);
+                  }}
+                  className="block w-full py-2 text-left text-base font-medium text-white/80 transition hover:text-white hover:bg-white/5 rounded-lg px-3"
+                >
+                  {item.label}
+                </button>
+              ) : (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={() => setIsOpen(false)}
+                  className="block w-full py-2 text-base font-medium text-white/80 transition hover:text-white hover:bg-white/5 rounded-lg px-3"
+                >
+                  {item.label}
+                </a>
+              ),
+            )}
+          </div>
+        )}
       </nav>
     </div>
   );
 };
 
 const Hero = () => {
+  const [activeMetric, setActiveMetric] = useState(0);
 
   const metrics = [
     { label: 'Pilot Farms', value: '3+', text: 'Committed farm partners' },
@@ -181,8 +326,18 @@ const Hero = () => {
     { label: 'Market Size', value: '$800M', text: 'Global hardware TAM' },
   ];
 
+  const currentMetric = metrics[activeMetric];
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveMetric((current) => (current + 1) % metrics.length);
+    }, 2600);
+
+    return () => window.clearInterval(timer);
+  }, [metrics.length]);
+
   return (
-    <section id="home" className="relative min-h-screen overflow-hidden px-4 pb-12 pt-28 md:pb-16">
+    <section id="home" className="relative min-h-screen overflow-hidden px-4 pb-20 pt-28 md:pb-24">
       <video
         autoPlay
         loop
@@ -194,17 +349,12 @@ const Hero = () => {
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-navy/15 via-navy/55 to-navy"></div>
-      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-40 bg-linear-to-t from-navy to-transparent"></div>
+      <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-navy/10 via-navy/52 to-navy"></div>
+      <div className="pointer-events-none absolute inset-x-0 bottom-0 h-72 bg-linear-to-t from-navy via-navy/92 to-transparent md:h-96"></div>
 
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-7rem)] w-full max-w-6xl flex-col items-center justify-center text-center">
         <FadeIn className="mx-auto w-full max-w-xs space-y-7 sm:max-w-none md:space-y-9">
           <div className="space-y-5 md:space-y-6">
-            <div className="mx-auto inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-sm font-bold text-white/85 shadow-xl backdrop-blur-xl">
-              <BarChart3 className="h-4 w-4 text-sunset-orange" />
-              <span className="sm:hidden">Investor-ready aquaculture</span>
-              <span className="hidden sm:inline">Investor-ready aquaculture infrastructure</span>
-            </div>
             <h1
               className="mx-auto text-[2.35rem] font-extrabold leading-tight tracking-tight text-white sm:text-5xl md:max-w-none md:text-6xl lg:text-7xl"
               style={{ textShadow: '0 4px 30px rgba(0,0,0,0.62)' }}
@@ -230,18 +380,22 @@ const Hero = () => {
               </span>
             </h1>
             <p className="mx-auto max-w-[25ch] text-base font-medium leading-relaxed text-white/88 sm:max-w-[34ch] sm:text-lg md:max-w-3xl md:text-2xl">
-              AeroTrust helps shrimp farms prevent aerator failure, protect harvest value, and turn emergency maintenance into predictable operating savings.
+              Cultivator helps shrimp farms prevent aerator failure, protect harvest value, and turn emergency maintenance into predictable operating savings.
             </p>
           </div>
 
-          <div className="mx-auto grid w-full max-w-xs gap-3 rounded-3xl border border-white/15 bg-white/10 p-3 shadow-[0_18px_70px_rgba(0,0,0,0.35)] backdrop-blur-2xl sm:max-w-5xl sm:grid-cols-3 md:gap-4 md:p-4">
-            {metrics.map((metric) => (
-              <div key={metric.label} className="rounded-2xl border border-white/10 bg-navy/35 px-4 py-4 text-left md:px-5">
-                <p className="text-xs font-bold uppercase tracking-[0.18em] text-lightgrey">{metric.label}</p>
-                <p className="mt-2 text-3xl font-extrabold tracking-tight text-white sm:text-2xl md:text-4xl">{metric.value}</p>
-                <p className="mt-1 text-sm leading-relaxed text-white/75 md:text-base">{metric.text}</p>
-              </div>
-            ))}
+          <div className="mx-auto min-h-28 w-full max-w-xs sm:max-w-md md:min-h-32">
+            <div key={currentMetric.label} className="animate-ghost-metric text-center">
+              <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-200/90">{currentMetric.label}</p>
+              <p className="mt-2 text-5xl font-extrabold tracking-tight text-white drop-shadow-[0_8px_30px_rgba(0,0,0,0.45)] sm:text-6xl md:text-7xl">
+                {currentMetric.value}
+              </p>
+              <p className="mt-2 text-sm font-semibold text-white/78 md:text-base">{currentMetric.text}</p>
+            </div>
+          </div>
+
+          <div className="mx-auto w-full max-w-4xl">
+            <LogoMarquee compact />
           </div>
 
           <div className="mx-auto flex w-full max-w-xs flex-col gap-3 pt-1 sm:max-w-none sm:flex-row sm:justify-center">
@@ -253,6 +407,13 @@ const Hero = () => {
               Download Pitch Deck
             </CTAButton>
           </div>
+
+          <a href="#problem" className="mx-auto mt-2 flex w-fit flex-col items-center gap-2 text-white/85 transition hover:text-white active:scale-[0.98]" aria-label="Scroll to problem section">
+            <span className="h-9 w-px rounded-full bg-white/40">
+              <span className="mx-auto block h-4 w-px rounded-full bg-sunset-orange animate-scroll-cue"></span>
+            </span>
+           
+          </a>
         </FadeIn>
       </div>
     </section>
@@ -260,7 +421,13 @@ const Hero = () => {
 };
 
 export const Problem = () => (
-  <section id="problem" className="relative px-4 py-20">
+  <section id="problem" className="relative px-4 py-20 overflow-hidden">
+    {/* Background image */}
+    <div className="absolute inset-0 z-0">
+      <img src={problemFragileOps} alt="" className="h-full w-full object-cover opacity-[0.08] mix-blend-luminosity" />
+      <div className="absolute inset-0 bg-gradient-to-b from-navy/80 via-navy/60 to-navy/80" />
+    </div>
+
     <div className="mx-auto max-w-7xl relative z-10">
       <FadeIn>
         <div className="mx-auto mb-16 max-w-3xl text-center">
@@ -304,106 +471,175 @@ export const Problem = () => (
   </section>
 );
 
-export const Team = () => (
-  <section id="team" className="relative px-4 py-20 overflow-hidden">
-    <div className="absolute inset-0 z-0">
-      <img src={hardwareImg} alt="Background" className="h-full w-full object-cover opacity-[0.03] mix-blend-luminosity" />
-    </div>
-    <div className="relative z-10 mx-auto max-w-6xl">
-      <FadeIn>
-        <div className="mx-auto mb-10 max-w-2xl text-center">
-          <h2 className="mb-4 text-2xl font-bold text-white md:text-4xl">Meet the Innovators.</h2>
-          <p className="text-lg text-lightgrey">A focused NTHU founding team spanning product, AI, growth, and hardware design.</p>
-        </div>
-      </FadeIn>
+export const Team = () => {
+  const [activeMember, setActiveMember] = useState(null);
+  const canHover = () => typeof window !== 'undefined' && window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  const members = [
+    {
+      name: 'Frans (郭凡思)',
+      role: 'CEO, Product Strategy',
+      image: teamFrans,
+      imageClass: 'brightness-110 contrast-105',
+      nationality: 'Indonesia',
+      flag: indonesiaFlag,
+      major: 'B.Sc. EECS / 電機資訊學士班',
+      experience: 'LITEON',
+      experienceImage: teamFransExperience,
+      experienceLogoClass: 'h-18 md:h-20 max-w-[13rem]',
+    },
+    {
+      name: 'Jason (陈建豪)',
+      role: 'COO, AI Systems & Data',
+      image: teamJason,
+      nationality: 'Indonesia',
+      flag: indonesiaFlag,
+      major: 'B.Sc. EECS / 電機資訊學士班',
+      experience: 'KaikuTek',
+      experienceImage: teamJasonExperience,
+      experienceLogoClass: 'h-9 md:h-11',
+    },
+    {
+      name: 'Delon (羊忠誠)',
+      role: 'CMO, Marketing & Growth',
+      image: teamDelon,
+      nationality: 'United States',
+      flag: usFlag,
+      major: 'B.Sc. EECS / 電機資訊學士班',
+      experience: 'NTHU Garage',
+      experienceImage: teamDelonExperience,
+      experienceLogoClass: 'h-9 md:h-11',
+    },
+    {
+      name: 'Jai Jai (孫宏才)',
+      role: 'CTO, Hardware Design',
+      image: teamJai,
+      nationality: 'Thailand',
+      flag: thailandFlag,
+      major: 'Engineering Technology / 工程技術學程',
+      experience: 'Logitech',
+      experienceImage: teamJaiExperience,
+      experienceLogoClass: 'h-16 md:h-18 max-w-[14rem]',
+    },
+  ];
+  const active = activeMember === null ? null : members[activeMember];
+  const compactMembers =
+    activeMember === null ? [] : members.map((member, index) => ({ ...member, index })).filter((member) => member.index !== activeMember);
 
-      <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4 mb-10 mx-auto">
-        {[
-          {
-            name: 'Frans (郭凡思)',
-            role: 'CEO, Product Strategy',
-            image: teamFrans,
-            imageClass: 'brightness-110 contrast-105',
-            nationality: 'Indonesia',
-            major: 'B.S. in Electrical Engineering and Computer Science / 電機資訊學士班',
-            experience: 'LITEON',
-            experienceImage: teamFransExperience,
-            experienceLogoClass: 'h-18 md:h-20',
-          },
-          {
-            name: 'Jason (陈建豪)',
-            role: 'COO, AI Systems & Data',
-            image: teamJason,
-            nationality: 'Indonesia',
-            major: 'B.S. in Electrical Engineering and Computer Science / 電機資訊學士班',
-            experience: 'KaikuTek',
-            experienceImage: teamJasonExperience,
-            experienceLogoClass: 'h-14 md:h-16',
-          },
-          {
-            name: 'Delon (羊忠誠)',
-            role: 'CMO, Marketing & Growth',
-            image: teamDelon,
-            nationality: 'United States',
-            major: 'B.S. in Electrical Engineering and Computer Science / 電機資訊學士班',
-            experience: 'NTHU Garage',
-            experienceImage: teamDelonExperience,
-            experienceLogoClass: 'h-14 md:h-16',
-          },
-          {
-            name: 'Jai Jai (孫宏才)',
-            role: 'CTO, Hardware Design',
-            image: teamJai,
-            nationality: 'Thailand',
-            major: 'Engineering Technology Program / 工程技術學程',
-            experience: 'Logitech',
-            experienceImage: teamJaiExperience,
-            experienceLogoClass: 'h-18 md:h-20',
-          },
-        ].map((member, index) => (
-          <FadeIn key={member.name} delay={index * 100}>
-            <button type="button" className="group relative block w-full overflow-hidden rounded-3xl border border-white/10 bg-white/5 text-left shadow-lg backdrop-blur-xl transition hover:-translate-y-1 hover:border-sunset-orange/40 hover:bg-white/8 focus:outline-none focus-visible:border-sunset-orange focus-visible:ring-2 focus-visible:ring-sunset-orange/40 active:scale-[0.99]">
-              <div className="relative aspect-[3/4] overflow-hidden bg-black">
-                <img src={member.image} alt={member.name} className={`absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-[1.03] group-focus:scale-[1.03] ${member.imageClass || ''}`} />
-                <div className="absolute inset-0 bg-linear-to-t from-navy/95 via-navy/20 to-transparent"></div>
+  return (
+    <section id="team" className="relative overflow-hidden px-4 py-20">
+      <div className="absolute inset-0 z-0">
+        <img src={hardwareImg} alt="Background" className="h-full w-full object-cover opacity-[0.03] mix-blend-luminosity" />
+      </div>
+      <div className="relative z-10 mx-auto max-w-6xl">
+        <FadeIn>
+          <div className="mx-auto mb-10 max-w-2xl text-center">
+            <h2 className="mb-4 text-2xl font-bold text-white md:text-4xl">Meet the Innovators.</h2>
+            <p className="text-lg text-lightgrey">A focused NTHU founding team spanning product, AI, growth, and hardware design.</p>
+          </div>
+        </FadeIn>
 
-                <div className="absolute left-4 top-4 flex items-center gap-2 rounded-full border border-white/15 bg-navy/65 px-3 py-2 text-xs font-bold text-white shadow-lg backdrop-blur-xl">
-                  <img src={nthuLogo} alt="NTHU" className="h-5 w-5 rounded-full bg-white object-cover" />
-                  NTHU
-                </div>
+        {active === null ? (
+          <div className="mx-auto mb-10 grid grid-cols-2 gap-3 sm:gap-5 lg:grid-cols-4">
+            {members.map((member, index) => (
+              <FadeIn key={member.name} delay={index * 80}>
+                <button
+                  type="button"
+                  onClick={() => setActiveMember(index)}
+                  onMouseEnter={() => {
+                    if (canHover()) setActiveMember(index);
+                  }}
+                  className="group relative block w-full overflow-hidden rounded-3xl border border-white/10 bg-white/5 text-left shadow-lg backdrop-blur-xl transition-[transform,border-color,background-color] duration-200 ease-out hover:-translate-y-1 hover:border-sunset-orange/40 hover:bg-white/8 focus:outline-none focus-visible:border-sunset-orange focus-visible:ring-2 focus-visible:ring-sunset-orange/40 active:scale-[0.99]"
+                >
+                  <div className="relative aspect-square overflow-hidden bg-black md:aspect-[3/4]">
+                    <img src={member.image} alt={member.name} className={`absolute inset-0 h-full w-full object-cover transition duration-200 group-hover:scale-[1.03] ${member.imageClass || ''}`} />
+                    <div className="absolute inset-0 bg-linear-to-t from-navy/92 via-navy/12 to-transparent"></div>
+                    <div className="absolute inset-x-3 bottom-3 md:bottom-4">
+                      <h3 className="text-base font-bold leading-tight text-white md:text-lg">{member.name}</h3>
+                      <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.1em] text-sunset-orange md:text-[10px]">{member.role}</p>
+                    </div>
+                  </div>
+                </button>
+              </FadeIn>
+            ))}
+          </div>
+        ) : (
+          <div
+            className="mx-auto mb-10 grid gap-4 lg:grid-cols-[minmax(0,1.55fr)_minmax(0,1fr)] lg:items-stretch"
+            onMouseLeave={() => {
+              if (canHover()) setActiveMember(null);
+            }}
+          >
+            <FadeIn>
+              <button
+                type="button"
+                onClick={() => {
+                  if (!canHover()) setActiveMember(null);
+                }}
+                className="block w-full overflow-hidden rounded-3xl border border-sunset-orange/45 bg-white/10 text-left shadow-lg backdrop-blur-xl transition active:scale-[0.99]"
+                aria-expanded="true"
+              >
+                <div className="grid md:grid-cols-[0.72fr_1fr]">
+                  <div className="relative min-h-64 overflow-hidden bg-black sm:min-h-80 md:min-h-[24rem]">
+                    <img src={active.image} alt={active.name} className={`absolute inset-0 h-full w-full object-cover ${active.imageClass || ''}`} />
+                    <div className="absolute inset-0 bg-linear-to-t from-navy/92 via-navy/18 to-transparent"></div>
+                    <div className="absolute inset-x-5 bottom-5">
+                      <h3 className="text-2xl font-bold leading-tight text-white">{active.name}</h3>
+                      <p className="mt-1 text-xs font-bold uppercase tracking-[0.12em] text-sunset-orange">{active.role}</p>
+                    </div>
+                  </div>
 
-                <div className="absolute inset-x-3 bottom-3 translate-y-[calc(100%-4.5rem)] rounded-3xl border border-white/10 bg-navy/82 p-4 shadow-[0_18px_40px_rgba(0,0,0,0.35)] backdrop-blur-xl transition duration-300 ease-out group-hover:translate-y-0 group-focus:translate-y-0">
-                    <h3 className="text-lg font-bold leading-tight text-white">{member.name}</h3>
-                    <p className="mt-1 text-[10px] font-bold uppercase tracking-[0.1em] text-sunset-orange">{member.role}</p>
-
-                  <div className="mt-4 border-t border-white/10 pt-4 opacity-0 transition duration-200 group-hover:opacity-100 group-focus:opacity-100">
-                    <div className="mb-3 rounded-2xl border border-white/10 bg-white/8 p-3 text-sm">
-                      <p className="font-bold text-white">{member.nationality}</p>
-                      <p className="text-xs font-medium uppercase tracking-[0.14em] text-lightgrey">Nationality</p>
+                  <div className="flex min-w-0 flex-col justify-center gap-4 bg-navy/82 p-5 md:p-7">
+                    <div className="flex items-center gap-3">
+                      <img src={active.flag} alt={`${active.nationality} flag`} className="h-6 w-9 rounded-[0.3rem] object-cover shadow-sm" />
+                      <p className="text-sm font-bold uppercase tracking-[0.12em] text-white/82">{active.nationality}</p>
                     </div>
 
-                    <div className="rounded-2xl border border-white/10 bg-white p-4">
-                      <p className="mb-2 text-xs font-bold uppercase tracking-[0.16em] text-navy/55">Experience</p>
-                      <img src={member.experienceImage} alt={`${member.experience} experience`} className={`w-full object-contain ${member.experienceLogoClass}`} />
-                    </div>
-
-                    <div className="mt-3 flex items-start gap-2 rounded-2xl border border-white/10 bg-white/8 p-3">
-                      <img src={nthuLogo} alt="National Tsing Hua University" className="h-8 w-8 rounded-full bg-white object-cover" />
+                    <div className="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/8 p-3">
+                      <img src={nthuLogo} alt="NTHU" className="h-9 w-9 shrink-0 rounded-full bg-white object-cover" />
                       <div>
-                        <p className="text-sm font-bold text-white">National Tsing Hua University</p>
-                        <p className="text-xs leading-snug text-lightgrey">{member.major}</p>
+                        <p className="text-base font-bold text-white">{active.major}</p>
+                        <p className="text-[10px] font-bold uppercase tracking-[0.13em] text-lightgrey">University / major</p>
                       </div>
+                    </div>
+
+                    <div className="max-w-sm rounded-2xl border border-white/10 bg-white p-3">
+                      <p className="mb-2 text-[10px] font-bold uppercase tracking-[0.16em] text-navy/55">{active.experience}</p>
+                      <img src={active.experienceImage} alt={`${active.experience} experience`} className={`mx-auto w-full object-contain ${active.experienceLogoClass}`} />
                     </div>
                   </div>
                 </div>
-              </div>
-            </button>
-          </FadeIn>
-        ))}
+              </button>
+            </FadeIn>
+
+            <div className="grid grid-cols-2 gap-3 pb-2 lg:flex lg:flex-col lg:pb-0">
+              {compactMembers.map((member) => (
+                <button
+                  key={member.name}
+                  type="button"
+                  onClick={() => setActiveMember(member.index)}
+                  onMouseEnter={() => {
+                    if (canHover()) setActiveMember(member.index);
+                  }}
+                  className="group relative h-28 min-w-0 overflow-hidden rounded-2xl border border-white/10 bg-white/5 text-left shadow-lg transition-[transform,border-color,background-color] duration-200 ease-out hover:-translate-y-0.5 hover:border-sunset-orange/40 hover:bg-white/8 focus:outline-none focus-visible:border-sunset-orange focus-visible:ring-2 focus-visible:ring-sunset-orange/40 active:scale-[0.98] sm:h-32 lg:h-full lg:min-h-0 lg:flex-1"
+                >
+                  <img src={member.image} alt={member.name} className={`absolute inset-0 h-full w-full object-cover transition duration-200 group-hover:scale-[1.03] ${member.imageClass || ''}`} />
+                  <div className="absolute inset-0 bg-linear-to-r from-navy/94 via-navy/45 to-transparent"></div>
+                  <div className="absolute inset-0 flex items-end justify-between gap-3 p-3">
+                    <div>
+                      <p className="text-sm font-bold leading-tight text-white sm:text-base">{member.name}</p>
+                      <p className="mt-1 text-[9px] font-bold uppercase tracking-[0.1em] text-sunset-orange">{member.role}</p>
+                    </div>
+                    <img src={member.flag} alt={`${member.nationality} flag`} className="h-5 w-7 shrink-0 rounded-[0.25rem] object-cover" />
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
-    </div>
-  </section>
-);
+    </section>
+  );
+};
 
 export const Gallery = () => {
   const images = [webImg1, webImg2, webImg4, webImg5];
@@ -432,7 +668,7 @@ export const Gallery = () => {
   );
 };
 
-const AeroTrustSolution = () => {
+const CultivatorSolution = () => {
   const [activeTab, setActiveTab] = useState('hardware');
 
   return (
@@ -440,7 +676,7 @@ const AeroTrustSolution = () => {
       <div className="relative z-10 mx-auto max-w-7xl">
         <FadeIn>
           <div className="mx-auto mb-12 max-w-3xl text-center">
-            <h2 className="mb-6 text-3xl font-bold text-white md:text-5xl">The AeroTrust Solution.</h2>
+            <h2 className="mb-6 text-3xl font-bold text-white md:text-5xl">The Cultivator Solution.</h2>
             <p className="text-xl text-lightgrey">Real-time aerator health monitoring for aquaculture systems. Installed directly on existing paddlewheel aerators.</p>
           </div>
         </FadeIn>
@@ -507,10 +743,10 @@ const AeroTrustSolution = () => {
           <div className={`transition-all duration-300 ease-out ${activeTab === 'software' ? 'relative z-10 translate-y-0 opacity-100' : 'pointer-events-none absolute inset-0 translate-y-5 opacity-0'}`}>
             <div className="grid items-center gap-8 md:grid-cols-2">
               <div className="relative aspect-[4/3] overflow-hidden rounded-4xl border border-white/10 shadow-2xl">
-                <img src={appUiImg} alt="AeroTrust dashboard" className="absolute inset-0 h-full w-full object-cover object-top" />
+                <img src={appUiImg} alt="Cultivator dashboard" className="absolute inset-0 h-full w-full object-cover object-top" />
                 <div className="absolute inset-0 bg-linear-to-t from-navy/90 via-navy/10 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 p-8">
-                  <p className="text-xl font-bold text-white">AeroTrust Dashboard</p>
+                  <p className="text-xl font-bold text-white">Cultivator Dashboard</p>
                   <p className="mt-2 text-lightgrey">Clear, actionable data in the palm of your hand.</p>
                 </div>
               </div>
@@ -560,13 +796,7 @@ const AeroTrustSolution = () => {
 };
 
 const SocialProof = () => {
-  const partners = [
-    { name: 'NTHU', detail: 'Campus ecosystem' },
-    { name: 'NTHU Garage', detail: 'Startup support' },
-    { name: 'Pilot Farms', detail: 'Field validation' },
-    { name: 'NTOU', detail: 'Technical conversations' },
-  ];
-
+  const [activeTestimonial, setActiveTestimonial] = useState(0);
   const testimonials = [
     {
       quote: 'A failed aerator at night can decide the whole harvest. Earlier alerts would change how we manage risk.',
@@ -587,6 +817,15 @@ const SocialProof = () => {
       image: field4,
     },
   ];
+  const currentTestimonial = testimonials[activeTestimonial];
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      setActiveTestimonial((current) => (current + 1) % testimonials.length);
+    }, 5800);
+
+    return () => window.clearInterval(timer);
+  }, [testimonials.length]);
 
   return (
     <section id="traction" className="relative border-y border-white/5 bg-navy/45 px-4 py-20">
@@ -599,21 +838,8 @@ const SocialProof = () => {
         </FadeIn>
 
         <FadeIn delay={80}>
-          <div className="mb-12 grid gap-3 rounded-3xl border border-white/10 bg-white/5 p-3 backdrop-blur-xl sm:grid-cols-2 lg:grid-cols-4">
-            {partners.map((partner) => (
-              <div key={partner.name} className="flex items-center gap-4 rounded-2xl border border-white/10 bg-navy/35 p-4">
-                <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-full border border-sunset-skyblue/30 bg-sunset-skyblue/10 text-sm font-extrabold text-white">
-                  {partner.name
-                    .split(' ')
-                    .map((word) => word[0])
-                    .join('')}
-                </div>
-                <div>
-                  <p className="font-bold text-white">{partner.name}</p>
-                  <p className="text-sm text-lightgrey">{partner.detail}</p>
-                </div>
-              </div>
-            ))}
+          <div className="mb-12 rounded-3xl border border-white/10 bg-white/5 p-4 backdrop-blur-xl">
+            <LogoMarquee />
           </div>
         </FadeIn>
 
@@ -633,6 +859,19 @@ const SocialProof = () => {
               <p className="text-lg leading-relaxed text-lightgrey">
                 Two partners in Indonesia are ready to adopt after MVP finalization, while a Taiwan partner is working with us for localized field testing.
               </p>
+              <div className="mt-8 min-h-44">
+                <div key={currentTestimonial.name} className="animate-ghost-comment">
+                  <Quote className="mb-4 h-7 w-7 text-sunset-orange" />
+                  <p className="text-lg leading-relaxed text-white/90">"{currentTestimonial.quote}"</p>
+                  <div className="mt-5 flex items-center gap-3">
+                    <img src={currentTestimonial.image} alt={`${currentTestimonial.name} - ${currentTestimonial.meta}`} className="h-11 w-11 rounded-full object-cover" />
+                    <div>
+                      <p className="font-bold text-white">{currentTestimonial.name}</p>
+                      <p className="text-sm text-lightgrey">{currentTestimonial.meta}</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row">
                 <CTAButton href={proposalPdf} className="w-full sm:w-auto">
                   <Download className="h-5 w-5" />
@@ -647,32 +886,20 @@ const SocialProof = () => {
 
           <FadeIn delay={180}>
             <div className="grid h-full grid-cols-2 gap-4">
-              {[field1, field2, field3, field4].map((image, index) => (
+              {[field1, field2, field3].map((image, index) => (
                 <div key={image} className={`relative overflow-hidden rounded-3xl border border-white/10 bg-white/5 shadow-xl ${index === 0 ? 'col-span-2 h-48 md:h-56' : 'h-36 md:h-44'}`}>
                   <img src={image} alt="Cultivator field validation" className="absolute inset-0 h-full w-full object-cover transition duration-500 hover:scale-[1.03]" />
                   <div className="absolute inset-0 bg-linear-to-t from-navy/65 via-transparent to-transparent"></div>
                 </div>
               ))}
+              <Link
+                to="/media"
+                className="inline-flex h-36 items-center justify-center gap-2 rounded-3xl border border-white/20 bg-white/5 px-5 text-center text-base font-bold text-white shadow-xl transition hover:-translate-y-0.5 hover:bg-white/10 active:scale-[0.98] md:h-44"
+              >
+                See more media <ChevronRight className="h-5 w-5" />
+              </Link>
             </div>
           </FadeIn>
-        </div>
-
-        <div className="mt-8 grid gap-6 md:grid-cols-3">
-          {testimonials.map((testimonial, index) => (
-            <FadeIn key={testimonial.name} delay={index * 100}>
-              <LiquidGlassCard className="h-full">
-                <Quote className="mb-5 h-8 w-8 text-sunset-orange" />
-                <p className="mb-6 text-lg leading-relaxed text-white/88">"{testimonial.quote}"</p>
-                <div className="flex items-center gap-3">
-                  <img src={testimonial.image} alt={`${testimonial.name} - ${testimonial.meta}`} className="h-12 w-12 rounded-full object-cover" />
-                  <div>
-                    <p className="font-bold text-white">{testimonial.name}</p>
-                    <p className="text-sm text-lightgrey">{testimonial.meta}</p>
-                  </div>
-                </div>
-              </LiquidGlassCard>
-            </FadeIn>
-          ))}
         </div>
       </div>
     </section>
@@ -721,8 +948,6 @@ const Competitions = () => (
 );
 
 const Market = () => {
-  const [activeRegion, setActiveRegion] = useState('taiwan');
-
   const stats = [
     {
       label: 'TAM',
@@ -749,21 +974,6 @@ const Market = () => {
       icon: Sprout,
     },
   ];
-
-  const regions = {
-    taiwan: {
-      label: 'Taiwan',
-      title: 'Launch market',
-      text: 'Dense shrimp farming, nearby field access, and strong university support make Taiwan the validation base.',
-      metric: '~12,000 farms',
-    },
-    sea: {
-      label: 'Southeast Asia',
-      title: 'Expansion corridor',
-      text: 'Indonesia, Thailand, Vietnam, and nearby markets share aerator-heavy pond operations and similar equipment risks.',
-      metric: '2028 target',
-    },
-  };
 
   return (
     <section id="market" className="relative overflow-hidden border-t border-white/5 px-4 py-20">
@@ -808,61 +1018,35 @@ const Market = () => {
 
           <FadeIn delay={140}>
             <LiquidGlassCard className="h-full">
-              <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div className="mb-8">
                 <div>
-                  <p className="text-sm font-bold uppercase tracking-[0.22em] text-sunset-skyblue">Target regions</p>
-                  <h3 className="mt-2 text-2xl font-bold text-white md:text-3xl">Taiwan to Southeast Asia</h3>
-                </div>
-                <div className="grid grid-cols-2 rounded-full border border-white/10 bg-navy/40 p-1">
-                  {Object.entries(regions).map(([key, region]) => (
-                    <button
-                      key={key}
-                      onClick={() => setActiveRegion(key)}
-                      className={`rounded-full px-4 py-2 text-sm font-bold transition active:scale-[0.98] ${
-                        activeRegion === key ? 'bg-sunset-orange text-navy' : 'text-white/70 hover:text-white'
-                      }`}
-                    >
-                      {region.label}
-                    </button>
-                  ))}
+                  <p className="text-sm font-bold uppercase tracking-[0.22em] text-sunset-skyblue">Market assumptions</p>
+                  <h3 className="mt-2 text-2xl font-bold text-white md:text-3xl">Focused by operating need</h3>
                 </div>
               </div>
 
-              <div className="grid gap-6 md:grid-cols-[1.2fr_0.8fr]">
-                <div className="relative min-h-80 overflow-hidden rounded-3xl border border-white/10 bg-navy/55 p-6">
-                  <div className="absolute inset-0 bg-[linear-gradient(rgba(85,212,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(85,212,255,0.08)_1px,transparent_1px)] bg-size-[38px_38px]"></div>
-                  <div className="absolute left-[53%] top-[30%] h-5 w-5 rounded-full bg-sunset-orange shadow-[0_0_28px_rgba(255,145,16,0.9)]"></div>
-                  <div className="absolute left-[48%] top-[36%] h-32 w-44 rounded-[55%] border border-sunset-orange/40 bg-sunset-orange/10 blur-[1px]"></div>
-                  <button
-                    onClick={() => setActiveRegion('taiwan')}
-                    className={`absolute left-[45%] top-[22%] rounded-full border px-4 py-2 text-sm font-bold backdrop-blur-xl transition active:scale-[0.98] ${
-                      activeRegion === 'taiwan' ? 'border-sunset-orange bg-sunset-orange text-navy' : 'border-white/20 bg-white/10 text-white'
-                    }`}
-                  >
-                    Taiwan
-                  </button>
-                  <button
-                    onClick={() => setActiveRegion('sea')}
-                    className={`absolute bottom-[24%] left-[28%] rounded-full border px-4 py-2 text-sm font-bold backdrop-blur-xl transition active:scale-[0.98] ${
-                      activeRegion === 'sea' ? 'border-sunset-orange bg-sunset-orange text-navy' : 'border-white/20 bg-white/10 text-white'
-                    }`}
-                  >
-                    SE Asia
-                  </button>
-                  <div className="absolute bottom-5 left-5 right-5 flex items-center gap-2 text-sm text-lightgrey">
-                    <MapPin className="h-4 w-4 text-sunset-skyblue" />
-                    Click a region to inspect the go-to-market focus.
+              <div className="grid gap-4">
+                {[
+                  { label: 'Dense aerator usage', value: '4-8', text: 'Typical aerators per pond create repeated monitoring demand.' },
+                  { label: 'Validation base', value: '~12k', text: 'Taiwan farms give nearby access for installation and field testing.' },
+                  { label: 'Expansion trigger', value: '2028', text: 'B2B2F channel launch after pilot and MVP validation.' },
+                ].map((item) => (
+                  <div key={item.label} className="rounded-3xl border border-white/10 bg-white/6 p-5">
+                    <div className="flex items-start justify-between gap-4">
+                      <div>
+                        <p className="text-xs font-bold uppercase tracking-[0.18em] text-lightgrey">{item.label}</p>
+                        <p className="mt-2 leading-relaxed text-white/78">{item.text}</p>
+                      </div>
+                      <p className="shrink-0 text-3xl font-extrabold text-sunset-orange">{item.value}</p>
+                    </div>
                   </div>
-                </div>
+                ))}
 
-                <div className="rounded-3xl border border-white/10 bg-white/5 p-6">
-                  <p className="text-sm font-bold uppercase tracking-[0.18em] text-lightgrey">{regions[activeRegion].label}</p>
-                  <h4 className="mt-2 text-2xl font-bold text-white">{regions[activeRegion].title}</h4>
-                  <p className="mt-4 leading-relaxed text-lightgrey">{regions[activeRegion].text}</p>
-                  <div className="mt-6 rounded-2xl bg-sunset-skyblue/10 p-4">
-                    <p className="text-sm font-bold text-sunset-skyblue">Focus metric</p>
-                    <p className="mt-1 text-2xl font-extrabold text-white">{regions[activeRegion].metric}</p>
-                  </div>
+                <div className="rounded-3xl border border-sunset-orange/20 bg-sunset-orange/10 p-5">
+                  <p className="text-sm font-bold text-sunset-orange">Why this matters</p>
+                  <p className="mt-2 leading-relaxed text-white/82">
+                    Cultivator starts where aerator failure has immediate operational cost, then expands through partners who already serve pond operators.
+                  </p>
                 </div>
               </div>
             </LiquidGlassCard>
@@ -1017,6 +1201,33 @@ const Roadmap = () => {
 };
 
 const SDGImpact = () => {
+  const [tiltCards, setTiltCards] = useState([null, null, null]);
+
+  const handleMouseMove = (index, e) => {
+    const card = e.currentTarget;
+    const rect = card.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const centerX = rect.width / 2;
+    const centerY = rect.height / 2;
+    const rotateX = (y - centerY) / 10;
+    const rotateY = (centerX - x) / 10;
+
+    setTiltCards(prev => {
+      const updated = [...prev];
+      updated[index] = { rotateX, rotateY };
+      return updated;
+    });
+  };
+
+  const handleMouseLeave = (index) => {
+    setTiltCards(prev => {
+      const updated = [...prev];
+      updated[index] = null;
+      return updated;
+    });
+  };
+
   const goals = [
     {
       img: sdg1Img,
@@ -1030,7 +1241,7 @@ const SDGImpact = () => {
       alt: 'SDG 9 Industry, Innovation and Infrastructure',
       headline: 'Resilient Infrastructure',
       metric: 'Retrofitting existing aerators',
-      text: 'AeroTrust upgrades farm equipment without forcing expensive pond redesigns or full system replacement.',
+      text: 'Cultivator upgrades farm equipment without forcing expensive pond redesigns or full system replacement.',
     },
     {
       img: sdg3Img,
@@ -1054,12 +1265,27 @@ const SDGImpact = () => {
         <div className="grid gap-8 md:grid-cols-3">
           {goals.map((goal, index) => (
             <FadeIn key={goal.headline} delay={index * 120}>
-              <LiquidGlassCard className="h-full">
-                <img src={goal.img} alt={goal.alt} className="mb-6 h-28 w-auto object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.35)] md:h-32" />
-                <h3 className="mb-3 text-2xl font-bold text-white">{goal.headline}</h3>
-                <div className="mb-4 rounded-2xl bg-sunset-orange/15 px-4 py-3 text-sm font-bold text-sunset-orange">{goal.metric}</div>
-                <p className="leading-relaxed text-lightgrey">{goal.text}</p>
-              </LiquidGlassCard>
+              <div
+                className="perspective-1000"
+                onMouseMove={(e) => handleMouseMove(index, e)}
+                onMouseLeave={() => handleMouseLeave(index)}
+              >
+                <div
+                  className="transition-transform duration-200 ease-out will-change-transform"
+                  style={{
+                    transform: tiltCards[index]
+                      ? `perspective(1000px) rotateX(${tiltCards[index].rotateX}deg) rotateY(${tiltCards[index].rotateY}deg) scale3d(1.02, 1.02, 1.02)`
+                      : 'perspective(1000px) rotateX(0) rotateY(0) scale3d(1, 1, 1)'
+                  }}
+                >
+                  <LiquidGlassCard className="h-full">
+                    <img src={goal.img} alt={goal.alt} className="mb-6 h-28 w-auto object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.35)] md:h-32" />
+                    <h3 className="mb-3 text-2xl font-bold text-white">{goal.headline}</h3>
+                    <div className="mb-4 rounded-2xl bg-sunset-orange/15 px-4 py-3 text-sm font-bold text-sunset-orange">{goal.metric}</div>
+                    <p className="leading-relaxed text-lightgrey">{goal.text}</p>
+                  </LiquidGlassCard>
+                </div>
+              </div>
             </FadeIn>
           ))}
         </div>
@@ -1070,29 +1296,75 @@ const SDGImpact = () => {
 
 const StickyInvestorCTA = () => {
   const [isVisible, setIsVisible] = useState(false);
+  const [isDismissed, setIsDismissed] = useState(false);
+  const [touchStartX, setTouchStartX] = useState(0);
+  const [touchStartY, setTouchStartY] = useState(0);
+  const [dragOffsetX, setDragOffsetX] = useState(0);
 
   useEffect(() => {
     const handleScroll = () => {
-      setIsVisible(window.scrollY > window.innerHeight * 0.72);
+      if (!isDismissed) {
+        setIsVisible(window.scrollY > window.innerHeight * 0.72);
+      }
     };
 
     handleScroll();
     window.addEventListener('scroll', handleScroll, { passive: true });
     return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  }, [isDismissed]);
+
+  const handleDismiss = () => {
+    setIsVisible(false);
+    setIsDismissed(true);
+  };
+
+  const handleTouchStart = (e) => {
+    setTouchStartX(e.touches[0].clientX);
+    setTouchStartY(e.touches[0].clientY);
+    setDragOffsetX(0);
+  };
+
+  const handleTouchMove = (e) => {
+    const touchX = e.touches[0].clientX;
+    const touchY = e.touches[0].clientY;
+    const deltaX = touchX - touchStartX;
+    const deltaY = touchY - touchStartY;
+
+    if (Math.abs(deltaX) > Math.abs(deltaY)) {
+      setDragOffsetX(deltaX);
+    } else if (deltaY > 50) {
+      handleDismiss();
+    }
+  };
+
+  const handleTouchEnd = () => {
+    if (Math.abs(dragOffsetX) > 90) {
+      handleDismiss();
+    } else {
+      setDragOffsetX(0);
+    }
+  };
 
   return (
     <div
       className={`fixed inset-x-0 bottom-0 z-50 px-3 pb-3 transition duration-300 ease-out md:px-6 md:pb-6 ${
         isVisible ? 'translate-y-0 opacity-100' : 'pointer-events-none translate-y-full opacity-0'
       }`}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
+      style={{ transform: `translateX(${dragOffsetX}px)` }}
     >
-      <div className="mx-auto flex max-w-4xl flex-col gap-3 rounded-3xl border border-white/15 bg-navy/85 p-3 shadow-[0_20px_70px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:flex-row sm:items-center sm:justify-between">
-        <div className="px-2 text-center sm:text-left">
-          <p className="font-bold text-white">Ready to review Cultivator?</p>
-          <p className="text-sm text-lightgrey">Download the deck or book a partner conversation.</p>
-        </div>
-        <div className="grid grid-cols-2 gap-2 sm:flex">
+      <div className="mx-auto flex max-w-4xl items-start gap-2 sm:items-center">
+        <div className="flex-1 rounded-3xl border border-white/15 bg-navy/85 p-4 shadow-[0_20px_70px_rgba(0,0,0,0.45)] backdrop-blur-2xl sm:flex sm:items-center sm:justify-between sm:p-3">
+          <div className="px-2 text-center sm:text-left pr-8 sm:pr-0">
+            <p className="font-bold text-white">Ready to review Cultivator?</p>
+            <p className="text-sm text-lightgrey">Download the deck or book a partner conversation.</p>
+          </div>
+          <div className="mt-3 grid grid-cols-2 gap-2 sm:mt-0 sm:flex">
+            <p className="col-span-2 text-center text-[11px] font-semibold uppercase tracking-[0.2em] text-white/60 sm:hidden">
+              Swipe away to ignore
+            </p>
           <a
             href={proposalPdf}
             target="_blank"
@@ -1103,14 +1375,22 @@ const StickyInvestorCTA = () => {
             <Download className="h-4 w-4" />
             Pitch Deck
           </a>
-          <a
-            href="#contact"
-            className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-3 text-sm font-bold text-white transition hover:bg-white/15 active:scale-[0.98]"
-          >
-            <Mail className="h-4 w-4" />
-            Contact Us
-          </a>
+            <a
+              href="#contact"
+              className="inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-3 text-sm font-bold text-white transition hover:bg-white/15 active:scale-[0.98]"
+            >
+              <Mail className="h-4 w-4" />
+              Contact Us
+            </a>
+          </div>
         </div>
+        <button
+          onClick={handleDismiss}
+          className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-white/10 bg-navy/90 p-2 text-white/70 shadow-lg transition-colors hover:bg-white/10 hover:text-white"
+          aria-label="Dismiss"
+        >
+          <X className="h-4 w-4" />
+        </button>
       </div>
     </div>
   );
@@ -1127,7 +1407,7 @@ export default function Home() {
       <Navbar />
       <Hero />
       <Problem />
-      <AeroTrustSolution />
+      <CultivatorSolution />
       <SocialProof />
       <Competitions />
       <Market />

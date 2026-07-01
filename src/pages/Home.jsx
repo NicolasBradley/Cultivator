@@ -26,7 +26,7 @@ import { LiquidGlassCard, FadeIn, CursorGlow, Footer } from '../components/Share
 import hardwareImg from '../assets/product_img.jpeg';
 import appUiImg from '../assets/software_img.png';
 import shrimpPondImg from '../assets/shrimp_pond.jpg';
-import proposalPdf from '../assets/inspo/Cultivator Project Proposal V5.pdf';
+import proposalPdf from '../assets/Cultivator Project Proposal.pdf';
 import heroVideo from '../assets/thailand_shrimp_farm_video.mp4';
 import logoImg from '../assets/Orange_Shrimp.png';
 import heroTitleImg from '../assets/Orange_No BG.png';
@@ -36,9 +36,9 @@ import sdg1Img from '../assets/sdg_1.png';
 import sdg2Img from '../assets/sdg_2.png';
 import sdg3Img from '../assets/sdg_3.png';
 
-import field1 from '../assets/asia/S__238305289_0.jpg';
-import field2 from '../assets/jason/DSC05264.JPG';
-import field3 from '../assets/asia/S__238305296_0.jpg';
+import field1 from '../assets/Hult Prize Taiwan/S__238305290_0.jpg';
+import field2 from '../assets/Hult Prize Taiwan/jason/DSC05264.JPG';
+import field3 from '../assets/Hult Prize Taiwan/S__238305296_0.jpg';
 
 import aeratorsImg from '../assets/aerators.jpg';
 import electricityImg from '../assets/electricity.jpg';
@@ -116,7 +116,7 @@ const CTAButton = ({ href, children, variant = 'primary', className = '' }) => {
     'inline-flex items-center justify-center gap-2 rounded-full px-6 py-3 text-base font-bold transition hover:-translate-y-0.5 active:scale-[0.98] md:px-8 md:py-4 md:text-lg';
   const styles =
     variant === 'primary'
-      ? 'bg-sunset-orange text-navy shadow-[0_0_22px_rgba(255,145,16,0.42)] hover:bg-sunset-orange/90'
+      ? 'bg-sunset-orange text-navy shadow-[0_0_12px_rgba(255,145,16,0.25)] hover:bg-sunset-orange/90'
       : 'border border-white/20 bg-white/5 text-white hover:bg-white/10';
 
   return (
@@ -339,8 +339,7 @@ const Navbar = () => {
 const Hero = () => {
   const [activeMetric, setActiveMetric] = useState(0);
   const [heroLogoOpacity, setHeroLogoOpacity] = useState(1);
-  const [isHovered, setIsHovered] = useState(false);
-  const [wavePosition, setWavePosition] = useState({ x: 0, y: 0 });
+  const [ripplePositions, setRipplePositions] = useState([]);
 
   const metrics = [
     { label: 'Pilot Farms', value: '3+', text: 'Committed farm partners' },
@@ -381,6 +380,17 @@ const Hero = () => {
     };
   }, []);
 
+  const handleLogoClick = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    const newRipple = { x, y, id: Date.now() };
+    setRipplePositions(prev => [...prev, newRipple]);
+    setTimeout(() => {
+      setRipplePositions(prev => prev.filter(r => r.id !== newRipple.id));
+    }, 600);
+  };
+
   return (
     <section id="home" className="relative min-h-screen overflow-hidden px-4 pb-16 pt-28 md:pb-20">
       <video
@@ -400,53 +410,32 @@ const Hero = () => {
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-7rem)] w-full max-w-6xl flex-col items-center justify-center text-center">
         <FadeIn className="mx-auto w-full max-w-xs space-y-7 sm:max-w-none md:space-y-9">
           <div className="space-y-5 md:space-y-6">
-            <h1
-              className="mx-auto will-change-[opacity,transform,filter] relative"
-              style={{
-                opacity: heroLogoOpacity,
-                transform: `translateY(${-18 * (1 - heroLogoOpacity)}px) scale(${0.98 + heroLogoOpacity * 0.02})`,
-                filter: `blur(${(1 - heroLogoOpacity) * 2}px)`,
-              }}
-            >
-              <img
-                src={heroTitleImg}
-                alt="Cultivator"
-                className={`mx-auto h-auto w-[min(86vw,22rem)] drop-shadow-[0_12px_35px_rgba(0,0,0,0.5)] sm:w-[min(78vw,30rem)] md:w-[min(72vw,42rem)] lg:w-[min(66vw,48rem)] transition-transform duration-300 ease-out`}
-                fetchPriority="high"
-                onMouseMove={(e) => {
-                  const rect = e.currentTarget.getBoundingClientRect();
-                  setWavePosition({
-                    x: e.clientX - rect.left,
-                    y: e.clientY - rect.top
-                  });
-                }}
-                onMouseEnter={() => setIsHovered(true)}
-                onMouseLeave={() => setIsHovered(false)}
-                style={{
-                  transform: isHovered && wavePosition.x !== 0
-                    ? `perspective(500px) rotateX(${(wavePosition.y - 150) / 15}deg) rotateY(${(wavePosition.x - 150) / -15}deg) scale(1.05)`
-                    : 'scale(1)'
-                }}
-              />
-              {isHovered && (
-                <>
-                  {[...Array(3)].map((_, i) => (
-                    <span
-                      key={i}
-                      className="absolute inset-0 rounded-full border-2 border-sunset-orange/30 animate-ping pointer-events-none"
-                      style={{
-                        animationDelay: `${i * 150}ms`,
-                        animationDuration: '1s',
-                        left: '50%',
-                        top: '50%',
-                        transform: 'translate(-50%, -50%)',
-                        width: '100%',
-                        height: '100%'
-                      }}
-                    />
-                  ))}
-                </>
-              )}
+            <h1 className="mx-auto relative">
+              <button
+                onClick={handleLogoClick}
+                className="relative cursor-pointer bg-transparent border-0 p-0"
+                style={{ opacity: heroLogoOpacity }}
+              >
+                <img
+                  src={heroTitleImg}
+                  alt="Cultivator"
+                  className={`mx-auto h-auto w-[min(86vw,22rem)] drop-shadow-[0_12px_35px_rgba(0,0,0,0.5)] sm:w-[min(78vw,30rem)] md:w-[min(72vw,42rem)] lg:w-[min(66vw,48rem)]`}
+                  fetchPriority="high"
+                />
+                {ripplePositions.map(ripple => (
+                  <span
+                    key={ripple.id}
+                    className="absolute rounded-full border-2 border-tealblue/40 animate-ping pointer-events-none"
+                    style={{
+                      left: ripple.x,
+                      top: ripple.y,
+                      transform: 'translate(-50%, -50%)',
+                      width: '100px',
+                      height: '100px',
+                    }}
+                  />
+                ))}
+              </button>
             </h1>
             <p className="mx-auto max-w-[22ch] text-xl font-extrabold leading-tight tracking-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)] sm:max-w-[32ch] sm:text-2xl md:max-w-4xl md:text-4xl">
               The Next Generation <span className="text-sunset-orange">of Smart Aquaculture Technology.</span>
@@ -485,7 +474,7 @@ export const Problem = () => (
   <section id="problem" className="relative px-4 py-20 overflow-hidden">
     {/* Background image */}
     <div className="absolute inset-0 z-0">
-      <img src={problemFragileOps} alt="" className="h-full w-full object-cover opacity-[0.08] mix-blend-luminosity" />
+      <img src={problemFragileOps} alt="" className="h-full w-full object-cover opacity-[0.08] mix-blend-luminosity" loading="lazy" />
       <div className="absolute inset-0 bg-gradient-to-b from-navy/80 via-navy/60 to-navy/80" />
     </div>
 
@@ -499,7 +488,7 @@ export const Problem = () => (
       <div className="grid gap-6 md:grid-cols-3">
         <FadeIn delay={100} className="h-full">
           <div className="relative h-full min-h-[380px] rounded-4xl overflow-hidden group animate-float [animation-delay:0s] shadow-2xl border border-white/10">
-            <img src={aeratorsImg} alt="Failures go undetected" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+            <img src={aeratorsImg} alt="Failures go undetected" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
             <div className="absolute bottom-0 left-0 w-full h-2/3 bg-linear-to-t from-navy/95 via-navy/70 to-transparent"></div>
             <div className="relative z-10 flex flex-col justify-end h-full p-8 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
               <h3 className="mb-3 text-2xl font-bold text-white group-hover:text-rose-400 transition-colors">Failures go undetected</h3>
@@ -509,7 +498,7 @@ export const Problem = () => (
         </FadeIn>
         <FadeIn delay={200} className="h-full">
           <div className="relative h-full min-h-[380px] rounded-4xl overflow-hidden group animate-float [animation-delay:1s] shadow-2xl border border-white/10">
-            <img src={electricityImg} alt="Electricity Cost Too High!" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+            <img src={electricityImg} alt="Electricity Cost Too High!" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
             <div className="absolute bottom-0 left-0 w-full h-2/3 bg-linear-to-t from-navy/95 via-navy/70 to-transparent"></div>
             <div className="relative z-10 flex flex-col justify-end h-full p-8 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
               <h3 className="mb-3 text-2xl font-bold text-white group-hover:text-amber-400 transition-colors">Electricity Cost Too High!</h3>
@@ -519,7 +508,7 @@ export const Problem = () => (
         </FadeIn>
         <FadeIn delay={300} className="h-full">
           <div className="relative h-full min-h-[380px] rounded-4xl overflow-hidden group animate-float [animation-delay:2s] shadow-2xl border border-white/10">
-            <img src={smallerShrimpImg} alt="Smaller Shrimp" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" />
+            <img src={smallerShrimpImg} alt="Smaller Shrimp" className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110" loading="lazy" />
             <div className="absolute bottom-0 left-0 w-full h-2/3 bg-linear-to-t from-navy/95 via-navy/70 to-transparent"></div>
             <div className="relative z-10 flex flex-col justify-end h-full p-8 drop-shadow-[0_4px_4px_rgba(0,0,0,0.8)]">
               <h3 className="mb-3 text-2xl font-bold text-white group-hover:text-sunset-orange transition-colors">Smaller Shrimp</h3>
@@ -589,7 +578,7 @@ export const Team = () => {
   return (
     <section id="team" className="relative overflow-hidden px-4 py-20">
       <div className="absolute inset-0 z-0">
-        <img src={hardwareImg} alt="Background" className="h-full w-full object-cover opacity-[0.03] mix-blend-luminosity" />
+        <img src={hardwareImg} alt="Background" className="h-full w-full object-cover opacity-[0.03] mix-blend-luminosity" loading="lazy" />
       </div>
       <div className="relative z-10 mx-auto max-w-6xl">
         <FadeIn>
@@ -747,7 +736,7 @@ const CultivatorSolution = () => {
             <button
               onClick={() => setActiveTab('hardware')}
               className={`rounded-full px-5 py-3 text-base font-bold transition active:scale-[0.98] md:px-8 md:text-lg ${
-                activeTab === 'hardware' ? 'bg-sunset-orange text-navy shadow-[0_0_15px_rgba(85,212,255,0.35)]' : 'text-white/70 hover:text-white'
+                activeTab === 'hardware' ? 'bg-sunset-orange text-navy shadow-[0_0_8px_rgba(85,212,255,0.2)]' : 'text-white/70 hover:text-white'
               }`}
             >
               Hardware
@@ -755,7 +744,7 @@ const CultivatorSolution = () => {
             <button
               onClick={() => setActiveTab('software')}
               className={`rounded-full px-5 py-3 text-base font-bold transition active:scale-[0.98] md:px-8 md:text-lg ${
-                activeTab === 'software' ? 'bg-sunset-orange text-navy shadow-[0_0_15px_rgba(85,212,255,0.35)]' : 'text-white/70 hover:text-white'
+                activeTab === 'software' ? 'bg-sunset-orange text-navy shadow-[0_0_8px_rgba(85,212,255,0.2)]' : 'text-white/70 hover:text-white'
               }`}
             >
               Software
@@ -791,7 +780,7 @@ const CultivatorSolution = () => {
                 </LiquidGlassCard>
               </div>
               <div className="relative aspect-[4/3] overflow-hidden rounded-4xl border border-white/10 shadow-2xl">
-                <img src={hardwareImg} alt="Hardware on aerator" className="absolute inset-0 h-full w-full object-cover" />
+                <img src={hardwareImg} alt="Hardware on aerator" className="absolute inset-0 h-full w-full object-cover" loading="lazy" />
                 <div className="absolute inset-0 bg-linear-to-t from-navy/90 via-navy/20 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 p-8">
                   <p className="text-xl font-bold text-white">Plug and Play Installation</p>
@@ -804,7 +793,7 @@ const CultivatorSolution = () => {
           <div className={`transition-all duration-300 ease-out ${activeTab === 'software' ? 'relative z-10 translate-y-0 opacity-100' : 'pointer-events-none absolute inset-0 translate-y-5 opacity-0'}`}>
             <div className="grid items-center gap-8 md:grid-cols-2">
               <div className="relative aspect-[4/3] overflow-hidden rounded-4xl border border-white/10 shadow-2xl">
-                <img src={appUiImg} alt="Cultivator dashboard" className="absolute inset-0 h-full w-full object-cover object-top" />
+                <img src={appUiImg} alt="Cultivator dashboard" className="absolute inset-0 h-full w-full object-cover object-top" loading="lazy" />
                 <div className="absolute inset-0 bg-linear-to-t from-navy/90 via-navy/10 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 p-8">
                   <p className="text-xl font-bold text-white">Cultivator Dashboard</p>
@@ -1382,7 +1371,7 @@ const StickyInvestorCTA = () => {
             href={proposalPdf}
             target="_blank"
             rel="noopener noreferrer"
-            download="Cultivator_Project_Proposal.pdf"
+            download
             className="inline-flex items-center justify-center gap-2 rounded-full bg-sunset-orange px-4 py-3 text-sm font-bold text-navy transition hover:bg-sunset-orange/90 active:scale-[0.98]"
           >
             <Download className="h-4 w-4" />

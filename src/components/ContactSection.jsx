@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { Mail, Smartphone, Download } from 'lucide-react';
 import { FadeIn } from './SharedUI';
 import shrimpPondImg from '../assets/shrimp_pond.jpg';
-import proposalPdf from '../assets/inspo/Cultivator Project Proposal V5.pdf';
+import proposalPdf from '../assets/Cultivator Project Proposal.pdf';
 
 export const ContactSection = () => {
   const [status, setStatus] = useState('idle'); // idle, submitting, success, error
@@ -94,7 +94,7 @@ export const ContactSection = () => {
                 </div>
 
                 <div className="pt-6 flex flex-col gap-3 md:gap-4 w-full sm:w-fit">
-                  <a href={proposalPdf} target="_blank" rel="noopener noreferrer" download="Cultivator_Project_Proposal.pdf" className="inline-flex items-center justify-center gap-2 md:gap-3 rounded-full bg-sunset-orange px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-bold text-navy shadow-[0_0_20px_rgba(255,145,16,0.45)] transition hover:-translate-y-1 hover:bg-sunset-orange/90 hover:shadow-[0_0_30px_rgba(255,145,16,0.6)] w-full">
+                  <a href={proposalPdf} target="_blank" rel="noopener noreferrer" download className="inline-flex items-center justify-center gap-2 md:gap-3 rounded-full bg-sunset-orange px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-bold text-navy shadow-[0_0_10px_rgba(255,145,16,0.25)] transition hover:-translate-y-1 hover:bg-sunset-orange/90 hover:shadow-[0_0_15px_rgba(255,145,16,0.35)] w-full">
                     <Download className="w-5 h-5 md:w-6 md:h-6" />
                     Download Project Proposal
                   </a>
@@ -174,7 +174,7 @@ export const ContactSection = () => {
                   <button 
                     type="submit" 
                     disabled={status === 'submitting'}
-                    className="w-full rounded-xl bg-sunset-orange px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-bold text-navy shadow-[0_0_20px_rgba(255,145,16,0.45)] transition hover:-translate-y-1 hover:bg-sunset-orange/90 disabled:opacity-70 disabled:hover:translate-y-0 disabled:cursor-not-allowed mt-4"
+                    className="w-full rounded-xl bg-sunset-orange px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-bold text-navy shadow-[0_0_10px_rgba(255,145,16,0.25)] transition hover:-translate-y-1 hover:bg-sunset-orange/90 disabled:opacity-70 disabled:hover:translate-y-0 disabled:cursor-not-allowed mt-4"
                   >
                     {status === 'submitting' ? 'Sending...' : 'Submit'}
                   </button>

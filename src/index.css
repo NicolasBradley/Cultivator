@@ -1,19 +1,42 @@
 @import "tailwindcss";
 
 @theme {
-  --color-navy: rgb(34, 42, 92);
-  --color-darkblue: rgb(32, 69, 115);
-  --color-tealblue: rgb(11, 95, 134);
-  --color-mutedteal: rgb(41, 128, 161);
-  --color-lightgrey: rgb(161, 186, 202);
-  --color-sunset-darkblue: rgb(15, 69, 114);
-  --color-sunset-steelblue: rgb(65, 112, 152);
-  --color-sunset-skyblue: rgb(85, 212, 255);
-  --color-sunset-yellow: rgb(255, 216, 77);
-  --color-sunset-orange: rgb(255, 145, 16);
+  --color-marine-900: #1C5168;
+  --color-marine-800: #29667E;
+  --color-marine-600: #4A8399;
+  --color-marine-400: #79ADC1;
+  --color-marine-200: #B6D4E0;
+  --color-ocean-500: #39B6FF;
+  --color-ocean-400: #67C7FF;
+  --color-ocean-300: #89D5FF;
+  --color-ocean-200: #B3E5FF;
+  --color-ocean-100: #DFF5FF;
+  --color-orange-500: #FF7828;
+  --color-orange-400: #FF924F;
+  --color-orange-300: #FFAD76;
+  --color-orange-200: #FFC89F;
+  --color-orange-100: #FFE7D8;
+  --color-neutral-black: #121212;
+  --color-neutral-charcoal: #2D2D2D;
+  --color-neutral-slate: #6B7280;
+  --color-neutral-gray: #E5E7EB;
+  --color-neutral-offwhite: #F8FAFC;
+  --color-neutral-white: #FFFFFF;
+
+  --color-navy: #1C5168;
+  --color-darkblue: #29667E;
+  --color-tealblue: #4A8399;
+  --color-mutedteal: #79ADC1;
+  --color-lightgrey: #DFF5FF;
+  --color-sunset-darkblue: #1C5168;
+  --color-sunset-steelblue: #4A8399;
+  --color-sunset-skyblue: #39B6FF;
+  --color-sunset-yellow: #FFE7D8;
+  --color-sunset-orange: #FF7828;
 
   --animate-marquee: marquee 25s linear infinite;
   --animate-float: float 6s ease-in-out infinite;
+  --animate-scroll-cue: scroll-cue 1.6s cubic-bezier(0.23, 1, 0.32, 1) infinite;
 
   @keyframes marquee {
     0% { transform: translateX(0%); }
@@ -24,11 +47,21 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-15px); }
   }
+
+  @keyframes scroll-cue {
+    0% { opacity: 0; transform: translateY(-4px); }
+    35% { opacity: 1; }
+    100% { opacity: 0; transform: translateY(10px); }
+  }
 }
 
 body {
   background-color: var(--color-navy);
   color: white;
+  background-image:
+    radial-gradient(circle at 15% 0%, rgba(57, 182, 255, 0.16), transparent 32rem),
+    radial-gradient(circle at 85% 8%, rgba(255, 120, 40, 0.16), transparent 28rem),
+    linear-gradient(180deg, #29667E, #1C5168);
   overflow-x: hidden;
 }
 

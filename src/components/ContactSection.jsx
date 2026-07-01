@@ -1,15 +1,11 @@
 import { useState } from 'react';
 import { Mail, Smartphone, Download } from 'lucide-react';
-import { useLocation, useNavigate } from 'react-router-dom';
 import { FadeIn } from './SharedUI';
 import shrimpPondImg from '../assets/shrimp_pond.jpg';
 import proposalPdf from '../assets/inspo/Cultivator Project Proposal V5.pdf';
 
 export const ContactSection = () => {
   const [status, setStatus] = useState('idle'); // idle, submitting, success, error
-  const location = useLocation();
-  const navigate = useNavigate();
-  const isInvestorPage = location.pathname === '/investor';
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -33,7 +29,7 @@ export const ContactSection = () => {
       } else {
         setStatus('error');
       }
-    } catch (error) {
+    } catch {
       setStatus('error');
     }
   };
@@ -72,22 +68,32 @@ export const ContactSection = () => {
                   </div>
                   <p className="text-white font-medium">ddieong04@gmail.com</p>
                 </div>
+                <div className="flex items-center gap-3 pt-2">
+                  <a
+                    href="https://www.linkedin.com/company/cultivatortech/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 bg-white/5 rounded-full border border-white/10 backdrop-blur-md text-white/70 hover:text-white transition hover:scale-110"
+                    aria-label="LinkedIn"
+                  >
+                    <span className="text-sm font-bold">in</span>
+                  </a>
+                  <a
+                    href="https://www.instagram.com/cultivatorteam/"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="p-3 bg-white/5 rounded-full border border-white/10 backdrop-blur-md text-white/70 hover:text-white transition hover:scale-110"
+                    aria-label="Instagram"
+                  >
+                    <span className="text-sm font-bold">ig</span>
+                  </a>
+                </div>
 
                 <div className="pt-6 flex flex-col gap-3 md:gap-4 w-full sm:w-fit">
                   <a href={proposalPdf} target="_blank" rel="noopener noreferrer" download="Cultivator_Project_Proposal.pdf" className="inline-flex items-center justify-center gap-2 md:gap-3 rounded-full bg-sunset-orange px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-bold text-navy shadow-[0_0_20px_rgba(255,145,16,0.45)] transition hover:-translate-y-1 hover:bg-sunset-orange/90 hover:shadow-[0_0_30px_rgba(255,145,16,0.6)] w-full">
                     <Download className="w-5 h-5 md:w-6 md:h-6" />
                     Download Project Proposal
                   </a>
-                  
-                  {isInvestorPage ? (
-                    <button onClick={() => { navigate('/'); window.scrollTo(0,0); }} className="inline-flex items-center justify-center gap-2 md:gap-3 rounded-full bg-white/5 border border-white/20 px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-bold text-white transition hover:-translate-y-1 hover:bg-white/10 w-full">
-                      Look at General Page
-                    </button>
-                  ) : (
-                    <button onClick={() => { navigate('/investor'); window.scrollTo(0,0); }} className="inline-flex items-center justify-center gap-2 md:gap-3 rounded-full bg-white/5 border border-white/20 px-6 py-3 md:px-8 md:py-4 text-base md:text-lg font-bold text-white transition hover:-translate-y-1 hover:bg-white/10 w-full">
-                      Look at Investor Page
-                    </button>
-                  )}
                 </div>
               </div>
             </div>

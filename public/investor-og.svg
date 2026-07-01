@@ -1,0 +1,49 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 627" width="1200" height="627">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:rgb(34,42,92)"/>
+      <stop offset="100%" style="stop-color:rgb(32,69,115)"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="1200" height="627" fill="url(#bg)"/>
+
+  <!-- Subtle orange accent line -->
+  <rect x="0" y="0" width="8" height="627" fill="rgb(255,145,16)"/>
+
+  <!-- Logo -->
+  <image href="/cultivator_logo.jpeg" x="40" y="40" width="120" height="120" clip-path="circle(60px at 100px,100px)"/>
+
+  <!-- Title -->
+  <text x="100" y="220" font-family="system-ui, -apple-system, sans-serif" font-size="64" font-weight="800" fill="white">
+    CULTIVATOR
+  </text>
+
+  <!-- Subtitle -->
+  <text x="100" y="280" font-family="system-ui, -apple-system, sans-serif" font-size="32" font-weight="500" fill="rgb(161,186,202)">
+    Smart Aquaculture Technology
+  </text>
+
+  <!-- Orange divider -->
+  <rect x="100" y="310" width="100" height="4" fill="rgb(255,145,16)"/>
+
+  <!-- Investment hook -->
+  <text x="100" y="380" font-family="system-ui, -apple-system, sans-serif" font-size="48" font-weight="700" fill="white">
+    Investment Opportunity
+  </text>
+
+  <!-- Key metrics -->
+  <text x="100" y="450" font-family="system-ui, -apple-system, sans-serif" font-size="28" font-weight="400" fill="rgb(85,212,255)">
+    $300M Market • Taiwan → Southeast Asia
+  </text>
+
+  <!-- CTA -->
+  <text x="100" y="520" font-family="system-ui, -apple-system, sans-serif" font-size="22" font-weight="500" fill="rgb(161,186,202)">
+    cultivator.vercel.app/investor
+  </text>
+
+  <!-- Decorative elements -->
+  <circle cx="1100" cy="500" r="120" fill="rgb(85,212,255)" opacity="0.05"/>
+  <circle cx="1050" cy="400" r="60" fill="rgb(255,145,16)" opacity="0.08"/>
+</svg>

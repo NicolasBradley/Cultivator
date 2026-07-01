@@ -1,0 +1,55 @@
+{
+  "name": "Cultivator - Smart Aquaculture Technology",
+  "short_name": "Cultivator",
+  "description": "IoT monitoring platform for shrimp farm aerators. Detect failures early, protect harvest value.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#222a5c",
+  "theme_color": "#ff9110",
+  "orientation": "portrait-primary",
+  "categories": ["agriculture", "technology", "iot"],
+  "icons": [
+    {
+      "src": "/favicon.png",
+      "sizes": "any",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/apple-touch-icon.png",
+      "sizes": "180x180",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "/cultivator-og.png",
+      "sizes": "1200x630",
+      "type": "image/png",
+      "label": "Cultivator Home"
+    },
+    {
+      "src": "/investor-og.svg",
+      "sizes": "1200x627",
+      "type": "image/svg+xml",
+      "label": "Investor Opportunity"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Investor Page",
+      "short_name": "Invest",
+      "description": "View investment opportunities",
+      "url": "/investor",
+      "icons": [
+        {
+          "src": "/investor-og.svg",
+          "sizes": "96x96"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

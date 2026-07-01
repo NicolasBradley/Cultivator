@@ -1,0 +1,12 @@
+User-agent: *
+Allow: /
+Crawl-delay: 1
+
+# Disallow specific paths if any
+# Disallow: /private/
+# Disallow: /admin/
+
+Sitemap: https://cultivator.vercel.app/sitemap.xml
+
+# Additional SEO hints
+# Host: https://cultivator.vercel.app

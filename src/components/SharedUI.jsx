@@ -63,7 +63,7 @@ export const CursorGlow = () => {
   return (
     <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden mix-blend-screen">
       <div 
-        className="absolute w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,rgba(85,212,255,0.06),transparent_60%)] rounded-full blur-3xl transition-transform duration-700 ease-out"
+        className="absolute w-[600px] h-[600px] bg-[radial-gradient(circle_at_center,rgba(57,182,255,0.12),rgba(255,120,40,0.08)_38%,transparent_62%)] rounded-full blur-3xl transition-transform duration-700 ease-out"
         style={{ transform: `translate(${position.x - 300}px, ${position.y - 300}px)` }}
       />
     </div>
@@ -75,6 +75,26 @@ export const Footer = () => (
     <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 text-sm text-lightgrey md:flex-row">
       <span className="font-bold text-white">Cultivator</span>
       <span>Partnering with shrimp farmers across Asia.</span>
+      <div className="flex items-center gap-4">
+        <a
+          href="https://www.linkedin.com/company/cultivatortech/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-white/70 transition hover:text-white hover:scale-110"
+          aria-label="LinkedIn"
+        >
+          <span className="text-sm font-bold">in</span>
+        </a>
+        <a
+          href="https://www.instagram.com/cultivatorteam/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="text-white/70 transition hover:text-white hover:scale-110"
+          aria-label="Instagram"
+        >
+          <span className="text-sm font-bold">ig</span>
+        </a>
+      </div>
       <span>&copy; 2026 Cultivator. All rights reserved.</span>
     </div>
   </footer>

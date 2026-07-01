@@ -437,22 +437,24 @@ const Hero = () => {
                 ))}
               </button>
             </h1>
+            <div className="mx-auto min-h-28 w-full max-w-xs sm:max-w-md md:min-h-32">
+              <div key={currentMetric.label} className="animate-ghost-metric text-center">
+                <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-200/90">{currentMetric.label}</p>
+                <p className="mt-2 text-5xl font-extrabold tracking-tight text-white drop-shadow-[0_8px_30px_rgba(0,0,0,0.45)] sm:text-6xl md:text-7xl">
+                  {currentMetric.value}
+                </p>
+                <p className="mt-2 text-sm font-semibold text-white/78 md:text-base">{currentMetric.text}</p>
+              </div>
+            </div>
+          </div>
+
+          <div className="mx-auto min-h-28 w-full max-w-xs space-y-3 sm:max-w-none md:min-h-32">
             <p className="mx-auto max-w-[22ch] text-xl font-extrabold leading-tight tracking-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)] sm:max-w-[32ch] sm:text-2xl md:max-w-4xl md:text-4xl">
               The Next Generation <span className="text-sunset-orange">of Smart Aquaculture Technology.</span>
             </p>
             <p className="mx-auto max-w-[25ch] text-base font-medium leading-relaxed text-white/88 sm:max-w-[34ch] sm:text-lg md:max-w-3xl md:text-xl">
               Cultivator helps shrimp farms prevent aerator failure, protect harvest value, and turn emergency maintenance into predictable operating savings.
             </p>
-          </div>
-
-          <div className="mx-auto min-h-28 w-full max-w-xs sm:max-w-md md:min-h-32">
-            <div key={currentMetric.label} className="animate-ghost-metric text-center">
-              <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-200/90">{currentMetric.label}</p>
-              <p className="mt-2 text-5xl font-extrabold tracking-tight text-white drop-shadow-[0_8px_30px_rgba(0,0,0,0.45)] sm:text-6xl md:text-7xl">
-                {currentMetric.value}
-              </p>
-              <p className="mt-2 text-sm font-semibold text-white/78 md:text-base">{currentMetric.text}</p>
-            </div>
           </div>
 
           <div className="mx-auto flex w-full max-w-xs flex-col gap-3 pt-1 sm:max-w-none sm:flex-row sm:justify-center">
@@ -832,14 +834,6 @@ const CultivatorSolution = () => {
             </div>
           </div>
         </div>
-
-        <FadeIn delay={120}>
-          <div className="mt-12 flex justify-center">
-            <CTAButton href="#market" variant="secondary">
-              See market opportunity <ChevronRight className="h-5 w-5" />
-            </CTAButton>
-          </div>
-        </FadeIn>
       </div>
     </section>
   );
@@ -1060,8 +1054,11 @@ const Market = () => {
                 </div>
                 <div className="mb-4 text-4xl font-extrabold tracking-tight text-white md:text-5xl">{stat.value}</div>
                 <p className="min-h-16 text-lg leading-relaxed text-white/80">{stat.text}</p>
-                <div className="mt-6 h-2 overflow-hidden rounded-full bg-white/10">
-                  <div className="h-full rounded-full bg-linear-to-r from-sunset-orange to-sunset-skyblue" style={{ width: `${stat.progress}%` }}></div>
+                <div className="relative">
+                  <div className="mt-6 h-2 overflow-hidden rounded-full bg-white/10">
+                    <div className="h-full rounded-full bg-linear-to-r from-sunset-orange to-sunset-skyblue" style={{ width: `${stat.progress}%` }}></div>
+                  </div>
+                  <img src={logoImg} alt="" className="absolute -top-3 h-7 w-7 rounded-full border-2 border-white/30 object-cover shadow-lg" style={{ left: `${stat.progress}%`, transform: 'translateX(-50%)' }} />
                 </div>
               </LiquidGlassCard>
             </FadeIn>
@@ -1171,8 +1168,11 @@ const Roadmap = () => {
                 <div className={`grid transition-all duration-300 ease-out ${openPhases[index] ? 'grid-rows-[1fr] opacity-100' : 'grid-rows-[0fr] opacity-0'}`}>
                   <div className="overflow-hidden">
                     <div className="border-t border-white/10 p-5 md:p-6">
-                      <div className="mb-6 h-2 overflow-hidden rounded-full bg-white/10">
-                        <div className="h-full rounded-full bg-linear-to-r from-sunset-orange to-sunset-skyblue" style={{ width: `${phase.progress}%` }}></div>
+                      <div className="mb-6 relative">
+                        <div className="h-2 overflow-hidden rounded-full bg-white/10">
+                          <div className="h-full rounded-full bg-linear-to-r from-sunset-orange to-sunset-skyblue" style={{ width: `${phase.progress}%` }}></div>
+                        </div>
+                        <img src={logoImg} alt="" className="absolute -top-3 h-7 w-7 rounded-full border-2 border-white/30 object-cover shadow-lg" style={{ left: `${phase.progress}%`, transform: 'translateX(-50%)' }} />
                       </div>
                       <div className="grid gap-4 md:grid-cols-3">
                         {phase.items.map((item) => (

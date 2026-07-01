@@ -35,11 +35,12 @@ export const ContactSection = () => {
   };
 
   return (
-    <section id="contact" className="relative overflow-hidden border-t border-tealblue/30 px-4 py-20 md:py-24">
+    <section id="contact" className="relative overflow-hidden px-4 py-20 md:py-24">
       <div className="absolute inset-0 z-0">
         <img src={shrimpPondImg} alt="Aquaculture pond background" className="h-full w-full object-cover opacity-70" />
         <div className="absolute inset-0 bg-linear-to-r from-navy/95 via-navy/90 to-navy/70"></div>
       </div>
+      <div className="pointer-events-none absolute inset-x-0 top-0 z-[1] h-44 bg-linear-to-b from-navy via-navy/80 to-transparent"></div>
 
       <div className="relative z-10 mx-auto max-w-7xl">
         <FadeIn>

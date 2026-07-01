@@ -42,7 +42,6 @@ import electricityImg from '../assets/electricity.jpg';
 import smallerShrimpImg from '../assets/smaller_shrimp.jpg';
 import problemFragileOps from '../assets/problem_fragile_ops.png';
 import shrimpFarmImg from '../assets/shrimp_farm.jpg';
-import graphTimelineImg from '../assets/graph timeline.png';
 import pexelsQuangImg from '../assets/pexels-quang-nguyen-vinh-222549-6872322.jpg';
 
 import webImg1 from '../assets/web_img1.jpg';
@@ -406,7 +405,6 @@ const Hero = () => {
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
-      <div className="pointer-events-none absolute inset-0 bg-linear-to-b from-navy/10 via-navy/60 to-navy"></div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-96 bg-linear-to-t from-navy via-navy/95 to-transparent"></div>
 
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-7rem)] w-full max-w-6xl flex-col items-center justify-center text-center">
@@ -1198,7 +1196,7 @@ const Roadmap = () => {
   }, []);
 
   return (
-    <section id="roadmap" ref={sectionRef} className="relative overflow-hidden px-4 py-24">
+    <section id="roadmap" ref={sectionRef} className="relative overflow-hidden px-4 py-16 sm:py-24">
       <div className="absolute inset-0 z-0">
         <img src={shrimpFarmImg} alt="" className="h-full w-full object-cover opacity-[0.12] mix-blend-luminosity" loading="lazy" />
         <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-navy to-transparent"></div>
@@ -1208,14 +1206,14 @@ const Roadmap = () => {
 
       <div className="relative z-10 mx-auto max-w-6xl">
         <FadeIn>
-          <div className="mx-auto mb-16 max-w-3xl text-center">
-            <h2 className="mb-6 text-3xl font-bold text-white md:text-5xl">Path to 5,000 Farms</h2>
-            <p className="text-xl text-lightgrey">Pilot → Expansion → Scale across Asia</p>
+          <div className="mx-auto mb-10 max-w-3xl text-center sm:mb-16">
+            <h2 className="mb-4 text-3xl font-bold text-white md:mb-6 md:text-5xl">Path to 5,000 Farms</h2>
+            <p className="text-base text-lightgrey sm:text-xl">Pilot → Expansion → Scale across Asia</p>
           </div>
         </FadeIn>
 
         <div className="relative">
-          <div className="mb-8 h-1 rounded-full bg-white/10">
+          <div className="mb-6 h-1 rounded-full bg-white/10 sm:mb-8">
             <div
               className="h-full rounded-full bg-linear-to-r from-sunset-orange via-sunset-skyblue to-tealblue transition-all duration-1000 ease-out"
               style={{ width: inView ? `${progress}%` : '0%' }}
@@ -1228,47 +1226,47 @@ const Roadmap = () => {
             />
           </div>
 
-          <div className="mx-auto grid max-w-4xl gap-4 md:grid-cols-3">
+          <div className="mx-auto grid max-w-3xl gap-3 sm:gap-4 md:max-w-4xl md:grid-cols-3">
             {phases.map((phase, index) => {
               const Icon = phase.icon;
               const isActive = progress > index * 40;
               const isExpanded = activePhase === index;
 
               return (
-                <FadeIn key={phase.label} delay={index * 150}>
+                <FadeIn key={phase.label} delay={index * 120} className="min-w-0">
                   <button
                     onClick={() => setActivePhase(isExpanded ? null : index)}
-                    className={`group relative h-full w-full overflow-hidden rounded-3xl border bg-white/4 p-3 text-left transition-all duration-500 ${
+                    className={`group relative w-full overflow-hidden rounded-2xl border bg-white/4 p-4 text-left transition-[transform,border-color,background-color,box-shadow] duration-200 ease-out md:h-full md:rounded-3xl md:p-3 ${
                       isActive
                         ? `border-${phase.color}/40 bg-white/8 hover:-translate-y-1 hover:shadow-[0_20px_60px_rgba(85,212,255,0.15)]`
                         : 'border-white/10'
                     }`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-4">
-                        <div className={`rounded-2xl p-3 transition-all duration-500 ${isActive ? `bg-${phase.color}/20 scale-110` : `bg-${phase.color}/10 scale-100`}`}>
-                          <Icon className={`h-6 w-6 text-${phase.color}`} />
+                    <div className="relative z-10 grid grid-cols-[auto_minmax(0,1fr)_auto] items-center gap-3 md:flex md:justify-between md:gap-4">
+                      <div className="flex min-w-0 items-center gap-3 md:gap-4">
+                        <div className={`shrink-0 rounded-xl p-2.5 transition-transform duration-200 ease-out md:rounded-2xl md:p-3 ${isActive ? `bg-${phase.color}/20 md:scale-110` : `bg-${phase.color}/10`}`}>
+                          <Icon className={`h-5 w-5 text-${phase.color} md:h-6 md:w-6`} />
                         </div>
-                        <div>
-                          <p className="text-sm font-bold uppercase tracking-[0.18em] text-lightgrey">{phase.range}</p>
-                          <h3 className="text-xl font-bold text-white md:text-2xl">{phase.label}</h3>
+                        <div className="min-w-0">
+                          <p className="truncate text-[10px] font-bold uppercase tracking-[0.14em] text-lightgrey md:text-sm md:tracking-[0.18em]">{phase.range}</p>
+                          <h3 className="truncate text-lg font-bold text-white md:text-2xl">{phase.label}</h3>
                         </div>
                       </div>
                       <div className="text-right">
-                        <div className={`text-xl font-extrabold text-white transition-all duration-500 md:text-2xl ${isActive ? 'scale-110' : 'scale-100'}`}>
+                        <div className={`text-lg font-extrabold leading-none text-white transition-transform duration-200 ease-out md:text-2xl ${isActive ? 'md:scale-110' : ''}`}>
                           {phase.farms.toLocaleString()}
                         </div>
-                        <p className="text-xs text-lightgrey">farms</p>
+                        <p className="mt-1 text-[10px] leading-none text-lightgrey md:text-xs">farms</p>
                       </div>
                     </div>
 
-                    <div className={`grid transition-all duration-300 ease-out ${isExpanded ? 'grid-rows-[1fr] opacity-100 mt-6' : 'grid-rows-[0fr] opacity-0'}`}>
+                    <div className={`relative z-10 grid transition-[grid-template-rows,opacity,margin] duration-200 ease-out ${isExpanded ? 'mt-4 grid-rows-[1fr] opacity-100 md:mt-6' : 'mt-0 grid-rows-[0fr] opacity-0'}`}>
                       <div className="overflow-hidden">
-                        <div className="space-y-3">
+                        <div className="space-y-2 md:space-y-3">
                           {phase.items.map((item) => (
-                            <div key={item.title} className="rounded-2xl border border-white/10 bg-navy/40 p-4">
-                              <p className="mb-2 inline-flex rounded-full bg-white/10 px-3 py-1 text-xs font-bold tracking-[0.14em] text-lightgrey">{item.time}</p>
-                              <h4 className="mb-2 text-lg font-bold text-white">{item.title}</h4>
+                            <div key={item.title} className="rounded-2xl border border-white/10 bg-navy/40 p-3 md:p-4">
+                              <p className="mb-2 inline-flex rounded-full bg-white/10 px-3 py-1 text-[10px] font-bold tracking-[0.14em] text-lightgrey md:text-xs">{item.time}</p>
+                              <h4 className="mb-1.5 text-base font-bold text-white md:mb-2 md:text-lg">{item.title}</h4>
                               <p className="text-sm leading-relaxed text-lightgrey">{item.text}</p>
                             </div>
                           ))}
@@ -1276,7 +1274,7 @@ const Roadmap = () => {
                       </div>
                     </div>
 
-                    <div className={`absolute inset-0 rounded-3xl bg-gradient-to-br from-${phase.color}/10 to-transparent transition-opacity duration-500 ${isActive ? 'opacity-100' : 'opacity-0'}`} />
+                    <div className={`pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-${phase.color}/10 to-transparent transition-opacity duration-200 md:rounded-3xl ${isActive ? 'opacity-100' : 'opacity-0'}`} />
                   </button>
                 </FadeIn>
               );

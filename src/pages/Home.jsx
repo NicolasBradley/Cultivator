@@ -1226,14 +1226,14 @@ const Roadmap = () => {
             />
           </div>
 
-          <div className="mx-auto grid max-w-3xl gap-3 sm:gap-4 md:max-w-4xl md:grid-cols-3">
+          <div className="mx-auto flex max-w-3xl flex-col gap-3 sm:gap-4 md:grid md:max-w-4xl md:auto-rows-fr md:grid-cols-3 md:items-stretch">
             {phases.map((phase, index) => {
               const Icon = phase.icon;
               const isActive = progress > index * 40;
               const isExpanded = activePhase === index;
 
               return (
-                <FadeIn key={phase.label} delay={index * 120} className="min-w-0">
+                <FadeIn key={phase.label} delay={index * 120} className="min-w-0 shrink-0 md:h-full">
                   <button
                     onClick={() => setActivePhase(isExpanded ? null : index)}
                     className={`group relative w-full overflow-hidden rounded-2xl border bg-white/4 p-4 text-left transition-[transform,border-color,background-color,box-shadow] duration-200 ease-out md:h-full md:rounded-3xl md:p-3 ${

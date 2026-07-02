@@ -428,7 +428,7 @@ const Hero = () => {
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-7rem)] w-full max-w-6xl flex-col items-center justify-center text-center">
         <FadeIn className="mx-auto w-full max-w-xs space-y-5 sm:max-w-none sm:space-y-7 md:space-y-9">
           <div className="relative mx-auto w-full max-w-5xl px-2 py-2 sm:px-6 sm:py-4">
-            <div className="pointer-events-none absolute left-[calc(50%-50vw)] right-[calc(50%-50vw)] top-[-4.5rem] bottom-[-3rem] bg-[radial-gradient(circle_at_50%_28%,rgba(137,213,255,0.2)_0%,rgba(103,199,255,0.12)_22%,transparent_48%),radial-gradient(ellipse_at_50%_18%,rgba(223,245,255,0.14)_0%,rgba(103,199,255,0.08)_34%,transparent_58%),radial-gradient(ellipse_at_center,rgba(9,24,32,0.66)_0%,rgba(20,55,70,0.46)_52%,rgba(28,81,104,0.18)_82%,transparent_100%)] blur-sm" aria-hidden="true"></div>
+            <div className="pointer-events-none absolute left-[calc(50%-50vw)] right-[calc(50%-50vw)] top-[-2rem] bottom-[-1rem] bg-[radial-gradient(ellipse_at_center,rgba(9,24,32,0.68)_0%,rgba(20,55,70,0.44)_42%,rgba(28,81,104,0.14)_62%,transparent_76%)] blur-sm sm:top-[-4.5rem] sm:bottom-[-3rem] sm:bg-[radial-gradient(circle_at_50%_28%,rgba(137,213,255,0.18)_0%,rgba(103,199,255,0.1)_22%,transparent_48%),radial-gradient(ellipse_at_50%_18%,rgba(223,245,255,0.12)_0%,rgba(103,199,255,0.07)_34%,transparent_58%),radial-gradient(ellipse_at_center,rgba(9,24,32,0.66)_0%,rgba(20,55,70,0.46)_52%,rgba(28,81,104,0.18)_82%,transparent_100%)]" aria-hidden="true"></div>
 
             <div className="relative space-y-4 md:space-y-6">
               <div className="space-y-4 md:space-y-6">

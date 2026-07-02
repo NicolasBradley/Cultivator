@@ -405,6 +405,7 @@ const Hero = () => {
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[46vh] bg-[linear-gradient(180deg,rgba(179,229,255,0.72)_0%,rgba(103,199,255,0.38)_48%,transparent_100%)] mix-blend-screen"></div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-navy via-navy/55 to-transparent"></div>
 
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-7rem)] w-full max-w-6xl flex-col items-center justify-center text-center">

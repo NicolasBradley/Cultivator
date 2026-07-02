@@ -93,23 +93,24 @@ const LogoMarquee = ({ compact = false }) => (
 );
 
 const LogoBand = () => (
-  <div className="pointer-events-auto relative w-full space-y-2 overflow-hidden py-2 [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]">
-    <div className="pointer-events-none absolute inset-0 z-10 bg-linear-to-b from-navy/12 via-tealblue/10 to-navy/14" aria-hidden="true"></div>
-    {[carouselLogos, [...carouselLogos].reverse()].map((rowLogos, rowIndex) => (
-      <div
-        key={`sponsor-row-${rowIndex}`}
-        className={`relative flex w-max animate-marquee items-center gap-2 whitespace-nowrap hover:[animation-play-state:paused] md:gap-3 ${
-          rowIndex === 0 ? '[animation-duration:30s]' : '[animation-direction:reverse] [animation-duration:42s]'
-        }`}
-      >
-        {[...rowLogos, ...rowLogos].map((logo, index) => (
-          <div key={`${logo.name}-hero-${rowIndex}-${index}`} className="relative flex h-8 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white px-3 shadow-[0_10px_24px_rgba(0,0,0,0.12)] md:h-10 md:w-32">
+  <div className="pointer-events-auto relative w-full overflow-hidden py-2">
+    <p
+      className="mb-2 text-center text-[0.72rem] font-semibold uppercase tracking-[0.24em] text-white/76 drop-shadow-[0_3px_12px_rgba(0,0,0,0.42)] sm:text-xs"
+      style={{ fontFamily: '"Avenir Next", ui-sans-serif, system-ui, sans-serif' }}
+    >
+      Trusted by partners and mentors
+    </p>
+    <div className="relative overflow-hidden [mask-image:linear-gradient(90deg,transparent,black_8%,black_92%,transparent)]">
+      <div className="pointer-events-none absolute inset-0 z-10 bg-linear-to-b from-navy/12 via-tealblue/10 to-navy/14" aria-hidden="true"></div>
+      <div className="relative flex w-max animate-marquee items-center gap-2 whitespace-nowrap [animation-duration:34s] hover:[animation-play-state:paused] md:gap-3">
+        {[...carouselLogos, ...carouselLogos].map((logo, index) => (
+          <div key={`${logo.name}-hero-${index}`} className="relative flex h-8 w-24 shrink-0 items-center justify-center overflow-hidden rounded-xl bg-white px-3 shadow-[0_10px_24px_rgba(0,0,0,0.12)] md:h-10 md:w-32">
             <img src={logo.src} alt={`${logo.name} logo`} className="max-h-[70%] max-w-[86%] object-contain" loading="lazy" />
             <span className="pointer-events-none absolute inset-0 bg-linear-to-br from-navy/34 via-tealblue/28 to-sunset-orange/20" aria-hidden="true"></span>
           </div>
         ))}
       </div>
-    ))}
+    </div>
   </div>
 );
 const CTAButton = ({ href, children, variant = 'primary', className = '' }) => {
@@ -209,7 +210,15 @@ const Navbar = () => {
                   {item.label}
                 </button>
               ) : (
-                <a key={item.label} href={item.href} className="text-base font-medium text-white/80 transition hover:text-white">
+                <a
+                  key={item.label}
+                  href={item.href}
+                  className={
+                    item.label === 'Contact'
+                      ? 'inline-flex items-center rounded-full border border-sunset-orange/50 bg-sunset-orange px-4 py-2 text-base font-bold text-navy shadow-[0_8px_22px_rgba(255,120,40,0.24)] transition hover:-translate-y-0.5 hover:bg-orange-400 active:scale-[0.98]'
+                      : 'text-base font-medium text-white/80 transition hover:text-white'
+                  }
+                >
                   {item.label}
                 </a>
               ),
@@ -285,7 +294,11 @@ const Navbar = () => {
                     key={item.label}
                     href={item.href}
                     onClick={() => setIsOpen(false)}
-                    className="text-lg font-medium text-white/80 transition hover:text-white"
+                    className={
+                      item.label === 'Contact'
+                        ? 'inline-flex items-center rounded-full border border-sunset-orange/50 bg-sunset-orange px-5 py-2 text-lg font-bold text-navy shadow-[0_8px_22px_rgba(255,120,40,0.24)] transition hover:bg-orange-400 active:scale-[0.98]'
+                        : 'text-lg font-medium text-white/80 transition hover:text-white'
+                    }
                   >
                     {item.label}
                   </a>
@@ -324,7 +337,11 @@ const Navbar = () => {
                   key={item.label}
                   href={item.href}
                   onClick={() => setIsOpen(false)}
-                  className="block w-full py-2 text-base font-medium text-white/80 transition hover:text-white hover:bg-white/5 rounded-lg px-3"
+                  className={
+                    item.label === 'Contact'
+                      ? 'mt-2 flex w-full items-center justify-center rounded-full border border-sunset-orange/50 bg-sunset-orange px-4 py-2 text-base font-bold text-navy shadow-[0_8px_22px_rgba(255,120,40,0.24)] transition hover:bg-orange-400 active:scale-[0.98]'
+                      : 'block w-full py-2 text-base font-medium text-white/80 transition hover:text-white hover:bg-white/5 rounded-lg px-3'
+                  }
                 >
                   {item.label}
                 </a>
@@ -405,66 +422,72 @@ const Hero = () => {
       >
         <source src={heroVideo} type="video/mp4" />
       </video>
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-[46vh] bg-[linear-gradient(180deg,rgba(179,229,255,0.72)_0%,rgba(103,199,255,0.38)_48%,transparent_100%)] mix-blend-screen"></div>
+      <div className="pointer-events-none absolute inset-x-0 top-0 h-[58vh] bg-[linear-gradient(180deg,rgba(9,24,32,0.72)_0%,rgba(20,55,70,0.54)_42%,rgba(28,81,104,0.22)_72%,transparent_100%)]"></div>
       <div className="pointer-events-none absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-t from-navy via-navy/55 to-transparent"></div>
 
       <div className="relative z-10 mx-auto flex min-h-[calc(100vh-7rem)] w-full max-w-6xl flex-col items-center justify-center text-center">
         <FadeIn className="mx-auto w-full max-w-xs space-y-5 sm:max-w-none sm:space-y-7 md:space-y-9">
-          <div className="space-y-4 md:space-y-6">
-            <h1 className="mx-auto relative">
-              <button
-                onClick={handleLogoClick}
-                className="relative cursor-pointer bg-transparent border-0 p-0"
-                style={{ opacity: heroLogoOpacity }}
-              >
-                <img
-                  src={heroTitleImg}
-                  alt="Cultivator"
-                  className={`mx-auto h-auto w-[min(82vw,19rem)] drop-shadow-[0_12px_35px_rgba(0,0,0,0.5)] sm:w-[min(78vw,30rem)] md:w-[min(72vw,42rem)] lg:w-[min(66vw,48rem)]`}
-                  fetchPriority="high"
-                />
-                {ripplePositions.map(ripple => (
-                  <span
-                    key={ripple.id}
-                    className="absolute rounded-full border-2 border-tealblue/40 animate-ping pointer-events-none"
-                    style={{
-                      left: ripple.x,
-                      top: ripple.y,
-                      transform: 'translate(-50%, -50%)',
-                      width: '100px',
-                      height: '100px',
-                    }}
-                  />
-                ))}
-              </button>
-            </h1>
-            <p className="mx-auto max-w-[21ch] text-[1.35rem] font-extrabold leading-tight tracking-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)] sm:max-w-[32ch] sm:text-2xl md:max-w-4xl md:text-4xl">
-              The Next Generation <span className="text-sunset-orange">of Smart Aquaculture Technology.</span>
-            </p>
-            <div className="mx-auto min-h-24 w-full max-w-xs sm:min-h-28 sm:max-w-md md:min-h-32">
-              <div key={currentMetric.label} className="animate-ghost-metric text-center">
-                <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-200/90">{currentMetric.label}</p>
-                <p className="mt-1 text-4xl font-extrabold tracking-tight text-white drop-shadow-[0_8px_30px_rgba(0,0,0,0.45)] sm:mt-2 sm:text-6xl md:text-7xl">
-                  {currentMetric.value}
+          <div className="relative mx-auto w-full max-w-5xl px-2 py-2 sm:px-6 sm:py-4">
+            <div className="pointer-events-none absolute left-[calc(50%-50vw)] right-[calc(50%-50vw)] top-[-4.5rem] bottom-[-3rem] bg-[radial-gradient(circle_at_50%_28%,rgba(137,213,255,0.2)_0%,rgba(103,199,255,0.12)_22%,transparent_48%),radial-gradient(ellipse_at_50%_18%,rgba(223,245,255,0.14)_0%,rgba(103,199,255,0.08)_34%,transparent_58%),radial-gradient(ellipse_at_center,rgba(9,24,32,0.66)_0%,rgba(20,55,70,0.46)_52%,rgba(28,81,104,0.18)_82%,transparent_100%)] blur-sm" aria-hidden="true"></div>
+
+            <div className="relative space-y-4 md:space-y-6">
+              <div className="space-y-4 md:space-y-6">
+                <h1 className="mx-auto relative">
+                  <button
+                    onClick={handleLogoClick}
+                    className="relative cursor-pointer bg-transparent border-0 p-0"
+                    style={{ opacity: heroLogoOpacity }}
+                  >
+                    <img
+                      src={heroTitleImg}
+                      alt="Cultivator"
+                      className={`mx-auto h-auto w-[min(82vw,19rem)] drop-shadow-[0_12px_35px_rgba(0,0,0,0.5)] sm:w-[min(78vw,30rem)] md:w-[min(72vw,42rem)] lg:w-[min(66vw,48rem)]`}
+                      fetchPriority="high"
+                    />
+                    {ripplePositions.map(ripple => (
+                      <span
+                        key={ripple.id}
+                        className="absolute rounded-full border-2 border-tealblue/40 animate-ping pointer-events-none"
+                        style={{
+                          left: ripple.x,
+                          top: ripple.y,
+                          transform: 'translate(-50%, -50%)',
+                          width: '100px',
+                          height: '100px',
+                        }}
+                      />
+                    ))}
+                  </button>
+                </h1>
+                <p className="mx-auto max-w-[21ch] text-[1.35rem] font-extrabold leading-tight tracking-tight text-white drop-shadow-[0_4px_24px_rgba(0,0,0,0.55)] sm:max-w-[32ch] sm:text-2xl md:max-w-4xl md:text-4xl">
+                  The Next Generation <span className="text-sunset-orange">of Smart Aquaculture Technology.</span>
                 </p>
-                <p className="mt-3 text-sm font-light text-white/60 tracking-wide md:text-base">{currentMetric.text}</p>
+                <div className="mx-auto min-h-24 w-full max-w-xs sm:min-h-28 sm:max-w-md md:min-h-32">
+                  <div key={currentMetric.label} className="animate-ghost-metric text-center">
+                    <p className="text-xs font-bold uppercase tracking-[0.22em] text-orange-200/90">{currentMetric.label}</p>
+                    <p className="mt-1 text-4xl font-extrabold tracking-tight text-white drop-shadow-[0_8px_30px_rgba(0,0,0,0.45)] sm:mt-2 sm:text-6xl md:text-7xl">
+                      {currentMetric.value}
+                    </p>
+                    <p className="mt-3 text-sm font-light text-white/60 tracking-wide md:text-base">{currentMetric.text}</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mx-auto min-h-10 w-full max-w-xs sm:min-h-16 sm:max-w-none md:min-h-20">
+                <p className="mx-auto max-w-[26ch] text-sm font-semibold leading-snug text-white/88 drop-shadow-[0_4px_18px_rgba(0,0,0,0.35)] sm:hidden">
+                  Prevent aerator failure before it costs a harvest.
+                </p>
+                <p className="mx-auto hidden max-w-[34ch] text-lg font-medium leading-relaxed text-white/88 sm:block md:max-w-3xl md:text-xl">
+                  Cultivator helps shrimp farms prevent aerator failure, protect harvest value, and turn emergency maintenance into predictable operating savings.
+                </p>
+              </div>
+
+              <div className="mx-auto flex w-full max-w-xs flex-col gap-3 pt-1 sm:max-w-none sm:flex-row sm:justify-center">
+                <CTAButton href="#problem" className="w-full sm:w-auto">
+                  Learn more <ChevronRight className="h-5 w-5" />
+                </CTAButton>
               </div>
             </div>
-          </div>
-
-          <div className="mx-auto min-h-10 w-full max-w-xs sm:min-h-16 sm:max-w-none md:min-h-20">
-            <p className="mx-auto max-w-[26ch] text-sm font-semibold leading-snug text-white/88 drop-shadow-[0_4px_18px_rgba(0,0,0,0.35)] sm:hidden">
-              Prevent aerator failure before it costs a harvest.
-            </p>
-            <p className="mx-auto hidden max-w-[34ch] text-lg font-medium leading-relaxed text-white/88 sm:block md:max-w-3xl md:text-xl">
-              Cultivator helps shrimp farms prevent aerator failure, protect harvest value, and turn emergency maintenance into predictable operating savings.
-            </p>
-          </div>
-
-          <div className="mx-auto flex w-full max-w-xs flex-col gap-3 pt-1 sm:max-w-none sm:flex-row sm:justify-center">
-            <CTAButton href="#problem" className="w-full sm:w-auto">
-              Learn more <ChevronRight className="h-5 w-5" />
-            </CTAButton>
           </div>
 
           <div className="mx-[calc(50%-50vw)] mt-2 w-screen">

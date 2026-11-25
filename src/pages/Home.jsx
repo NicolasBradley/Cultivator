@@ -360,9 +360,9 @@ const Hero = () => {
   const [ripplePositions, setRipplePositions] = useState([]);
 
   const metrics = [
-    { label: 'Pilot Farms', value: '3+', text: 'Committed farm partners' },
-    { label: 'Projected ROI', value: '12 mo', text: 'Target payback window' },
-    { label: 'Market Size', value: '$800M', text: 'Global hardware TAM' },
+    { label: 'Farmers Reached', value: '35+', text: 'Across 4 countries' },
+    { label: 'Potential Aerators', value: '1,000+', text: 'Validated farmer network' },
+    { label: 'Signed Pilots', value: '9', text: 'Including 3 paid pilots' },
   ];
 
   const currentMetric = metrics[activeMetric];
@@ -909,7 +909,7 @@ const SocialProof = () => (
         <FadeIn>
           <div className="mx-auto mb-12 max-w-3xl text-center">
             <h2 className="mb-6 text-3xl font-bold text-white md:text-5xl">Credibility from the Field.</h2>
-            <p className="text-xl text-lightgrey">Cultivator is combining startup momentum with direct farmer validation and Taiwan-based technical support.</p>
+            <p className="text-xl text-lightgrey">Cultivator is combining startup momentum with direct farmer validation, signed pilots, and partner traction across Asia.</p>
           </div>
         </FadeIn>
 
@@ -924,16 +924,24 @@ const SocialProof = () => (
             <LiquidGlassCard className="h-full border-l-4 border-l-sunset-orange">
               <div className="mb-8 grid grid-cols-2 gap-4">
                 <div>
-                  <p className="text-5xl font-extrabold text-white">5</p>
-                  <p className="mt-1 text-lightgrey">Farmers approached</p>
+                  <p className="text-5xl font-extrabold text-white">35+</p>
+                  <p className="mt-1 text-lightgrey">Farmers reached</p>
                 </div>
                 <div>
-                  <p className="text-5xl font-extrabold text-sunset-orange">3</p>
-                  <p className="mt-1 text-lightgrey">Committed to pilot</p>
+                  <p className="text-5xl font-extrabold text-sunset-orange">9</p>
+                  <p className="mt-1 text-lightgrey">Signed pilots</p>
+                </div>
+                <div>
+                  <p className="text-5xl font-extrabold text-white">3</p>
+                  <p className="mt-1 text-lightgrey">Paid pilots</p>
+                </div>
+                <div>
+                  <p className="text-5xl font-extrabold text-sunset-orange">4</p>
+                  <p className="mt-1 text-lightgrey">Countries</p>
                 </div>
               </div>
               <p className="text-lg leading-relaxed text-lightgrey">
-                Two partners in Indonesia are ready to adopt after MVP finalization, while a Taiwan partner is working with us for localized field testing.
+                In 2 months, Cultivator reached 35+ farmers across 4 countries, identified 1,000+ potential aerators, and formed company partnerships with LanCore System and Crustea.
               </p>
               <Link
                 to="/media"
@@ -1040,9 +1048,9 @@ const Market = () => {
   ];
 
   const insights = [
-    { label: 'Aerators per pond', value: '4-8', text: 'Creates repeated monitoring demand.' },
-    { label: 'Taiwan farms', value: '~12k', text: 'Nearby access for installation and testing.' },
-    { label: 'B2B2F launch', value: '2028', text: 'After pilot and MVP validation.' },
+    { label: 'Potential aerators', value: '1,000+', text: 'Identified through farmer validation.' },
+    { label: 'Company partners', value: '2', text: 'LanCore System and Crustea.' },
+    { label: 'Countries validated', value: '4', text: 'Early traction across Asian markets.' },
   ];
 
   return (
@@ -1056,7 +1064,7 @@ const Market = () => {
         <FadeIn>
           <div className="mx-auto mb-16 max-w-3xl text-center">
             <h2 className="mb-6 text-3xl font-bold text-white md:text-5xl">A Scalable Solution.</h2>
-            <p className="text-xl text-lightgrey">Taiwan shrimp market ~$507M. ~12,000 farms using 4-8 aerators per pond.</p>
+            <p className="text-xl text-lightgrey">35+ farmers across 4 countries already represent 1,000+ potential aerators for early deployment.</p>
           </div>
         </FadeIn>
 
@@ -1168,13 +1176,13 @@ const Roadmap = () => {
       label: 'Pilot',
       range: 'Months 1-3',
       status: 'Current',
-      farms: 3,
+      farms: 9,
       icon: Rocket,
       color: 'sunset-orange',
       items: [
         { time: 'Month 1', title: 'Prototype Finalization', text: 'Finalize device, build pilot units, waterproof case, confirm farms.' },
-        { time: 'Month 2', title: 'Field Deployment', text: 'Install devices, collect data, test alerts, gather farmer feedback.' },
-        { time: 'Month 3', title: 'Validation', text: 'Analyze results, improve product, prepare pilot report.' },
+        { time: 'Month 2', title: 'Pilot Traction', text: 'Secure 9 signed pilots, including 3 paid pilots, across 4 countries.' },
+        { time: 'Month 3', title: 'Validation', text: 'Validate 1,000+ potential aerators and formalize partner channels.' },
       ],
     },
     {
@@ -1185,7 +1193,7 @@ const Roadmap = () => {
       icon: Handshake,
       color: 'sunset-skyblue',
       items: [
-        { time: '2026', title: 'Final MVP', text: 'Final MVP and pilot farms reaching 50 farmers.' },
+        { time: '2026', title: 'Final MVP', text: 'Final MVP and field network expanded from 35+ farmers.' },
         { time: '2027', title: 'Precision Prototype', text: 'Precision prototype deployed across 50 farms.' },
         { time: '2028', title: 'B2B2F Launch', text: '200 farmers and expansion into Southeast Asia.' },
       ],
@@ -1220,13 +1228,13 @@ const Roadmap = () => {
   }, []);
 
   return (
-    <section id="roadmap" ref={sectionRef} className="relative overflow-hidden px-4 py-16 sm:py-24">
-      <div className="absolute inset-0 z-0">
+    <section id="roadmap" ref={sectionRef} className="relative overflow-hidden bg-navy px-4 py-12 sm:py-20 md:bg-transparent md:py-24">
+      <div className="absolute inset-0 z-0 hidden md:block">
         <img src={shrimpFarmImg} alt="" className="h-full w-full object-cover opacity-[0.12] mix-blend-luminosity" loading="lazy" />
         <div className="absolute inset-x-0 top-0 h-32 bg-linear-to-b from-navy to-transparent"></div>
         <div className="absolute inset-x-0 bottom-0 h-32 bg-linear-to-t from-navy to-transparent"></div>
       </div>
-      <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(circle_at_center,rgba(85,212,255,0.08),transparent_45%)]"></div>
+      <div className="absolute inset-0 pointer-events-none hidden bg-[radial-gradient(circle_at_center,rgba(85,212,255,0.08),transparent_45%)] md:block"></div>
 
       <div className="relative z-10 mx-auto max-w-6xl">
         <FadeIn>
@@ -1257,7 +1265,7 @@ const Roadmap = () => {
               const isExpanded = activePhase === index;
 
               return (
-                <FadeIn key={phase.label} delay={index * 120} className="roadmap-phase-item min-w-0 shrink-0 md:h-full">
+                <div key={phase.label} className="roadmap-phase-item min-w-0 shrink-0 md:h-full">
                   <button
                     onClick={() => setActivePhase(isExpanded ? null : index)}
                     className={`roadmap-phase-card group relative w-full overflow-hidden rounded-2xl border bg-white/4 p-4 text-left transition-[transform,border-color,background-color,box-shadow] duration-200 ease-out md:h-full md:rounded-3xl md:p-3 ${
@@ -1300,7 +1308,7 @@ const Roadmap = () => {
 
                     <div className={`pointer-events-none absolute inset-0 rounded-2xl bg-gradient-to-br from-${phase.color}/10 to-transparent transition-opacity duration-200 md:rounded-3xl ${isActive ? 'opacity-100' : 'opacity-0'}`} />
                   </button>
-                </FadeIn>
+                </div>
               );
             })}
           </div>
@@ -1343,7 +1351,7 @@ const SDGImpact = () => {
       img: sdg1Img,
       alt: 'SDG 2 Zero Hunger',
       headline: 'Zero Hunger',
-      metric: 'Supporting 50+ farmers by 2026',
+      metric: 'Reached 35+ farmers across 4 countries',
       text: 'Reducing avoidable crop loss protects local protein supply and strengthens small farm resilience.',
     },
     {

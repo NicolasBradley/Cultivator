@@ -1,7 +1,9 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import HomePage from './pages/Home';
 import MediaPage from './pages/Media';
+import BrandPage from './pages/Brand';
+import V2Page from './pages/V2';
 
 const SITE_URL = 'https://cultivator.vercel.app';
 
@@ -141,7 +143,12 @@ const setMeta = (selector, attribute, value) => {
 
 const ScrollToTop = () => {
   const { pathname } = useLocation();
+  const lastPath = useRef(pathname);
   useEffect(() => {
+    // Only when moving between pages, never on first load/reload (pages may restore their own position).
+    // Comparing paths keeps this correct even when effects run twice in development.
+    if (lastPath.current === pathname) return;
+    lastPath.current = pathname;
     window.scrollTo(0, 0);
   }, [pathname]);
   return null;
@@ -211,6 +218,8 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/media" element={<MediaPage />} />
+        <Route path="/brand" element={<BrandPage />} />
+        <Route path="/v2" element={<V2Page />} />
         <Route path="*" element={<HomePage />} />
       </Routes>
     </BrowserRouter>

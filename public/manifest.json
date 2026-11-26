@@ -4,8 +4,8 @@
   "description": "IoT monitoring platform for shrimp farm aerators. Detect failures early, protect harvest value.",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#222a5c",
-  "theme_color": "#ff9110",
+  "background_color": "#FFFFFF",
+  "theme_color": "#FF802E",
   "orientation": "portrait-primary",
   "categories": ["agriculture", "technology", "iot"],
   "icons": [
@@ -41,7 +41,7 @@
       "name": "Investor Page",
       "short_name": "Invest",
       "description": "View investment opportunities",
-      "url": "/investor",
+      "url": "/#ask",
       "icons": [
         {
           "src": "/investor-og.svg",

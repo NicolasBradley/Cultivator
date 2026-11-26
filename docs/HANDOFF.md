@@ -4,6 +4,8 @@ Handoff from Claude Code to the next agent (Codex). Read this first, then `docs/
 
 Last updated: 25 Nov 2026.
 
+Production update, 26 Nov 2026: the owner approved the Night Shift redesign as the main homepage. `src/pages/V2.jsx` now serves `/` and `/v2`; the previous `Home.jsx` is preserved. Production deploys from `redesign/night-shift-v2` to `https://cultivatortech.com`. The deck and contact links now use the original homepage's PDF and public contact details. The remaining notes below describe the earlier handoff state.
+
 ---
 
 ## 1. What this project is

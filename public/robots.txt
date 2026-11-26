@@ -6,7 +6,7 @@ Crawl-delay: 1
 # Disallow: /private/
 # Disallow: /admin/
 
-Sitemap: https://cultivator.vercel.app/sitemap.xml
+Sitemap: https://cultivatortech.com/sitemap.xml
 
 # Additional SEO hints
-# Host: https://cultivator.vercel.app
+# Host: https://cultivatortech.com

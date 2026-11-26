@@ -1,18 +1,17 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
-import HomePage from './pages/Home';
 import MediaPage from './pages/Media';
 import BrandPage from './pages/Brand';
 import V2Page from './pages/V2';
 
-const SITE_URL = 'https://cultivator.vercel.app';
+const SITE_URL = 'https://cultivatortech.com';
 
 const routeSeo = {
   '/': {
-    title: 'Cultivator | Cultivator Smart Aquaculture IoT',
+    title: 'Cultivator | Smart Aerator Monitoring for Shrimp Farms',
     description:
-      'Cultivator builds Cultivator, an IoT monitoring platform for shrimp farm aerators with pilot traction, partner momentum, and a clear smart aquaculture investment opportunity.',
-    keywords: 'Cultivator, Cultivator, aquaculture IoT, shrimp farming, aerator monitoring, smart aquaculture, Taiwan startup, agritech investment',
+      'Cultivator monitors shrimp farm aerators and water quality, with LINE and WhatsApp alerts to help farmers catch failures early and protect their harvest.',
+    keywords: 'Cultivator, aquaculture IoT, shrimp farming, aerator monitoring, smart aquaculture, Taiwan startup, agritech investment',
     image: `${SITE_URL}/cultivator-og.png`,
     twitterCard: 'summary_large_image',
     schemaType: 'organization',
@@ -199,11 +198,6 @@ const SEOManager = () => {
       schemas.push(structuredData.organization);
     }
 
-    // Always inject FAQ on homepage
-    if (pathname === '/') {
-      schemas.push(structuredData.faq);
-    }
-
     injectStructuredData(schemas);
   }, [pathname]);
 
@@ -216,11 +210,11 @@ export default function App() {
       <ScrollToTop />
       <SEOManager />
       <Routes>
-        <Route path="/" element={<HomePage />} />
+        <Route path="/" element={<V2Page />} />
         <Route path="/media" element={<MediaPage />} />
         <Route path="/brand" element={<BrandPage />} />
         <Route path="/v2" element={<V2Page />} />
-        <Route path="*" element={<HomePage />} />
+        <Route path="*" element={<V2Page />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,28 +1,26 @@
 import { useEffect, useRef, useState } from 'react';
-import { Activity, ArrowUpRight, BellRing, Ear, Footprints, Mail, Plug, Timer, Waves, Wind } from 'lucide-react';
+import { Activity, ArrowUpRight, BellRing, Download, Droplets, Footprints, Mail, Play, Plug, Timer, Waves, Wind, Zap, ZapOff } from 'lucide-react';
 import ContourPattern from '../../components/ContourPattern';
 import { AeratorFront, AeratorGlyph, DeviceOnMotor, ShrimpGlyph, Waveform } from './art';
 import crustea from '../../assets/carousel/crustea.png';
 import lancore from '../../assets/carousel/Lancore_System.png';
-import fubon from '../../assets/carousel/fubon insurane.png';
 import sankina from '../../assets/carousel/sankina_aquaculture.jpeg';
 import hult from '../../assets/carousel/Hult_International_Business_School_logo.png';
 import nthu from '../../assets/carousel/nthulogo.png';
 import imba from '../../assets/carousel/IMBA.png';
-import pioneer from '../../assets/carousel/pioneer group logo.png';
-import wisesemi from '../../assets/carousel/wisesemi_technology_coporation_logo.jpeg';
-import hungstar from '../../assets/carousel/hung star logo.jpeg';
+import maxmar from '../../assets/carousel/maxmar.webp';
+import nthuGarage from '../../assets/carousel/nthu-garage.webp';
 import teamPond from '../../assets/v2/team-pond.jpg';
 import fransPic from '../../assets/v2/frans.jpg';
 import danielPic from '../../assets/v2/daniel.jpg';
-import jaiPic from '../../assets/v2/jai.jpg';
 import jasonPic from '../../assets/v2/jason.jpg';
 import installPic from '../../assets/v2/device-install.webp';
 import aeratorPic from '../../assets/v2/aerator-real.webp';
+import deckCover from '../../assets/v2/deck-cover-proposal.webp';
 import AsciiImg from './AsciiImg';
 import { LQIP } from './lqip';
 import { smooth, useProgress, useStageSizing } from './scroll';
-import { CONTACT, PITCH_DECK } from './contact';
+import { CONTACT, DECK } from './contact';
 
 // Chapter scenes for /v2. Each scene lives inside <section data-scene id=…> which carries --e / --p (see scroll.js).
 // Sticky scenes pin for (h − 1) screens and play their timeline on --p.
@@ -169,35 +167,41 @@ export function LifeScene() {
       <div className="relative z-10 mx-auto mt-auto w-full max-w-6xl px-6 pb-16" style={rv()}>
         <Eyebrow>21:00 · Beneath the wheel</Eyebrow>
         <H2 className="max-w-[16ch]">Under every wheel, a whole harvest breathes.</H2>
-        <p className="mt-4 max-w-[38ch] text-[18px] opacity-90">About 1.8 tonnes of shrimp per pond depend on that one machine never stopping.</p>
+        <p className="mt-4 max-w-[38ch] text-[18px] opacity-90">Up to US$50,000 of shrimp in a single pond depend on that one machine never stopping.</p>
       </div>
     </Stage>
   );
 }
 
-// 23:00 — fragile ---------------------------------------------------------------------------------
+// 23:00 — how farmers cope now (deck p.6) -----------------------------------------------------------
+const COPE = [
+  ['3 AM', 'Walk the ponds at night', 'Someone checks every aerator by hand. People miss things, and every visit is a biosecurity risk.', Footprints],
+  ['Too much', 'Run every aerator all day', 'Safe for the shrimp, but aerators are the biggest electricity cost on the farm.', Zap],
+  ['Too little', 'Cut back to save power', 'The bill goes down. So does the oxygen, and the farmer finds out from dead shrimp.', ZapOff],
+];
+
 export function FragileScene() {
   return (
     <div className="mx-auto flex min-h-svh max-w-6xl flex-col justify-center px-6 py-24">
       <div style={rv()}>
         <Eyebrow>23:00 · The night shift</Eyebrow>
-        <H2 className="max-w-[14ch]">Shrimp farming is fragile.</H2>
+        <H2 className="max-w-[16ch]">How farmers cope now.</H2>
+        <p className="mt-4 max-w-[40ch] text-[18px] opacity-90">None of these deals with the machine itself.</p>
       </div>
-      <div className="mt-10 grid gap-4 md:grid-cols-2">
-        <div className="rounded-[24px] p-7" style={{ ...tint(7), ...rv(0.1) }}>
-          <p className="text-[44px] font-bold tracking-[-0.03em] md:text-[56px]">24/7</p>
-          <p className="opacity-85">monitoring is required, every night of the crop.</p>
-        </div>
-        <div className="rounded-[24px] p-7" style={{ ...tint(7), ...rv(0.2) }}>
-          <p className="text-[44px] font-bold tracking-[-0.03em] md:text-[56px]">1 failure</p>
-          <p className="opacity-85">in a cycle can wipe out the harvest.</p>
-        </div>
+      <div className="mt-10 grid gap-4 md:grid-cols-3">
+        {COPE.map(([tag, title, body, Icon], i) => (
+          <div key={title} className="rounded-[24px] p-6 md:p-7" style={{ ...tint(7), ...rv(0.1 + i * 0.08) }}>
+            <p className="flex items-center gap-2 text-[12px] font-semibold uppercase tracking-[0.08em] text-[#FF802E]" style={{ fontFamily: MONO }}>
+              <Icon size={14} aria-hidden="true" /> {tag}
+            </p>
+            <p className="mt-4 text-[22px] font-bold leading-tight tracking-[-0.02em] md:text-[26px]">{title}</p>
+            <p className="mt-3 text-[15px] leading-relaxed opacity-85">{body}</p>
+          </div>
+        ))}
       </div>
-      <p className="mt-12 text-[13px] uppercase tracking-[0.08em] opacity-75" style={{ fontFamily: MONO, ...rv(0.3) }}>How farmers check today</p>
-      <div className="mt-4 grid gap-4 md:grid-cols-2">
-        <div className="flex items-center gap-4" style={rv(0.35)}><span className="grid h-12 w-12 place-items-center rounded-full" style={tint(10)}><Ear size={20} /></span>Listening for the motor</div>
-        <div className="flex items-center gap-4" style={rv(0.42)}><span className="grid h-12 w-12 place-items-center rounded-full" style={tint(10)}><Footprints size={20} /></span>Walking the ponds at night</div>
-      </div>
+      <p className="mt-8 max-w-[56ch] text-[15px] opacity-80" style={rv(0.35)}>
+        About 90% of shrimp farmers are smallholders. Most check their ponds by hand every night and rely on experience.
+      </p>
     </div>
   );
 }
@@ -218,13 +222,13 @@ export function FailureScene() {
         <div>
           <Eyebrow>02:13 · Pond 07</Eyebrow>
           <H2>The wheel stops.</H2>
-          <p className="mt-4 max-w-[32ch] text-[17px] opacity-90" style={{ opacity: `calc(0.9 * ${seg(0.12, 0.25)})` }}>A $300 machine fails in the dark. Nobody hears it.</p>
+          <p className="mt-4 max-w-[32ch] text-[17px] opacity-90" style={{ opacity: `calc(0.9 * ${seg(0.12, 0.25)})` }}>A US$300 machine fails in the dark. Nobody hears it.</p>
           <div className="mt-4 md:mt-8" style={{ opacity: seg(0.3, 0.4) }}>
-            <Live id="failure" format={(p) => `−$${Math.round(smooth(0.35, 0.92, p) * 10000).toLocaleString('en-US')}`} className="block text-[52px] font-bold tabular-nums tracking-[-0.04em] text-[#FF802E] md:text-[76px]" />
-            <p className="text-[15px] opacity-85">of shrimp lost · <Live id="failure" format={clock} className="tabular-nums" style={{ fontFamily: MONO }} /></p>
+            <Live id="failure" format={(p) => `−US$${Math.round(smooth(0.35, 0.92, p) * 50000).toLocaleString('en-US')}`} className="block text-[40px] font-bold tabular-nums tracking-[-0.04em] text-[#FF802E] md:text-[68px]" />
+            <p className="text-[15px] opacity-85">of shrimp in one pond, in about an hour · <Live id="failure" format={clock} className="tabular-nums" style={{ fontFamily: MONO }} /></p>
           </div>
           <p className="mt-4 text-[18px] font-semibold md:mt-8 md:text-[24px]" style={{ opacity: seg(0.86, 0.96), transform: `translateY(calc((1 - ${seg(0.86, 0.96)}) * 20px))` }}>
-            Industry-wide: −$1.8 million, every day.
+            One stopped aerator can cost a whole pond.
           </p>
         </div>
         <div className="grid gap-3">
@@ -248,14 +252,14 @@ export function FailureScene() {
 }
 
 // 02:13 — the gap -------------------------------------------------------------------------------
-const GAP = 'Industry monitors the water. Who watches the machine that keeps the shrimp alive?'.split(' ');
+const GAP = 'The industry monitors the water. Who looks after the machine that keeps the shrimp alive?'.split(' ');
 
 export function GapScene() {
   return (
     <div className="mx-auto flex min-h-svh max-w-6xl items-center px-6 py-24">
       <p className="text-[40px] font-bold leading-[1.04] tracking-[-0.035em] md:text-[76px]">
         {GAP.map((w, i) => (
-          <span key={i} style={{ opacity: `clamp(0.12, calc(var(--e) * ${GAP.length * 1.5} - ${i}), 1)`, color: i >= 4 ? ORANGE : undefined }}>
+          <span key={i} style={{ opacity: `clamp(0.12, calc(var(--e) * ${GAP.length * 1.5} - ${i}), 1)`, color: i >= 5 ? ORANGE : undefined }}>
             {w}{' '}
           </span>
         ))}
@@ -269,17 +273,16 @@ const STEPS = [
   ['Turn', 0, 0.28],
   ['Clip on', 0.3, 0.5],
   ['Detect', 0.55, 0.7],
-  ['Alert', 0.7, 1],
+  ['LINE alert', 0.7, 1],
 ];
 
 export function DeviceScene() {
   const current = useRef({ amp: 0.6, spike: 0 });
-  const vib = useRef({ amp: 0.5, spike: 0 });
+  const oxy = useRef({ amp: 0.45, spike: 0 });
   const [fixed, setFixed] = useState(false);
   useProgress('device', (p) => {
     const s = smooth(0.58, 0.66, p) * (1 - smooth(0.8, 0.88, p));
     current.current.spike = s;
-    vib.current.spike = s;
     setFixed(p > 0.86);
   });
   return (
@@ -287,8 +290,8 @@ export function DeviceScene() {
       <div className="mx-auto grid w-full max-w-6xl items-center gap-8 px-6 md:grid-cols-[1fr_1.2fr] md:gap-12">
         <div>
           <Eyebrow>02:14 · Cultivator</Eyebrow>
-          <H2>Clip it on. It listens for you.</H2>
-          <p className="mt-4 hidden max-w-[34ch] text-[17px] opacity-90 md:block">A small sensor that fits any paddlewheel aerator. It reads the motor's current and vibration, and alerts your phone the moment something's wrong.</p>
+          <H2>We watch the machine. You get the message.</H2>
+          <p className="mt-4 hidden max-w-[34ch] text-[17px] opacity-90 md:block">A US$10 current sensor clamps onto each aerator's cable inside the existing electrical box: no cable cut, nothing in the pond replaced. The moment an aerator stops, the farmer gets a message on LINE or WhatsApp, in their own language.</p>
           <ol className="mt-5 grid grid-cols-4 md:mt-8 gap-2 text-[12px] font-semibold uppercase tracking-[0.06em]" style={{ fontFamily: MONO }}>
             {STEPS.map(([label, a, b], i) => (
               <li key={label} className="border-t-2 pt-2" style={{ borderColor: 'currentColor', opacity: `calc(0.3 + 0.7 * ${seg(a, Math.min(b, a + 0.08))})` }}>
@@ -297,12 +300,12 @@ export function DeviceScene() {
             ))}
           </ol>
           <div className="mt-4 flex flex-wrap gap-2 text-[13px] font-semibold md:mt-6">
-            <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={tint(10)}><Plug size={14} /> Plug and play</span>
-            <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={tint(10)}><Timer size={14} /> ~10 min install</span>
+            <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={tint(10)}><Plug size={14} /> No cable cut</span>
+            <span className="inline-flex items-center gap-2 rounded-full px-3 py-1.5" style={tint(10)}><Timer size={14} /> Under 10 min to fit</span>
           </div>
           <figure className="mt-6 hidden items-center gap-4 md:flex" style={{ opacity: seg(0.4, 0.5), transform: `translateY(calc((1 - ${seg(0.4, 0.5)}) * 16px))` }}>
-            <AsciiImg src={installPic} lqip={LQIP.install} alt="Cultivator sensor being clipped onto a real aerator gearbox" className="h-24 w-24 shrink-0 rounded-full ring-2 ring-[#FF802E]" imgClassName="h-full w-full object-cover" />
-            <figcaption className="max-w-[22ch] text-[13px] opacity-85">The real thing: clipped under the motor of a pilot farm's aerator.</figcaption>
+            <AsciiImg src={installPic} lqip={LQIP.install} alt="An early Cultivator prototype being fitted on a pilot farm aerator" className="h-24 w-24 shrink-0 rounded-full ring-2 ring-[#FF802E]" imgClassName="h-full w-full object-cover" />
+            <figcaption className="max-w-[22ch] text-[13px] opacity-85">An early prototype, fitted on a pilot farm in Taiwan.</figcaption>
           </figure>
         </div>
 
@@ -326,8 +329,8 @@ export function DeviceScene() {
               <Waveform ampRef={current} kind="current" className="h-12" color={ORANGE} />
             </div>
             <div className="rounded-[14px] px-3 pb-1 pt-2" style={tint(6)}>
-              <p className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.08em] opacity-75" style={{ fontFamily: MONO }}><Waves size={12} /> Vibration</p>
-              <Waveform ampRef={vib} kind="vibration" className="h-12" color={ORANGE} />
+              <p className="flex items-center gap-1.5 text-[11px] uppercase tracking-[0.08em] opacity-75" style={{ fontFamily: MONO }}><Droplets size={12} /> Dissolved O₂</p>
+              <Waveform ampRef={oxy} kind="hum" className="h-12" color={ORANGE} />
             </div>
           </div>
 
@@ -336,10 +339,10 @@ export function DeviceScene() {
             style={{ opacity: seg(0.68, 0.74), transform: `translateY(calc((1 - ${seg(0.68, 0.78)}) * 40px))` }}
           >
             <p className="flex items-center gap-2 text-[11px] uppercase tracking-[0.08em] opacity-75" style={{ fontFamily: MONO }}>
-              <BellRing size={12} /> Cultivator · now
+              <BellRing size={12} /> LINE · Cultivator · now
             </p>
             <p className="mt-1.5 text-[15px] font-bold">{fixed ? 'Aerator 3 back online' : 'Aerator 3 stopped · Pond 07'}</p>
-            <p className="text-[13px] opacity-80">{fixed ? 'Oxygen recovering. Shrimp safe.' : 'Motor current dropped to 0 A at 02:14.'}</p>
+            <p className="text-[13px] opacity-80">{fixed ? 'Oxygen recovering. Shrimp safe.' : 'Current dropped to 0 A at 02:14. Oxygen is falling.'}</p>
           </div>
         </div>
       </div>
@@ -347,37 +350,92 @@ export function DeviceScene() {
   );
 }
 
-// 04:00 — impact ----------------------------------------------------------------------------------
+// 03:00 — see it working: the team's software walkthrough on YouTube.
+// Shows the thumbnail only; YouTube's player (privacy-enhanced domain) loads when the reader presses play.
+const DEMO = { id: 'Z1nB4kvm3vs', title: 'Cultivator Software Integration', url: 'https://youtu.be/Z1nB4kvm3vs' };
+
+export function DemoScene() {
+  const [playing, setPlaying] = useState(false);
+  return (
+    <div className="mx-auto flex min-h-svh max-w-5xl flex-col justify-center px-6 py-24">
+      <div style={rv()}>
+        <Eyebrow>03:00 · See it working</Eyebrow>
+        <H2 className="max-w-[22ch]">From the aerator to the farmer&apos;s phone.</H2>
+        <p className="mt-4 max-w-[46ch] text-[17px] opacity-85">A short walkthrough of the Cultivator app, where farmers see their aerators, alerts and logs.</p>
+      </div>
+      <div className="relative mt-10 aspect-video w-full overflow-hidden rounded-[24px] bg-black shadow-[0_20px_50px_rgb(0_0_0/0.35)]" style={rv(0.1, 30)}>
+        {playing ? (
+          <iframe
+            className="absolute inset-0 h-full w-full"
+            src={`https://www.youtube-nocookie.com/embed/${DEMO.id}?autoplay=1&rel=0&modestbranding=1`}
+            title={DEMO.title}
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+            referrerPolicy="strict-origin-when-cross-origin"
+            allowFullScreen
+          />
+        ) : (
+          <button type="button" onClick={() => setPlaying(true)} className="group absolute inset-0 h-full w-full" aria-label={`Play video: ${DEMO.title}`}>
+            <img src={`https://i.ytimg.com/vi/${DEMO.id}/maxresdefault.jpg`} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-85 transition-opacity duration-300 group-hover:opacity-100" />
+            <span className="absolute inset-0 bg-[linear-gradient(to_top,rgb(35_31_32/0.7),transparent_55%)]" />
+            <span className="absolute left-1/2 top-1/2 grid size-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-[#FF802E] sm:size-20 text-[#231F20] shadow-[0_8px_24px_rgb(0_0_0/0.35)] transition-transform duration-300 group-hover:scale-110">
+              <Play fill="currentColor" className="ml-1 size-6 sm:size-8" aria-hidden="true" />
+            </span>
+            <span className="absolute bottom-5 left-6 hidden text-left text-white sm:block">
+              <span className="block text-[11px] uppercase tracking-[0.08em] opacity-80" style={{ fontFamily: MONO }}>Video · Cultivator</span>
+              <span className="mt-1 block text-[18px] font-semibold">{DEMO.title}</span>
+            </span>
+          </button>
+        )}
+      </div>
+      <a href={DEMO.url} target="_blank" rel="noopener noreferrer" className="mt-4 inline-flex min-h-11 items-center gap-1 self-start text-[14px] underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current" style={rv(0.2)}>
+        Watch on YouTube<ArrowUpRight size={15} aria-hidden="true" />
+      </a>
+    </div>
+  );
+}
+
+// 04:00 — proof from a real farm (deck p.10): one of twelve aerators was drawing 3× its normal current ----
+const FAULTY = 6;
+
 export function ImpactScene() {
   return (
     <Stage>
       <div className="mx-auto grid w-full max-w-6xl items-center gap-10 px-6 md:grid-cols-2">
         <div>
-          <Eyebrow>04:00 · Impact</Eyebrow>
-          <H2>Fewer aerators running. More shrimp harvested.</H2>
+          <Eyebrow>04:00 · Proof from a real farm</Eyebrow>
+          <H2>On a farm test, one aerator was drawing 3× its normal current.</H2>
           <div className="mt-8 grid grid-cols-3 gap-4">
             {[
-              [(p) => `${(smooth(0.1, 0.55, p) * 27.6).toFixed(1)}%`, 'energy saved'],
-              [(p) => `${(smooth(0.2, 0.65, p) * 1.8).toFixed(1)} t`, 'more shrimp / crop'],
-              [(p) => `$${Math.round(smooth(0.3, 0.72, p) * 10).toLocaleString('en-US')}k`, 'back per harvest'],
+              [(p) => `US$${Math.round(smooth(0.1, 0.55, p) * 200)}`, 'a year of electricity wasted, for one aerator'],
+              [(p) => `US$${Math.round(smooth(0.2, 0.65, p) * 15)}`, 'to fix it, once we knew which one'],
+              [(p) => `<${Math.round(smooth(0.3, 0.72, p) * 10)} min`, 'to fit one aerator, in our own tests'],
             ].map(([fmt, label]) => (
               <div key={label}>
-                <Live id="impact" format={fmt} className="block text-[30px] font-bold tabular-nums tracking-[-0.03em] text-[#FF802E] md:text-[44px]" />
-                <p className="text-[13px] opacity-80">{label}</p>
+                <Live id="impact" format={fmt} className="block text-[28px] font-bold tabular-nums tracking-[-0.03em] text-[#FF802E] md:text-[40px]" />
+                <p className="text-[13px] leading-snug opacity-80">{label}</p>
               </div>
             ))}
           </div>
+          <p className="mt-8 max-w-[46ch] text-[14px] opacity-75">
+            <span className="font-semibold">Still to prove:</span> how the system holds up over months on a farm. Our pilots will give us that data.
+          </p>
         </div>
         <div className="grid grid-cols-4 gap-x-4 gap-y-6 md:gap-x-6 md:gap-y-8">
           {Array.from({ length: 12 }, (_, i) => (
-            <div key={i} style={[1, 6, 11].includes(i) ? { opacity: `calc(1 - ${seg(0.15, 0.55)})`, transform: `translateY(calc(${seg(0.15, 0.55)} * 24px)) scale(calc(1 - 0.4 * ${seg(0.15, 0.55)}))` } : undefined}>
+            <div key={i} className="relative">
               <div className="v2-anim" style={{ animation: `v2bob ${2.4 + (i % 4) * 0.3}s ease-in-out ${-i * 0.37}s infinite` }}>
                 <AeratorGlyph className="w-full text-white" />
               </div>
+              {i === FAULTY && (
+                <>
+                  <span className="pointer-events-none absolute -inset-2 rounded-[16px] ring-2 ring-[#FF802E]" style={{ opacity: seg(0.15, 0.3), boxShadow: '0 0 24px rgba(255,128,46,0.55)' }} />
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#FF802E] px-2 py-0.5 text-[11px] font-bold text-[#231F20]" style={{ fontFamily: MONO, opacity: seg(0.2, 0.32) }}>3×</span>
+                </>
+              )}
             </div>
           ))}
           <p className="col-span-4 text-[12px] uppercase tracking-[0.08em] opacity-75" style={{ fontFamily: MONO }}>
-            12 aerators → 9, same oxygen
+            Measured on a farm in Taiwan
           </p>
         </div>
       </div>
@@ -385,67 +443,72 @@ export function ImpactScene() {
   );
 }
 
-// 05:00 — market ------------------------------------------------------------------------------------
-const MARKET = [
-  ['$7B', 'Global aquaculture aerators'],
-  ['$1.6B', 'Shrimp aerators'],
-  ['$115M', 'Monitoring in Indonesia, Vietnam, India, Taiwan'],
-  ['$3M', '5-year reachable capture'],
-];
+// 05:00 — how we compare (deck p.11) ------------------------------------------------------------------
+const COMPARE_ROWS = ['Focus', 'Hardware', 'Price'];
+const THEM = { names: 'Aqua Exchange · Eruvaka · Hydroneo', cells: ['The pond: water, feeding, oxygen', 'A full new system for every pond', 'Leased, up to US$300 a pond a month'] };
+const US = { cells: ['The aerator itself', 'Clips onto the aerators farmers already own, any brand', 'Buy from US$750 a pond, or lease to own'] };
+
+function CompareCard({ title, sub, cells, us, style }) {
+  return (
+    <div className={`rounded-[28px] p-6 md:p-8 ${us ? 'bg-[#FF802E] text-[#231F20]' : ''}`} style={style}>
+      <p className="text-[12px] font-semibold uppercase tracking-[0.08em] opacity-75" style={{ fontFamily: MONO }}>{sub}</p>
+      <p className="mt-2 text-[28px] font-bold tracking-[-0.02em] md:text-[34px]">{title}</p>
+      <dl className="mt-6 divide-y divide-[#231F20]/12">
+        {COMPARE_ROWS.map((row, r) => (
+          <div key={row} className="grid gap-1 py-4 sm:grid-cols-[88px_1fr] sm:gap-4">
+            <dt className="pt-0.5 text-[11px] uppercase tracking-[0.08em] opacity-70" style={{ fontFamily: MONO }}>{row}</dt>
+            <dd className={`text-[17px] leading-snug ${us ? 'font-semibold' : 'opacity-85'}`}>{cells[r]}</dd>
+          </div>
+        ))}
+      </dl>
+    </div>
+  );
+}
 
 export function MarketScene() {
   return (
-    <div className="mx-auto grid min-h-svh max-w-6xl items-center gap-10 px-6 py-24 md:grid-cols-2">
-      <div className="relative mx-auto aspect-square w-[min(80vw,440px)]">
-        {MARKET.map((_, i) => (
-          <div
-            key={i}
-            className="absolute rounded-full border-[1.5px] border-[#FF802E]"
-            style={{
-              inset: `${i * 15}%`,
-              background: i === 3 ? ORANGE : 'transparent',
-              transform: `scale(clamp(0, calc(var(--e) * 1.6 - ${i * 0.15}), 1))`,
-            }}
-          />
-        ))}
+    <div className="mx-auto flex min-h-svh max-w-5xl flex-col justify-center px-6 py-24">
+      <div style={rv()}>
+        <Eyebrow>05:00 · How we compare</Eyebrow>
+        <H2 className="max-w-[20ch]">Others manage the pond. We start with the aerator.</H2>
       </div>
-      <div>
-        <div style={rv()}>
-          <Eyebrow>05:00 · Market</Eyebrow>
-          <H2>A problem worth solving.</H2>
-        </div>
-        <dl className="mt-8 grid gap-4">
-          {MARKET.map(([v, label], i) => (
-            <div key={v} className="flex items-baseline gap-4 border-b border-current/15 pb-3" style={rv(0.1 + i * 0.08, 24)}>
-              <dt className="w-[96px] text-[28px] font-bold tracking-[-0.03em] md:text-[34px]" style={{ color: i === 3 ? ORANGE : undefined }}>{v}</dt>
-              <dd className="opacity-85">{label}</dd>
-            </div>
-          ))}
-        </dl>
+      <div className="mt-10 grid gap-4 md:grid-cols-2">
+        <CompareCard title="Pond systems" sub={THEM.names} cells={THEM.cells} style={{ ...tint(7), ...rv(0.1, 30) }} />
+        <CompareCard title="Cultivator" sub="Us" cells={US.cells} us style={rv(0.18, 30)} />
       </div>
+      <a href="#contact" className="mt-6 inline-flex min-h-11 items-center gap-1 self-start text-[15px] font-semibold underline decoration-[#231F20]/30 underline-offset-4 transition-colors hover:decoration-current" style={rv(0.24)}>
+        Ask us for the full comparison<ArrowUpRight size={16} aria-hidden="true" />
+      </a>
     </div>
   );
 }
 
 // 05:30 — proof: sticky country list, cards scroll past ------------------------------------------------
 const PROOF = [
-  { country: 'Taiwan', people: ['Jason', 'Benny Chung', 'Nicholas', 'Lancore Aquaculture'], note: 'Pilot farms + hardware partner' },
-  { country: 'Indonesia', people: ['Bryan', 'JALA tech'], note: '1,000+ potential aerators' },
-  { country: 'Malaysia', people: ['Sankina Aquaculture'], note: '1,000+ potential aerators' },
-  { country: 'China', people: ['Kevin'], note: 'Field visit + farmer interviews' },
+  { country: 'Indonesia', note: 'Maxmar · Crustea', body: 'Maxmar, a large shrimp farmer, has agreed to test our finished product on a 10-pond farm in Madura (nothing is signed yet). Crustea is our aquaculture guide and launch partner.' },
+  { country: 'Taiwan', note: 'Farm tests · LanCore System', body: 'Farm visits, tests and our first paid pilots. LanCore System is our technical partner for aerator control and motor drives.' },
+  { country: 'Malaysia', note: 'Sankina Aquaculture', body: 'Partner and advisor on shrimp farming, through Managing Director Jenny Ou.' },
+  { country: 'China', note: 'Signed pilots', body: 'Pilot farms signed up to test Cultivator.' },
 ];
-const STATS = [['50+', 'farmers interviewed'], ['9', 'signed pilots'], ['3', 'paid pilots'], ['4', 'countries'], ['2', 'company partners']];
+const STATS = [['15+', 'signed pilots'], ['5', 'paid pilots'], ['4', 'countries'], ['~5,000', 'aerators across our pilots and partners']];
+const MILESTONES = [
+  ['Feb 2026', 'Cultivator starts'],
+  ['Mar 2026', 'Joins NTHU Garage'],
+  ['Apr 2026', 'Hult Prize Taiwan champion'],
+  ['May–Jul 2026', 'First paid pilots'],
+  ['Nov 2026', 'DeployAI, 2nd place'],
+  ['Nov 2026', 'Filmed for LITEON “Boldness”'],
+  ['25 Jan 2027', 'Techathon+ finals (if selected)'],
+];
 const PARTNERS = [
+  ['Maxmar', maxmar],
   ['Crustea', crustea],
   ['LanCore System', lancore],
-  ['Fubon Insurance', fubon],
   ['Sankina Aquaculture', sankina],
+  ['NTHU Garage', nthuGarage],
   ['Hult Prize', hult],
   ['NTHU', nthu],
   ['IMBA NTHU', imba],
-  ['Pioneer Group', pioneer],
-  ['WiseSemi', wisesemi],
-  ['Hung Star', hungstar],
 ];
 
 export function ProofScene() {
@@ -460,8 +523,8 @@ export function ProofScene() {
     <div className="mx-auto max-w-6xl px-6 py-28">
       <div className="grid gap-10 md:grid-cols-[1fr_1.6fr]">
         <div className="md:sticky md:top-28 md:self-start">
-          <Eyebrow>05:30 · Proof from the field</Eyebrow>
-          <H2 className="md:text-[52px]">Built with farmers, not for them.</H2>
+          <Eyebrow>05:30 · Traction and partners</Eyebrow>
+          <H2 className="md:text-[52px]">Who is working with us.</H2>
           <ul className="mt-8 space-y-1">
             {PROOF.map((p, i) => (
               <li key={p.country} className="flex items-center gap-3 text-[26px] font-bold tracking-[-0.02em] md:text-[32px]" style={{ opacity: active === i ? 1 : 0.38, transition: 'opacity 400ms ease' }}>
@@ -483,14 +546,14 @@ export function ProofScene() {
               <p className="text-[12px] uppercase tracking-[0.08em] opacity-75" style={{ fontFamily: MONO }}>{p.note}</p>
               <div>
                 <p className="text-[44px] font-bold tracking-[-0.035em] md:text-[64px]">{p.country}</p>
-                <p className="mt-2 text-[17px] opacity-85">{p.people.join(' · ')}</p>
+                <p className="mt-3 max-w-[44ch] text-[16px] leading-relaxed opacity-85">{p.body}</p>
               </div>
             </article>
           ))}
         </div>
       </div>
 
-      <div className="mt-20 grid grid-cols-2 gap-6 md:grid-cols-5">
+      <div className="mt-20 grid grid-cols-2 gap-6 md:grid-cols-4">
         {STATS.map(([v, l]) => (
           <div key={l}>
             <p className="text-[40px] font-bold tracking-[-0.035em] text-[#FF802E] md:text-[52px]">{v}</p>
@@ -498,7 +561,14 @@ export function ProofScene() {
           </div>
         ))}
       </div>
-      <p className="mt-4 text-[13px] uppercase tracking-[0.08em] opacity-75" style={{ fontFamily: MONO }}>Idea → first sales in 2 months</p>
+      <ol className="mt-10 flex gap-3 overflow-x-auto pb-2 [scrollbar-width:none]" aria-label="Milestones">
+        {MILESTONES.map(([when, what]) => (
+          <li key={when + what} className="min-w-[160px] shrink-0 rounded-[16px] p-4" style={tint(7)}>
+            <p className="text-[11px] uppercase tracking-[0.08em] opacity-70" style={{ fontFamily: MONO }}>{when}</p>
+            <p className="mt-1 text-[15px] font-semibold leading-snug">{what}</p>
+          </li>
+        ))}
+      </ol>
 
       <div className="mt-16 overflow-hidden border-y border-current/15 py-5 [mask-image:linear-gradient(to_right,transparent,#000_10%,#000_90%,transparent)]">
         <div className="v2-anim flex w-max items-center gap-14" style={{ animation: 'v2marquee 36s linear infinite' }}>
@@ -507,22 +577,24 @@ export function ProofScene() {
           ))}
         </div>
       </div>
+      <p className="mt-4 text-center text-[12px] uppercase tracking-[0.08em] opacity-70" style={{ fontFamily: MONO }}>Featured in LITEON&apos;s “Boldness” campaign · November 2026</p>
     </div>
   );
 }
 
-// 05:45 — business model ------------------------------------------------------------------------
+// 05:45 — pricing (deck p.11) -----------------------------------------------------------------------
 export function ModelScene() {
   return (
     <div className="mx-auto flex min-h-svh max-w-6xl flex-col justify-center px-6 py-24">
       <div style={rv()}>
-        <Eyebrow>05:45 · Business model</Eyebrow>
-        <H2>Hardware once. Software every year.</H2>
+        <Eyebrow>05:45 · Pricing</Eyebrow>
+        <H2>Buy it, or lease it to own.</H2>
+        <p className="mt-4 max-w-[44ch] text-[18px] opacity-90">It clips onto the aerators a farm already has, any brand. A US$10 sensor per aerator.</p>
       </div>
       <div className="mt-10 grid gap-4 md:grid-cols-2">
         {[
-          ['Hardware', '~$100', 'Cultivator device per aerator · 40% margin'],
-          ['Software', '$120 / yr', 'Monitoring, alerts and history per aerator'],
+          ['Buy', 'US$750', 'per pond, + US$10 per aerator, then US$10 a month'],
+          ['Lease-to-own', 'US$45 / mo', 'after a US$99 setup'],
         ].map(([k, v, d], i) => (
           <div key={k} className="rounded-[28px] p-8" style={{ ...rv(0.1 + i * 0.1), background: i ? ORANGE : '#231F20', color: i ? '#231F20' : '#FFFFFF' }}>
             <p className="text-[12px] uppercase tracking-[0.08em] opacity-80" style={{ fontFamily: MONO }}>{k}</p>
@@ -531,23 +603,21 @@ export function ModelScene() {
           </div>
         ))}
       </div>
-      <p className="mt-6 text-[15px] opacity-80" style={rv(0.3)}>Year 1: 90 ponds from 9 signed pilots → $58,500 revenue, $27,000 gross profit.</p>
     </div>
   );
 }
 
-// 06:00 — team ------------------------------------------------------------------------------------
+// 06:00 — team (deck p.15) ---------------------------------------------------------------------------
 const TEAM = [
-  ['Frans', 'CEO', 'Product · Strategy', fransPic, LQIP.frans],
-  ['Jason', 'COO', 'AI systems · Data', jasonPic, LQIP.jason],
-  ['Daniel', 'CMO', 'Marketing · Growth', danielPic, LQIP.daniel],
-  ['Jai-Jai', 'CTO', 'Hardware design', jaiPic, LQIP.jai],
+  ['Fransiskus Guntur', 'Overall architecture of the company', fransPic, LQIP.frans],
+  ['Daniel Ieong', 'Software and business', danielPic, LQIP.daniel],
+  ['Jason Nababan', 'Partnerships and product development', jasonPic, LQIP.jason],
 ];
 
 const ADVISORS = [
-  ['Jenny Ou', 'Managing Director, Sankina Aquaculture'],
-  ['Bagas Pramana Putra Fadhila', 'Tech lead, Sinarmas'],
-  ['Prof. Yu Wei Hsu', 'IMBA, NTHU · Business development'],
+  ['Jenny Ou', 'Managing Director, Sankina Aquaculture. Advises us on shrimp farming.'],
+  ['Bagas Pramana Putra Fadhila', 'Tech lead, Sinarmas. Advises us on technology development.'],
+  ['Prof. Yu Wei Hsu', 'IMBA, National Tsing Hua University. Advises us on business development.'],
 ];
 
 export function TeamScene() {
@@ -555,20 +625,20 @@ export function TeamScene() {
     <div className="mx-auto flex min-h-svh max-w-6xl flex-col justify-center px-6 py-24">
       <div style={rv()}>
         <Eyebrow>06:00 · Dawn</Eyebrow>
-        <H2>The team on the night shift.</H2>
-        <p className="mt-4 opacity-90">12+ years of engineering across Kaikutek, Liteon and Logitech.</p>
+        <H2>The people.</H2>
+        <p className="mt-4 max-w-[52ch] opacity-90">We are fourth-year students at National Tsing Hua University and graduate in May 2027. All three of us go full-time on Cultivator straight after.</p>
       </div>
       <div className="mt-8 overflow-hidden rounded-[28px]" style={rv(0.05, 40)}>
         <AsciiImg src={teamPond} lqip={LQIP.teamPond} alt="The Cultivator team at a pond" className="aspect-[16/7] w-full" imgClassName="h-full w-full object-cover" />
       </div>
-      <div className="mt-10 grid grid-cols-2 gap-4 md:grid-cols-4">
-        {TEAM.map(([n, r, f, pic, lq], i) => (
+      <div className="mt-10 grid gap-4 sm:grid-cols-3">
+        {TEAM.map(([n, f, pic, lq], i) => (
           <div key={n} className="group rounded-[24px] bg-[#231F20] p-5 text-white transition-transform duration-500 hover:-translate-y-1 hover:rotate-[-1deg]" style={rv(0.08 * i, 40)}>
             <div className="mb-8 grid h-14 w-14 place-items-center overflow-hidden rounded-full bg-[#FF802E] text-[18px] font-bold text-[#231F20] transition-transform duration-500 group-hover:scale-110">
               <AsciiImg src={pic} lqip={lq} alt={n} className="h-full w-full" imgClassName="h-full w-full object-cover" />
             </div>
             <p className="text-[20px] font-bold">{n}</p>
-            <p className="text-[13px] opacity-80">{r} · {f}</p>
+            <p className="text-[13px] opacity-80">{f}</p>
           </div>
         ))}
       </div>
@@ -585,61 +655,86 @@ export function TeamScene() {
   );
 }
 
-// 06:00 — the ask -----------------------------------------------------------------------------------
-const SPLIT = [
-  ['R&D + product', 35],
-  ['Operations', 30],
-  ['Manufacturing', 20],
-  ['Sales + marketing', 15],
+// 06:00 — what's next + decks + contact (deck p.14, p.16) ---------------------------------------------
+const ROADMAP = [
+  ['Now', 'Working on the bench', 'Sensing, alerts and reports'],
+  ['Next', 'A long trial in a real pond', 'Farm-ready hardware'],
+  ['By end of 2027', '150+ ponds equipped', 'Running 30+ days without a visit'],
 ];
 
 export function AskScene() {
   return (
-    <div className="mx-auto grid min-h-svh max-w-6xl items-center gap-10 px-6 py-24 md:grid-cols-[1.5fr_1fr]">
-      <div>
+    <div className="mx-auto min-h-svh max-w-6xl px-6 py-24">
       <div style={rv()}>
-        <Eyebrow>06:00 · The ask</Eyebrow>
-        <H2 className="md:text-[88px]">Deploying $1M.</H2>
-        <p className="mt-4 max-w-[40ch] text-[18px] opacity-90">To take Cultivator from 9 signed pilots to a first batch of 500–1,000 units across Southeast Asia.</p>
+        <Eyebrow>06:00 · What&apos;s next</Eyebrow>
+        <H2 className="md:text-[72px]">From the bench to the pond.</H2>
       </div>
-      <div className="mt-10 flex h-12 w-full origin-left overflow-hidden rounded-full md:h-16" style={{ transform: `scaleX(clamp(0, calc(var(--e) * 1.5 - 0.3), 1))` }}>
-        {SPLIT.map(([l, v], i) => (
-          <div key={l} className="flex shrink-0 items-center justify-center px-1 text-[12px] font-semibold tabular-nums md:px-3 md:text-[13px]" style={{ width: `${v}%`, background: ['#231F20', '#3A3536', '#FFFFFF', '#FFE6D6'][i], color: i < 2 ? '#FFFFFF' : '#231F20' }}>
-            <span className="whitespace-nowrap">{v}%</span>
-          </div>
+      <ol className="relative mt-12 grid gap-8 md:grid-cols-3 md:gap-6">
+        {/* the line the three steps sit on */}
+        <span aria-hidden="true" className="absolute bottom-2 left-[7px] top-2 w-px bg-[#231F20]/20 md:inset-x-0 md:bottom-auto md:left-0 md:top-[7px] md:h-px md:w-auto" />
+        {ROADMAP.map(([when, title, note], i) => (
+          <li key={when} className="relative pl-9 md:pl-0 md:pt-10" style={rv(0.1 + i * 0.08, 24)}>
+            <span aria-hidden="true" className={`absolute left-0 top-1 size-[15px] rounded-full border-2 border-[#231F20] md:top-0 ${i === 0 ? 'bg-[#231F20]' : 'bg-transparent'}`} />
+            <p className="text-[12px] font-semibold uppercase tracking-[0.08em] opacity-75" style={{ fontFamily: MONO }}>{when}</p>
+            <p className="mt-2 text-[24px] font-bold leading-tight tracking-[-0.02em] md:text-[28px]">{title}</p>
+            <p className="mt-1 text-[15px] opacity-75">{note}</p>
+          </li>
         ))}
-      </div>
-      <div className="mt-3 grid grid-cols-2 gap-2 text-[13px] opacity-90 md:grid-cols-4">
-        {SPLIT.map(([l, v]) => <p key={l}>{v}% · {l}</p>)}
-      </div>
-      <div className="mt-12 flex flex-wrap gap-3" style={rv(0.3)}>
-        <a href={PITCH_DECK} download="Cultivator-Pitch-Deck.pdf" className="inline-flex h-14 items-center rounded-full bg-[#231F20] px-7 text-[16px] font-semibold text-white transition-transform hover:scale-[1.03]">Download the deck</a>
-        <a href={CONTACT.conversation} className="inline-flex h-14 items-center rounded-full px-7 text-[16px] font-semibold transition-transform hover:scale-[1.03]" style={tint(12)}>Book a call</a>
-      </div>
-      <address id="contact" className="mt-10 border-t border-[#231F20]/20 pt-6 not-italic">
-        <h3 className="text-[12px] uppercase tracking-[0.08em] opacity-75" style={{ fontFamily: MONO }}>Let’s connect</h3>
-        <a href={`mailto:${CONTACT.email}`} className="mt-2 inline-flex min-h-11 items-center gap-2 text-[16px] font-semibold underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current">
-          <Mail size={18} aria-hidden="true" />
-          {CONTACT.email}
-        </a>
-        <div className="mt-2 grid grid-cols-2 gap-x-4">
-          {CONTACT.phones.map(({ name, number, href }) => (
-            <a key={name} href={href} className="flex min-h-14 flex-col justify-center text-[14px] underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current">
-              <span className="text-[12px] opacity-75">{name}</span>
-              <span className="whitespace-nowrap font-medium">{number}</span>
+      </ol>
+      <a href="#contact" className="mt-8 inline-flex min-h-11 items-center gap-1 text-[15px] font-semibold underline decoration-[#231F20]/30 underline-offset-4 transition-colors hover:decoration-current" style={rv(0.3)}>
+        Ask us about the roadmap<ArrowUpRight size={16} aria-hidden="true" />
+      </a>
+
+      <div className="mt-16 grid items-center gap-10 md:grid-cols-[1.5fr_1fr]">
+        <div>
+          <p className="max-w-[30ch] text-[26px] font-bold leading-tight tracking-[-0.02em] md:text-[34px]" style={rv(0.2)}>
+            Want to see it on one of your aerators, or follow our progress? Get in touch.
+          </p>
+
+          {/* Pitch deck download (same file as the live homepage). */}
+          <div id="decks" className="mt-8 scroll-mt-28" style={rv(0.25)}>
+            <a
+              href={DECK.href}
+              download={DECK.file}
+              className="group flex max-w-sm items-center gap-4 rounded-[18px] bg-[#231F20] p-2.5 pr-5 text-white transition-transform duration-300 hover:-translate-y-1"
+            >
+              <img src={deckCover} alt="" loading="lazy" className="h-24 w-[68px] shrink-0 rounded-[10px] object-cover" />
+              <span className="min-w-0 flex-1">
+                <span className="block text-[16px] font-semibold">{DECK.title}</span>
+                <span className="mt-1 block text-[11px] opacity-70" style={{ fontFamily: MONO }}>{DECK.meta}</span>
+              </span>
+              <Download size={18} aria-hidden="true" className="shrink-0 opacity-80 transition-transform group-hover:translate-y-0.5" />
             </a>
-          ))}
-        </div>
-        <div className="mt-3 flex flex-wrap gap-x-6">
-          {CONTACT.socials.map(({ name, href }) => (
-            <a key={name} href={href} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1 text-[14px] underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current">
-              {name}<ArrowUpRight size={15} aria-hidden="true" />
+          </div>
+
+          <div className="mt-8 flex flex-wrap gap-3" style={rv(0.3)}>
+            <a href={CONTACT.conversation} className="inline-flex h-14 items-center rounded-full bg-[#231F20] px-7 text-[16px] font-semibold text-white transition-transform hover:scale-[1.03]">Get in touch</a>
+          </div>
+          <address id="contact" className="mt-10 border-t border-[#231F20]/20 pt-6 not-italic">
+            <h3 className="text-[12px] uppercase tracking-[0.08em] opacity-75" style={{ fontFamily: MONO }}>Let’s connect</h3>
+            <a href={`mailto:${CONTACT.email}`} className="mt-2 inline-flex min-h-11 items-center gap-2 text-[16px] font-semibold underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current">
+              <Mail size={18} aria-hidden="true" />
+              {CONTACT.email}
             </a>
-          ))}
+            <div className="mt-2 grid grid-cols-2 gap-x-4">
+              {CONTACT.phones.map(({ name, number, href }) => (
+                <a key={name} href={href} className="flex min-h-14 flex-col justify-center text-[14px] underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current">
+                  <span className="text-[12px] opacity-75">{name}</span>
+                  <span className="whitespace-nowrap font-medium">{number}</span>
+                </a>
+              ))}
+            </div>
+            <div className="mt-3 flex flex-wrap gap-x-6">
+              {CONTACT.socials.map(({ name, href }) => (
+                <a key={name} href={href} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1 text-[14px] underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current">
+                  {name}<ArrowUpRight size={15} aria-hidden="true" />
+                </a>
+              ))}
+            </div>
+          </address>
         </div>
-      </address>
+        <div data-slot="ask" className="mx-auto aspect-square w-[min(56vw,300px)]" />
       </div>
-      <div data-slot="ask" className="mx-auto aspect-square w-[min(56vw,300px)]" />
     </div>
   );
 }

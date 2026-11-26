@@ -3,14 +3,13 @@ import ContourPattern from '../components/ContourPattern';
 import FarmPonds from './v2/FarmPonds';
 import { INTRO_MS, useScrollEngine, viewportHeight } from './v2/scroll';
 import IntroScreen from './v2/IntroScreen';
-import { AskScene, DeviceScene, FailureScene, FragileScene, GapScene, ImpactScene, LifeScene, MarketScene, ModelScene, ProofScene, TeamScene, WheelScene } from './v2/scenes';
+import { AskScene, DemoScene, DeviceScene, FailureScene, FragileScene, GapScene, ImpactScene, LifeScene, MarketScene, ModelScene, ProofScene, TeamScene, WheelScene } from './v2/scenes';
 import { ShrimpSymbol, WheelIcon } from './v2/art';
 import { ShrimpActor } from './v2/actor';
 import Lenis from 'lenis';
 import { ArrowUp, Menu, X } from 'lucide-react';
 import 'lenis/dist/lenis.css';
 import wordmark from '../assets/v2/wordmark-white.png';
-import { PITCH_DECK } from './v2/contact';
 
 // "Night Shift" redesign (docs/REDESIGN_CONCEPT.md). Scroll engine: ./v2/scroll.js · scenes: ./v2/scenes.jsx · art: ./v2/art.jsx
 
@@ -24,52 +23,66 @@ const TONES = {
   dawn: { bg: '#FF802E', fg: '#231F20', pattern: 5 },
 };
 
-const CHIPS = ['Problem', 'Product', 'Traction', 'Team', 'Ask'];
-const CHIP_TARGET = ['fragile', 'device', 'market', 'team', 'ask'];
+const CHIPS = ['Problem', 'Product', 'Traction', 'Team', 'Next'];
+const CHIP_TARGET = ['fragile', 'device', 'proof', 'team', 'ask'];
 
 // chip: index into CHIPS (-1 = none). wave: [amplitude, drift speed] for the background water.
 // noise: 0 clean current … 1 raw noise. Page loads as noise and settles clean; the problem chapters get noisy,
 // and the Cultivator chapter resolves it back to a clean signal (plug in → usable data).
 const CHAPTERS = [
-  { id: 'hero', noise: 0, time: '18:00', tone: 'pond', h: 1.45, chip: -1, wave: [5, 0.8] },
+  { id: 'hero', noise: 0, time: '18:00', tone: 'pond', h: 3.2, chip: -1, wave: [5, 0.8] },
   { id: 'wheel', noise: 0, time: '19:00', tone: 'dusk', h: 2.2, chip: -1, wave: [6.5, 3.5] },
   { id: 'life', noise: 0, time: '21:00', tone: 'night', h: 1.6, chip: -1, wave: [5, 2.5], blend: 1.0 },
   { id: 'fragile', noise: 0.45, time: '23:00', tone: 'night', h: 1, chip: 0, wave: [2.5, 1] },
   { id: 'failure', noise: 1, time: '02:13', tone: 'night', h: 2.6, chip: 0, wave: [1.5, 0], fail: true },
   { id: 'gap', noise: 1, time: '02:13', tone: 'night', h: 1, chip: 0, wave: [1.5, 0], fail: true },
   { id: 'device', noise: 0, time: '02:14', tone: 'night', h: 3, chip: 1, wave: [4.5, 2] },
+  { id: 'demo', noise: 0, time: '03:00', tone: 'night', h: 1, chip: 1, wave: [4, 1.5] },
   { id: 'impact', noise: 0, time: '04:00', tone: 'night', h: 3, chip: 1, wave: [4, 2] },
-  { id: 'market', noise: 0, time: '05:00', tone: 'light', h: 1, chip: 2, wave: [2.5, 1] },
+  { id: 'market', noise: 0, time: '05:00', tone: 'light', h: 1, chip: 1, wave: [2.5, 1] },
   { id: 'proof', noise: 0, time: '05:30', tone: 'light', h: 1, chip: 2, wave: [3, 1.2] },
   { id: 'model', noise: 0, time: '05:45', tone: 'light', h: 1, chip: 2, wave: [2.5, 1] },
   { id: 'team', noise: 0, time: '06:00', tone: 'dawn', h: 1, chip: 3, wave: [4, 1.5] },
   { id: 'ask', noise: 0, time: '06:00', tone: 'dawn', h: 1, chip: 4, wave: [4.5, 2] },
 ];
 
+// Hero title in title case, "Shrimp Farms" in italics, an orange scan sweeping over "Smart Aeration".
+function HeroTitle() {
+  return (
+    <h1 className="max-w-[960px] text-[clamp(27px,8.2vw,34px)] font-semibold leading-[1.12] tracking-[-0.035em] [text-wrap:balance] md:text-[clamp(44px,4.6vw,60px)]">
+      {/* A slow orange scan sweeps across "Smart Aeration", like a sensor reading the line. Ink at rest. */}
+      <span className="v2-anim v2-scan" style={{ animationDelay: `${INTRO_MS}ms` }}>Smart Aeration</span> for{' '}
+      <em className="whitespace-nowrap">Shrimp Farms</em>
+    </h1>
+  );
+}
+
 // Hero: shrimp centred over the converging-current background, pond strip at the bottom.
 // Scrolling through the (sticky) hero sinks the shrimp into the pond; the next chapter turns it into the wheel.
 function Hero({ style = 'pond' }) {
   const stageRef = useRef(null);
   const copyRef = useRef(null);
-  const [reduced] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const stripRef = useRef(null);
 
   useEffect(() => {
     const onScroll = () => {
       const r = stageRef.current.parentElement.getBoundingClientRect();
       const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - viewportHeight())));
-      copyRef.current.style.opacity = String(1 - smoothT((p - 0.25) / 0.75));
-      copyRef.current.style.transform = `translateY(${-p * 20}px)`;
+      // The hero is pinned for a long camera move (v2/FarmPonds.jsx): the words and the bottom strip clear out first.
+      const fade = style === 'pond' ? 1 - smoothT((p - 0.02) / 0.16) : 1 - smoothT((p - 0.25) / 0.75);
+      copyRef.current.style.opacity = String(fade);
+      copyRef.current.style.transform = `translateY(${-Math.min(p, 0.2) * 100}px)`;
+      if (stripRef.current) stripRef.current.style.opacity = String(style === 'pond' ? fade : 1);
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [style]);
 
   // Stacked in normal flow (nav space → mark → copy → pond) so spacing can't collide at any screen size.
   return (
     <div ref={stageRef} className="sticky top-0 flex h-svh flex-col overflow-hidden">
       <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center gap-4 pt-20 md:gap-5">
-        {style === 'pond' && <FarmPonds reduced={reduced} />}
         {/* The logo itself is drawn here by the travelling shrimp (v2/actor.jsx), so it can morph on scroll. */}
         <div data-slot="hero" className="aspect-square h-[min(40svh,70vw)] shrink-0 translate-x-[3%] translate-y-[4%] md:h-[min(40svh,340px)]" />
 
@@ -77,17 +90,18 @@ function Hero({ style = 'pond' }) {
         <p className="mb-3 text-[9px] uppercase tracking-[0.16em] opacity-55 md:mb-4 md:text-[10px]" style={{ fontFamily: MONO }}>
           Cultivate trust. Empower farmers.
         </p>
-        <h1 className="max-w-[960px] text-[clamp(27px,8.2vw,34px)] font-semibold leading-[1.12] tracking-[-0.035em] [text-wrap:balance] md:text-[clamp(44px,4.6vw,60px)]">
-          <span className="mb-2 block text-[18px] font-normal leading-snug tracking-[-0.015em] opacity-75 md:mb-3 md:text-[25px]">A smart aeration system for</span>
-          <span className="block">3.5 million<br className="md:hidden" /> smallholder farmers.</span>
-        </h1>
+        <HeroTitle />
+        <p className="mt-3 max-w-[40ch] text-[15px] leading-relaxed opacity-80 md:mt-4 md:text-[17px]">
+          Know the moment an aerator stops
+        </p>
       </div>
       </div>
 
       {/* Pond: no hard horizon. Lines bunch toward the top and fade out, so the water seems to go on forever.
           The water turns opaque further down, so the shrimp fades as it sinks. */}
-      <div className="relative h-[16svh] min-h-[84px] shrink-0 bg-[linear-gradient(to_bottom,transparent_0%,var(--v2-bg,#FF802E)_65%)]">
-        <svg viewBox="0 0 1200 100" preserveAspectRatio="none" className={`pointer-events-none absolute inset-x-0 top-0 h-16 w-full overflow-visible ${style === 'pond' ? 'text-[#FF802E]' : 'text-white'}`} aria-hidden="true">
+      {/* With the pond farm behind it, this strip is just a faint wave (the farm is the water). */}
+      <div ref={stripRef} className={`relative h-[16svh] min-h-[84px] shrink-0 ${style === 'pond' ? '' : 'bg-[linear-gradient(to_bottom,transparent_0%,var(--v2-bg,#FF802E)_65%)]'}`}>
+        <svg viewBox="0 0 1200 100" preserveAspectRatio="none" className={`pointer-events-none absolute inset-x-0 top-0 h-16 w-full overflow-visible ${style === 'pond' ? 'text-[#FF802E] opacity-20' : 'text-white'}`} aria-hidden="true">
           <g className="v2-anim" style={{ animation: 'v2swell 7s ease-in-out infinite' }}>
             <path d="M-100 36 Q50 8 200 36 T500 36 T800 36 T1100 36 T1400 36 V120 H-100Z" fill="currentColor" fillOpacity="0.06" />
             <path d="M-100 36 Q50 8 200 36 T500 36 T800 36 T1100 36 T1400 36" fill="none" stroke="currentColor" strokeOpacity="0.45" strokeWidth="1.25" vectorEffect="non-scaling-stroke" />
@@ -102,7 +116,7 @@ function Hero({ style = 'pond' }) {
           heartbeat={false}
           amp={6}
           speed={1}
-          className="absolute inset-0 h-full w-full opacity-45 [mask-image:linear-gradient(to_bottom,transparent_0%,#000_25%,#000_70%,transparent_100%)]"
+          className={`absolute inset-0 h-full w-full ${style === 'pond' ? 'opacity-10' : 'opacity-45'} [mask-image:linear-gradient(to_bottom,transparent_0%,#000_25%,#000_70%,transparent_100%)]`}
         />
         <a href="#wheel" className="absolute bottom-4 left-1/2 inline-flex min-h-11 -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full px-4 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#231F20] transition-opacity hover:opacity-70" style={{ fontFamily: MONO }}>
           <span>Scroll to dive</span>
@@ -123,6 +137,7 @@ const SCENES = {
   failure: FailureScene,
   gap: GapScene,
   device: DeviceScene,
+  demo: DemoScene,
   impact: ImpactScene,
   market: MarketScene,
   proof: ProofScene,
@@ -165,11 +180,13 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
   const [settled, setSettled] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [peek, setPeek] = useState(false);
+  const [desktop, setDesktop] = useState(() => window.matchMedia('(min-width: 1024px)').matches);
   const [collapseOffsets, setCollapseOffsets] = useState({ nav: 0, right: 0 });
   const [ind, setInd] = useState({ x: 0, w: 0 });
   const prevChip = useRef(-1);
   const light = tone.bg === '#231F20';
-  const collapsed = scrolled && settled && !menuOpen;
+  const collapsed = scrolled && settled && !menuOpen && !peek;
   const pill = light ? 'bg-[#231F20]/95 text-white ring-white/20' : 'bg-white/95 text-[#231F20] ring-[#FF802E]/25';
   const [blobColour] = useState(() => (light ? '#231F20' : '#FFFFFF'));
   // Pill backgrounds switch on instantly when the goo layer is removed (no fade = no flicker);
@@ -204,6 +221,28 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
     const id = requestAnimationFrame(() => setSettled(true));
     return () => cancelAnimationFrame(id);
   }, [done]);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const onChange = () => setDesktop(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  // A peeked (re-opened) desktop menu folds away again once the reader scrolls on.
+  useEffect(() => {
+    if (!peek) return undefined;
+    const y0 = window.scrollY;
+    const onScroll = () => Math.abs(window.scrollY - y0) > 240 && setPeek(false);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [peek]);
+
+  const onLogo = () => {
+    if (!scrolled) onTop?.();
+    else if (desktop) setPeek((p) => !p);
+    else setMenuOpen((open) => !open);
+  };
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -383,7 +422,7 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
         ref={rowRef}
         className="relative flex items-center justify-between gap-3 px-4 py-3 md:px-6"
       >
-        <button ref={wordRef} type="button" onClick={() => scrolled ? setMenuOpen((open) => !open) : onTop?.()} aria-label={scrolled ? (menuOpen ? 'Close navigation' : 'Open navigation') : 'Cultivator'} aria-expanded={scrolled ? menuOpen : undefined} aria-controls={scrolled ? 'v2-mobile-menu' : undefined} className={pillCls('pointer-events-auto relative z-10 inline-flex h-12 shrink-0 items-center px-4 md:px-5')}>
+        <button ref={wordRef} type="button" onClick={onLogo} aria-label={!scrolled ? 'Cultivator' : desktop ? (peek ? 'Hide navigation' : 'Show navigation') : (menuOpen ? 'Close navigation' : 'Open navigation')} aria-expanded={scrolled ? (desktop ? peek : menuOpen) : undefined} aria-controls={scrolled && !desktop ? 'v2-mobile-menu' : undefined} className={pillCls('pointer-events-auto relative z-10 inline-flex h-12 shrink-0 items-center px-4 md:px-5')}>
           {/* Nudged up/right: the wordmark's ink sits low and left of its box (tall letters, shrimp head), so true centring looks off. */}
           <span className="block h-[20px] w-[100px] md:h-[22px] md:w-[115px] translate-x-[0.5px] -translate-y-[1.5px] bg-[#FF802E]" style={{ WebkitMask: `url(${wordmark}) center / contain no-repeat`, mask: `url(${wordmark}) center / contain no-repeat` }} />
         </button>
@@ -418,11 +457,11 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
             aria-expanded={menuOpen}
             aria-controls="v2-mobile-menu"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            className="-ml-1 grid h-9 w-9 place-items-center rounded-full transition-transform active:scale-90"
+            className="-ml-1 grid h-9 w-9 place-items-center rounded-full transition-transform active:scale-90 lg:hidden"
           >
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
-          <a ref={deckRef} href={PITCH_DECK} download="Cultivator-Pitch-Deck.pdf" className="inline-flex h-9 items-center rounded-full bg-[#FF802E] px-5 text-[14px] font-semibold text-[#231F20] transition-transform duration-300 hover:scale-105 active:scale-95">Deck</a>
+          <a ref={deckRef} href="#decks" className="inline-flex h-9 items-center rounded-full bg-[#FF802E] px-5 text-[14px] font-semibold text-[#231F20] transition-transform duration-300 hover:scale-105 active:scale-95">Deck</a>
         </div>
         </div>
       </div>
@@ -452,7 +491,7 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
             className={`flex h-12 items-center justify-between rounded-[20px] px-4 text-[17px] font-semibold ${chapter.chip === i ? (light ? 'bg-[#231F20]/10' : 'bg-white/15') : ''}`}
           >
             {label}
-            <span className="text-[12px] opacity-60" style={{ fontFamily: MONO }}>{['23:00', '02:14', '05:00', '06:00', '06:00'][i]}</span>
+            <span className="text-[12px] opacity-60" style={{ fontFamily: MONO }}>{['23:00', '02:14', '05:30', '06:00', '06:00'][i]}</span>
           </a>
         ))}
         <button
@@ -491,6 +530,7 @@ const smoothT = (t) => {
 
 export default function V2Page() {
   const [heroStyle, setHeroStyle] = useState('pond');
+  const [reducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const chapters = useMemo(() => CHAPTERS.map((chapter) => chapter.id === 'hero' ? { ...chapter, tone: heroStyle } : chapter), [heroStyle]);
   const [saved] = useState(readSaved);
   const [active, setActive] = useState(() => saved?.i ?? 0);
@@ -619,6 +659,8 @@ export default function V2Page() {
         <div className="h-full w-full" style={{ opacity: c.id === 'hero' && heroStyle === 'pond' ? 0 : 1 }}>
           <ContourPattern variant={tone.pattern} frozen={Boolean(c.fail)} amp={c.wave[0]} speed={c.wave[1]} lines={c.id === 'hero' ? 5 : 8} wavelength={2.5} convergence={c.id === 'hero' ? 0.78 : 0.45} focusTarget={c.id === 'hero' ? '[data-slot="hero"]' : null} heartbeat={c.id !== 'hero'} chaos={c.noise} introChaos={0} pulses={0} lineOpacity={0.18} className="h-full w-full" />
         </div>
+        {/* Hero farm lives in the fixed background so it stays under the shrimp; it follows the hero as it scrolls away. */}
+        {heroStyle === 'pond' && <FarmPonds reduced={reducedMotion} />}
       </div>
 
       <ShrimpSymbol />

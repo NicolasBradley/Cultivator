@@ -52,6 +52,8 @@ function buildTargets(centroids) {
 // otherwise x / y as fractions of the viewport and size in px.
 const KF = [
   { sec: 'hero', p: 0, slot: 'hero', wheel: 0, spin: 0, grey: 0, op: 1, body: 0, rot: 0 },
+  // Spins in place while the camera zooms into the farm and tilts up to the horizon, then drops into the pond.
+  { sec: 'hero', p: 0.84, slot: 'hero', wheel: 0, spin: 0, grey: 0, op: 1, body: 0, rot: 450 },
   { sec: 'hero', p: 1, x: 0.5, y: 1.15, sizeOf: 'hero', scale: 0.75, wheel: 0.2, spin: 0.15, grey: 0, op: 1, body: 0, rot: 540 },
   { sec: 'wheel', p: 0.14, slot: 'wheel', wheel: 1, spin: 0.7, grey: 0, op: 1, body: 1, rot: 720 },
   { sec: 'wheel', p: 0.92, slot: 'wheel', wheel: 1, spin: 0.7, grey: 0, op: 1, body: 1, rot: 720 },

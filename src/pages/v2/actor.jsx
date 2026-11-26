@@ -101,7 +101,9 @@ export function ShrimpActor({ hidden = false, orangeHero = true }) {
     SHRIMP_PARTS.forEach((p, i) => tl.to(partRefs.current[p.id], { morphSVG: { shape: targets[p.id], type: 'rotational' }, duration: 1, ease: 'power1.inOut' }, i * 0.025));
 
     let anchors = [];
+    let askSlot = null;
     const measure = () => {
+      askSlot = document.querySelector('[data-slot="ask"]');
       const vh = viewportHeight();
       const vw = window.innerWidth;
       anchors = KF.map((k) => {
@@ -138,7 +140,12 @@ export function ShrimpActor({ hidden = false, orangeHero = true }) {
     const state = (y) => {
       if (y <= anchors[0].at) return anchors[0];
       const last = anchors[anchors.length - 1];
-      if (y >= last.at) return last;
+      if (y >= last.at) {
+        // Once the logo lands, keep it in the page's reserved space as the
+        // footer scrolls into view rather than freezing it over the copyright.
+        const slot = askSlot?.getBoundingClientRect();
+        return slot ? { ...last, x: slot.left + slot.width / 2, y: slot.top + slot.height / 2, size: slot.width } : last;
+      }
       let i = 0;
       while (anchors[i + 1].at < y) i += 1;
       const a = anchors[i];

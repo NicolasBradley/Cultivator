@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Activity, BellRing, Ear, Footprints, Plug, Timer, Waves, Wind } from 'lucide-react';
+import { Activity, ArrowUpRight, BellRing, Ear, Footprints, Mail, Plug, Timer, Waves, Wind } from 'lucide-react';
 import ContourPattern from '../../components/ContourPattern';
 import { AeratorFront, AeratorGlyph, DeviceOnMotor, ShrimpGlyph, Waveform } from './art';
 import crustea from '../../assets/carousel/crustea.png';
@@ -22,6 +22,7 @@ import aeratorPic from '../../assets/v2/aerator-real.webp';
 import AsciiImg from './AsciiImg';
 import { LQIP } from './lqip';
 import { smooth, useProgress, useStageSizing } from './scroll';
+import { CONTACT, PITCH_DECK } from './contact';
 
 // Chapter scenes for /v2. Each scene lives inside <section data-scene id=…> which carries --e / --p (see scroll.js).
 // Sticky scenes pin for (h − 1) screens and play their timeline on --p.
@@ -601,10 +602,10 @@ export function AskScene() {
         <H2 className="md:text-[88px]">Deploying $1M.</H2>
         <p className="mt-4 max-w-[40ch] text-[18px] opacity-90">To take Cultivator from 9 signed pilots to a first batch of 500–1,000 units across Southeast Asia.</p>
       </div>
-      <div className="mt-10 flex h-16 w-full origin-left overflow-hidden rounded-full" style={{ transform: `scaleX(clamp(0, calc(var(--e) * 1.5 - 0.3), 1))` }}>
+      <div className="mt-10 flex h-12 w-full origin-left overflow-hidden rounded-full md:h-16" style={{ transform: `scaleX(clamp(0, calc(var(--e) * 1.5 - 0.3), 1))` }}>
         {SPLIT.map(([l, v], i) => (
-          <div key={l} className="flex items-center px-4 text-[13px] font-semibold" style={{ width: `${v}%`, background: ['#231F20', '#3A3536', '#FFFFFF', '#FFE6D6'][i], color: i < 2 ? '#FFFFFF' : '#231F20' }}>
-            <span className="truncate">{v}%</span>
+          <div key={l} className="flex shrink-0 items-center justify-center px-1 text-[12px] font-semibold tabular-nums md:px-3 md:text-[13px]" style={{ width: `${v}%`, background: ['#231F20', '#3A3536', '#FFFFFF', '#FFE6D6'][i], color: i < 2 ? '#FFFFFF' : '#231F20' }}>
+            <span className="whitespace-nowrap">{v}%</span>
           </div>
         ))}
       </div>
@@ -612,9 +613,31 @@ export function AskScene() {
         {SPLIT.map(([l, v]) => <p key={l}>{v}% · {l}</p>)}
       </div>
       <div className="mt-12 flex flex-wrap gap-3" style={rv(0.3)}>
-        <a href="#ask" className="inline-flex h-14 items-center rounded-full bg-[#231F20] px-7 text-[16px] font-semibold text-white transition-transform hover:scale-[1.03]">Download the deck</a>
-        <a href="#ask" className="inline-flex h-14 items-center rounded-full px-7 text-[16px] font-semibold transition-transform hover:scale-[1.03]" style={tint(12)}>Book a call</a>
+        <a href={PITCH_DECK} download="Cultivator-Pitch-Deck.pdf" className="inline-flex h-14 items-center rounded-full bg-[#231F20] px-7 text-[16px] font-semibold text-white transition-transform hover:scale-[1.03]">Download the deck</a>
+        <a href={CONTACT.conversation} className="inline-flex h-14 items-center rounded-full px-7 text-[16px] font-semibold transition-transform hover:scale-[1.03]" style={tint(12)}>Book a call</a>
       </div>
+      <address id="contact" className="mt-10 border-t border-[#231F20]/20 pt-6 not-italic">
+        <h3 className="text-[12px] uppercase tracking-[0.08em] opacity-75" style={{ fontFamily: MONO }}>Let’s connect</h3>
+        <a href={`mailto:${CONTACT.email}`} className="mt-2 inline-flex min-h-11 items-center gap-2 text-[16px] font-semibold underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current">
+          <Mail size={18} aria-hidden="true" />
+          {CONTACT.email}
+        </a>
+        <div className="mt-2 grid grid-cols-2 gap-x-4">
+          {CONTACT.phones.map(({ name, number, href }) => (
+            <a key={name} href={href} className="flex min-h-14 flex-col justify-center text-[14px] underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current">
+              <span className="text-[12px] opacity-75">{name}</span>
+              <span className="whitespace-nowrap font-medium">{number}</span>
+            </a>
+          ))}
+        </div>
+        <div className="mt-3 flex flex-wrap gap-x-6">
+          {CONTACT.socials.map(({ name, href }) => (
+            <a key={name} href={href} target="_blank" rel="noopener noreferrer" className="inline-flex min-h-11 items-center gap-1 text-[14px] underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current">
+              {name}<ArrowUpRight size={15} aria-hidden="true" />
+            </a>
+          ))}
+        </div>
+      </address>
       </div>
       <div data-slot="ask" className="mx-auto aspect-square w-[min(56vw,300px)]" />
     </div>

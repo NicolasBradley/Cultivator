@@ -10,6 +10,7 @@ import Lenis from 'lenis';
 import { ArrowUp, Menu, X } from 'lucide-react';
 import 'lenis/dist/lenis.css';
 import wordmark from '../assets/v2/wordmark-white.png';
+import { PITCH_DECK } from './v2/contact';
 
 // "Night Shift" redesign (docs/REDESIGN_CONCEPT.md). Scroll engine: ./v2/scroll.js · scenes: ./v2/scenes.jsx · art: ./v2/art.jsx
 
@@ -150,6 +151,9 @@ const SPRING = 'cubic-bezier(.22,1,.36,1)';
 const PULL = 'cubic-bezier(.65,0,.35,1)';
 
 function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }) {
+  const rowRef = useRef(null);
+  const navWrapRef = useRef(null);
+  const rightWrapRef = useRef(null);
   const wordRef = useRef(null);
   const navRef = useRef(null);
   const rightRef = useRef(null);
@@ -161,15 +165,39 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
   const [settled, setSettled] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [collapseOffsets, setCollapseOffsets] = useState({ nav: 0, right: 0 });
   const [ind, setInd] = useState({ x: 0, w: 0 });
   const prevChip = useRef(-1);
   const light = tone.bg === '#231F20';
-  const pill = light ? 'bg-white text-[#231F20] ring-[#231F20]/10' : 'bg-[#231F20] text-white ring-white/10';
-  const [blobColour] = useState(() => (light ? '#FFFFFF' : '#231F20'));
+  const collapsed = scrolled && settled && !menuOpen;
+  const pill = light ? 'bg-[#231F20]/95 text-white ring-white/20' : 'bg-white/95 text-[#231F20] ring-[#FF802E]/25';
+  const [blobColour] = useState(() => (light ? '#231F20' : '#FFFFFF'));
   // Pill backgrounds switch on instantly when the goo layer is removed (no fade = no flicker);
   // colour transitions are enabled one frame later, for section changes only.
   const pillCls = (extra) =>
-    `${extra} rounded-full ring-1 ${settled ? 'transition-[background-color,color,box-shadow] duration-700' : ''} ${done ? pill : `${pill} !bg-transparent !ring-transparent`} ${scrolled ? 'shadow-[0_6px_20px_rgb(0_0_0/0.18)]' : ''}`;
+    `${extra} rounded-full ring-1 ${settled ? 'backdrop-blur-xl transition-[background-color,color,box-shadow] duration-500' : ''} ${done ? pill : `${pill} !bg-transparent !ring-transparent`} ${scrolled ? 'shadow-[0_3px_12px_rgb(35_31_32/0.06)]' : ''}`;
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const word = wordRef.current;
+      const center = word.offsetLeft + word.offsetWidth / 2;
+      const offset = (element) => center - element.offsetLeft - element.offsetWidth / 2;
+      const next = { nav: offset(navWrapRef.current), right: offset(rightWrapRef.current) };
+      setCollapseOffsets((previous) => previous.nav === next.nav && previous.right === next.right ? previous : next);
+    };
+    const observer = new ResizeObserver(measure);
+    [rowRef.current, navWrapRef.current, rightWrapRef.current].forEach((element) => observer.observe(element));
+    measure();
+    return () => observer.disconnect();
+  }, []);
+
+  const foldingStyle = (offset) => ({
+    transform: collapsed ? `translateX(${offset}px) scale(.35)` : 'translateX(0) scale(1)',
+    opacity: collapsed ? 0 : 1,
+    visibility: collapsed ? 'hidden' : 'visible',
+    pointerEvents: collapsed ? 'none' : 'auto',
+    transition: reduced ? 'none' : `transform 420ms ${EASE}, opacity 200ms ease, visibility 0s ${collapsed ? '420ms' : '0s'}`,
+  });
 
   useEffect(() => {
     if (!done) return undefined;
@@ -185,7 +213,7 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
   }, [menuOpen]);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80);
+    const onScroll = () => setScrolled((previous) => window.scrollY > (previous ? 100 : 160));
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -211,6 +239,44 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
     const anims = [];
     const go = (el, frames, opts) => anims.push(el.animate(frames, { fill: 'both', ...opts, delay: (opts.delay ?? 0) + startDelay }));
     const tf = (dx, scx = 1, scy = 1) => `translateX(${dx}px) scale(${scx}, ${scy})`;
+
+    // Below the desktop breakpoint there are only two pills. The desktop
+    // centre bubble otherwise survives the split and snaps away at handoff.
+    if (!n.width) {
+      [bC, d1, d2, d3, d4].forEach((el) => { el.style.display = 'none'; });
+      const duration = 1000;
+      const split = (rect) => [
+        { offset: 0, opacity: 0, transform: tf(dxTo(rect), sx(rect) * 0.94, 0.94) },
+        { offset: 0.18, opacity: 1, transform: tf(dxTo(rect), sx(rect)), easing: 'linear' },
+        { offset: 0.3, opacity: 1, transform: tf(dxTo(rect), sx(rect)), easing: EASE },
+        { offset: 1, opacity: 1, transform: tf(0) },
+      ];
+      go(bL, split(w), { duration });
+      go(bR, split(r), { duration });
+      // Keep the wordmark attached to its bubble throughout one timeline.
+      go(wordRef.current, split(w), { duration });
+      go(rightRef.current, [
+        { offset: 0, opacity: 0, transform: `translateX(${dxTo(r)}px)` },
+        { offset: 0.5, opacity: 0, transform: `translateX(${dxTo(r) * 0.15}px)`, easing: EASE },
+        { offset: 1, opacity: 1, transform: 'translateX(0)' },
+      ], { duration });
+      let live = true;
+      const finish = () => { if (live) setDone(true); };
+      const width = window.innerWidth;
+      const onResize = () => {
+        if (window.innerWidth !== width) {
+          anims.forEach((animation) => animation.finish());
+          finish();
+        }
+      };
+      window.addEventListener('resize', onResize);
+      Promise.all(anims.map((animation) => animation.finished)).then(finish).catch(() => {});
+      return () => {
+        live = false;
+        window.removeEventListener('resize', onResize);
+        anims.forEach((animation) => animation.cancel());
+      };
+    }
 
     // 1. Pop in (centre bubble carries the start shape; the side bubbles hide inside it)
     const cStart = tf(dxTo(navRect), sx(navRect));
@@ -297,7 +363,7 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
   }, [chapter.chip]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-20">
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-20">
       <svg width="0" height="0" className="absolute" aria-hidden="true">
         <filter id="nav-goo">
           <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b" />
@@ -314,18 +380,19 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
       )}
 
       <div
+        ref={rowRef}
         className="relative flex items-center justify-between gap-3 px-4 py-3 md:px-6"
-        style={{ transform: scrolled && settled ? 'scale(.94)' : 'none', transformOrigin: '50% 0', transition: `transform 500ms ${EASE}` }}
       >
-        <a ref={wordRef} href="#hero" aria-label="Cultivator" className={pillCls('inline-flex h-12 items-center px-4 md:px-5')}>
+        <button ref={wordRef} type="button" onClick={() => scrolled ? setMenuOpen((open) => !open) : onTop?.()} aria-label={scrolled ? (menuOpen ? 'Close navigation' : 'Open navigation') : 'Cultivator'} aria-expanded={scrolled ? menuOpen : undefined} aria-controls={scrolled ? 'v2-mobile-menu' : undefined} className={pillCls('pointer-events-auto relative z-10 inline-flex h-12 shrink-0 items-center px-4 md:px-5')}>
           {/* Nudged up/right: the wordmark's ink sits low and left of its box (tall letters, shrimp head), so true centring looks off. */}
-          <span className="block h-[20px] w-[100px] md:h-[22px] md:w-[115px] translate-x-[0.5px] -translate-y-[1.5px] bg-current" style={{ WebkitMask: `url(${wordmark}) center / contain no-repeat`, mask: `url(${wordmark}) center / contain no-repeat` }} />
-        </a>
+          <span className="block h-[20px] w-[100px] md:h-[22px] md:w-[115px] translate-x-[0.5px] -translate-y-[1.5px] bg-[#FF802E]" style={{ WebkitMask: `url(${wordmark}) center / contain no-repeat`, mask: `url(${wordmark}) center / contain no-repeat` }} />
+        </button>
 
+        <div ref={navWrapRef} className="hidden lg:block" style={foldingStyle(collapseOffsets.nav)} inert={collapsed}>
         <nav ref={navRef} className={pillCls('relative hidden h-12 items-center p-1 lg:flex')}>
           <span
             aria-hidden="true"
-            className={`absolute inset-y-1 left-0 rounded-full ${light ? 'bg-[#231F20]/10' : 'bg-white/15'}`}
+            className="absolute inset-y-1 left-0 rounded-full bg-[#FF802E]/15"
             style={{ width: ind.w, transform: `translateX(${ind.x}px)`, opacity: chapter.chip < 0 ? 0 : 1, transition: `transform 420ms ${SPRING}, width 420ms ${SPRING}, opacity 300ms ease, background-color 700ms ease` }}
           />
           {CHIPS.map((label, i) => (
@@ -334,13 +401,15 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
               ref={(el) => { chipRefs.current[i] = el; }}
               href={`#${CHIP_TARGET[i]}`}
               aria-current={chapter.chip === i ? 'true' : undefined}
-              className={`relative inline-flex h-10 items-center rounded-full px-4 text-[14px] font-medium transition-colors duration-300 ${light ? 'hover:bg-[#231F20]/5' : 'hover:bg-white/10'}`}
+              className="relative inline-flex h-10 items-center rounded-full px-4 text-[14px] font-medium transition-colors duration-300 hover:bg-[#FF802E]/10"
             >
               <span style={{ opacity: chapter.chip === i ? 1 : 0.72, transition: 'opacity 300ms ease' }}>{label}</span>
             </a>
           ))}
         </nav>
+        </div>
 
+        <div ref={rightWrapRef} style={foldingStyle(collapseOffsets.right)} inert={collapsed}>
         <div ref={rightRef} className={pillCls('flex h-12 items-center gap-2 pl-4 pr-1.5 md:gap-3')}>
           <span className="hidden text-[13px] tabular-nums opacity-80 sm:inline" style={{ fontFamily: MONO }}>{chapter.time}</span>
           <button
@@ -353,14 +422,15 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
           >
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
-          <a ref={deckRef} href="#ask" className="inline-flex h-9 items-center rounded-full bg-[#FF802E] px-5 text-[14px] font-semibold text-[#231F20] transition-transform duration-300 hover:scale-105 active:scale-95">Deck</a>
+          <a ref={deckRef} href={PITCH_DECK} download="Cultivator-Pitch-Deck.pdf" className="inline-flex h-9 items-center rounded-full bg-[#FF802E] px-5 text-[14px] font-semibold text-[#231F20] transition-transform duration-300 hover:scale-105 active:scale-95">Deck</a>
+        </div>
         </div>
       </div>
 
       {/* Mobile menu sheet: the same chapters as the desktop chips, plus back to top. */}
       <div
         id="v2-mobile-menu"
-        className={`absolute inset-x-3 top-[72px] origin-top rounded-[28px] p-2 shadow-[0_12px_32px_rgb(0_0_0/0.3)] ring-1 md:left-auto md:right-6 md:w-[320px] ${pill}`}
+        className={`absolute inset-x-3 top-[72px] origin-top rounded-[28px] p-2 shadow-[0_8px_28px_rgb(35_31_32/0.12)] ring-1 backdrop-blur-xl md:left-auto md:right-6 md:w-[320px] ${pill}`}
         style={{ opacity: menuOpen ? 1 : 0, transform: menuOpen ? 'none' : 'translateY(-8px) scale(.97)', pointerEvents: menuOpen ? 'auto' : 'none', transition: `opacity 250ms ease, transform 350ms ${EASE}` }}
         aria-hidden={!menuOpen}
       >

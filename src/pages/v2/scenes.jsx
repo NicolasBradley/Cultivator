@@ -21,7 +21,7 @@ import installPic from '../../assets/v2/device-install.webp';
 import aeratorPic from '../../assets/v2/aerator-real.webp';
 import AsciiImg from './AsciiImg';
 import { LQIP } from './lqip';
-import { smooth, useProgress } from './scroll';
+import { smooth, useProgress, useStageSizing } from './scroll';
 
 // Chapter scenes for /v2. Each scene lives inside <section data-scene id=…> which carries --e / --p (see scroll.js).
 // Sticky scenes pin for (h − 1) screens and play their timeline on --p.
@@ -40,7 +40,8 @@ const rv = (d = 0, dist = 50) => ({
 const tint = (pct) => ({ background: `color-mix(in srgb, currentColor ${pct}%, transparent)` });
 
 function Stage({ children, className = '' }) {
-  return <div className={`sticky top-0 flex h-svh items-center overflow-hidden pt-16 md:pt-0 ${className}`}>{children}</div>;
+  const ref = useStageSizing();
+  return <div ref={ref} data-stage className={`sticky flex min-h-svh items-center py-24 md:h-svh md:overflow-hidden md:py-0 ${className}`} style={{ top: 'calc(-1 * var(--stage-extra, 0px))' }}>{children}</div>;
 }
 
 function Eyebrow({ children }) {
@@ -76,23 +77,29 @@ function Pond({ className = 'h-[20svh]' }) {
 // 19:00 — the shrimp has sunk; a paddlewheel rises and spins with the scroll ---------------------------
 export function WheelScene() {
   return (
-    <Stage>
-      <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-6 px-6 pb-[14svh] md:grid-cols-2 md:gap-10">
+    <Stage className="!py-20 md:!py-0">
+      <div className="relative z-10 mx-auto grid w-full max-w-6xl items-center gap-4 px-6 md:grid-cols-2 md:gap-10 md:pb-[14svh]">
         <div style={rv()}>
           <Eyebrow>19:00 · The machine</Eyebrow>
-          <H2>This is an aerator.</H2>
-          <p className="mt-5 max-w-[34ch] text-[18px] leading-relaxed opacity-90 md:text-[20px]">A $300 paddlewheel that beats oxygen into the pond, 24 hours a day. Every pond needs 4 to 8 of them.</p>
-          <ul className="mt-8 flex flex-wrap gap-3 text-[14px] font-semibold">
-            <li className="inline-flex items-center gap-2 rounded-full px-4 py-2" style={{ ...tint(10), opacity: seg(0.3, 0.42) }}><Wind size={16} /> Gives oxygen</li>
-            <li className="inline-flex items-center gap-2 rounded-full px-4 py-2" style={{ ...tint(10), opacity: seg(0.42, 0.54) }}><Waves size={16} /> Circulates water</li>
+          <H2 className="!text-[30px] md:!text-[60px]">This is an aerator.</H2>
+          <p className="mt-3 max-w-[34ch] text-[15px] leading-relaxed opacity-90 md:mt-5 md:text-[20px]">A $300 paddlewheel that beats oxygen into the pond, 24 hours a day. Every pond needs 4 to 8 of them.</p>
+          <ul className="mt-4 flex flex-wrap gap-2 text-[11px] font-semibold md:mt-8 md:gap-3 md:text-[14px]">
+            <li className="inline-flex items-center gap-2 rounded-full px-3 py-2 md:px-4" style={{ ...tint(10), opacity: 'var(--e)' }}><Wind size={14} /> Gives oxygen</li>
+            <li className="inline-flex items-center gap-2 rounded-full px-3 py-2 md:px-4" style={{ ...tint(10), opacity: 'var(--e)' }}><Waves size={14} /> Circulates water</li>
           </ul>
-          <figure className="mt-7 max-w-[300px]" style={{ opacity: seg(0.5, 0.62), transform: `translateY(calc((1 - ${seg(0.5, 0.62)}) * 16px))` }}>
+          <figure className="mt-7 hidden max-w-[300px] md:block" style={rv(0.1, 16)}>
             <img src={aeratorPic} alt="The Cultivator team beside a paddlewheel aerator on a pond" loading="lazy" decoding="async" className="aspect-[760/625] w-full rounded-[20px] object-cover shadow-[0_8px_24px_rgb(0_0_0/0.18)]" />
             <figcaption className="mt-2 text-[12px] uppercase tracking-[0.08em] opacity-75" style={{ fontFamily: MONO }}>The real thing, with the team that monitors it</figcaption>
           </figure>
         </div>
-        <div data-slot="wheel" className="relative mx-auto mt-24 aspect-square w-[min(62vw,380px)] md:mt-32">
-          <span className="absolute -right-2 top-6 rounded-full bg-white px-3 py-1 text-[12px] font-semibold text-[#231F20]" style={{ fontFamily: MONO, opacity: seg(0.3, 0.42), transform: `translateY(calc(var(--p) * -40px))` }}>O₂ ↑</span>
+        <div className="relative mx-auto h-[clamp(140px,30svh,260px)] w-full max-w-[340px] md:mt-32 md:aspect-square md:h-auto md:max-w-none md:w-[min(62vw,380px)]">
+          <div data-slot="wheel" className="absolute left-1/2 top-1/2 aspect-square h-[75%] -translate-x-1/2 -translate-y-1/2 md:h-full">
+            <span className="absolute -right-2 top-6 hidden rounded-full bg-white px-3 py-1 text-[12px] font-semibold text-[#231F20] md:block" style={{ fontFamily: MONO, opacity: seg(0.3, 0.42), transform: `translateY(calc(var(--p) * -40px))` }}>O₂ ↑</span>
+          </div>
+          <figure className="absolute inset-0 flex flex-col items-center md:hidden" style={{ opacity: `calc(${seg(0.48, 0.62)} * (1 - ${seg(0.92, 1)}))`, transform: `translateY(calc((1 - ${seg(0.48, 0.62)}) * 12px))` }}>
+            <img src={aeratorPic} alt="The Cultivator team beside a real paddlewheel aerator" loading="lazy" decoding="async" className="min-h-0 w-full flex-1 rounded-[20px] object-cover" />
+            <figcaption className="mt-2 text-center text-[10px] uppercase tracking-[0.06em] opacity-75" style={{ fontFamily: MONO }}>The real aerator, with our team</figcaption>
+          </figure>
         </div>
       </div>
       <Pond />
@@ -113,7 +120,7 @@ const SWARM = Array.from({ length: 22 }, (_, i) => {
 // Default glyph faces left; flipped ones face and swim right.
 function Swarm() {
   return (
-    <div className="absolute inset-0" style={{ color: ORANGE }}>
+    <div className="absolute inset-0 overflow-hidden" style={{ color: ORANGE }}>
       {[0, 1, 2].map((layer) => (
         <div key={layer} className="absolute inset-0" style={{ transform: `translateX(calc(var(--p) * ${-(layer + 1) * 8}vw))`, opacity: 0.5 + layer * 0.25 }}>
           {SWARM.filter((s) => s.layer === layer).map((s, i) => {
@@ -349,9 +356,9 @@ export function ImpactScene() {
           <H2>Fewer aerators running. More shrimp harvested.</H2>
           <div className="mt-8 grid grid-cols-3 gap-4">
             {[
-              [(p) => `${(smooth(0.1, 0.7, p) * 27.6).toFixed(1)}%`, 'energy saved'],
-              [(p) => `${(smooth(0.2, 0.8, p) * 1.8).toFixed(1)} t`, 'more shrimp / crop'],
-              [(p) => `$${Math.round(smooth(0.3, 0.9, p) * 10).toLocaleString('en-US')}k`, 'back per harvest'],
+              [(p) => `${(smooth(0.1, 0.55, p) * 27.6).toFixed(1)}%`, 'energy saved'],
+              [(p) => `${(smooth(0.2, 0.65, p) * 1.8).toFixed(1)} t`, 'more shrimp / crop'],
+              [(p) => `$${Math.round(smooth(0.3, 0.72, p) * 10).toLocaleString('en-US')}k`, 'back per harvest'],
             ].map(([fmt, label]) => (
               <div key={label}>
                 <Live id="impact" format={fmt} className="block text-[30px] font-bold tabular-nums tracking-[-0.03em] text-[#FF802E] md:text-[44px]" />
@@ -463,14 +470,14 @@ export function ProofScene() {
             ))}
           </ul>
         </div>
-        <div className="grid gap-6">
+        <div className="relative isolate pb-[12svh]">
           {PROOF.map((p, i) => (
             <article
               key={p.country}
               ref={(el) => { cards.current[i] = el; }}
               data-k={i}
-              className="flex min-h-[52svh] flex-col justify-between rounded-[28px] p-8 shadow-[0_2px_4px_rgb(0_0_0/0.05),0_4px_12px_rgb(0_0_0/0.08)]"
-              style={{ background: i % 2 ? '#231F20' : '#FFFFFF', color: i % 2 ? '#FFFFFF' : '#231F20', border: '1px solid rgb(35 31 32 / 0.08)' }}
+              className="sticky mb-8 flex min-h-[min(52svh,420px)] flex-col justify-between gap-16 rounded-[28px] p-7 md:p-8"
+              style={{ top: `calc(88px + ${i * 14}px)`, zIndex: i + 1, background: i % 2 ? '#231F20' : '#FFFFFF', color: i % 2 ? '#FFFFFF' : '#231F20', border: '1px solid rgb(138 132 134 / 0.25)' }}
             >
               <p className="text-[12px] uppercase tracking-[0.08em] opacity-75" style={{ fontFamily: MONO }}>{p.note}</p>
               <div>

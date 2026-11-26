@@ -16,34 +16,34 @@ const rand = (i, seed) => {
   return v - Math.floor(v) - 0.5; // -0.5..0.5, stable per line
 };
 
-function cleanY(v, x, i, n, w, h, A, t) {
+function cleanY(v, x, i, n, w, h, A, t, wavelength, convergence, focus) {
   const depth = (i + 1) / n;
   if (v === 5) {
     const y0 = ((i + 0.5) * h) / n;
-    const k = Math.exp(-(((x - w / 2) / (w * 0.27)) ** 2));
-    return y0 + (h / 2 - y0) * 0.45 * k + A * Math.sin(x / 30 + i * 0.4 + t * 0.6);
+    const k = Math.exp(-(((x - focus.x) / (w * 0.27)) ** 2));
+    return y0 + (focus.y - y0) * convergence * k + A * Math.sin(x / (30 * wavelength) + i * 0.4 + t * 0.6);
   }
   if (v === 'horizon') {
-    return h * depth ** 1.7 + A * depth * (Math.sin(x / (18 + 40 * depth) + i * 0.9 + t * 0.6) + 0.5 * Math.sin(x / 11 - t * 0.5 + i));
+    return h * depth ** 1.7 + A * depth * (Math.sin(x / ((18 + 40 * depth) * wavelength) + i * 0.9 + t * 0.6) + 0.5 * Math.sin(x / (11 * wavelength) - t * 0.5 + i));
   }
   if (v === 'sky') {
-    return h * depth ** 0.55 + A * (0.4 + 0.6 * depth) * Math.sin(x / (60 + 30 * depth) + i * 0.7 + t * 0.35);
+    return h * depth ** 0.55 + A * (0.4 + 0.6 * depth) * Math.sin(x / ((60 + 30 * depth) * wavelength) + i * 0.7 + t * 0.35);
   }
   const y0 = ((i + 0.5) * h) / n;
-  return y0 + A * Math.sin(x / 34 + i * 0.55 + t * 0.6) + A * 0.6 * Math.sin(x / 15 + i * 1.3 - t * 0.42);
+  return y0 + A * Math.sin(x / (34 * wavelength) + i * 0.55 + t * 0.6) + A * 0.6 * Math.sin(x / (15 * wavelength) + i * 1.3 - t * 0.42);
 }
 
 // Disorder stays low-frequency so lines remain smooth: uneven spacing + slow wandering swells.
-function lineY(v, x, i, n, w, h, A, t, chaos) {
-  const y = cleanY(v, x, i, n, w, h, A, t);
+function lineY(v, x, i, n, w, h, A, t, chaos, wavelength, convergence, focus) {
+  const y = cleanY(v, x, i, n, w, h, A, t, wavelength, convergence, focus);
   if (chaos < 0.001) return y;
   return y + chaos * (rand(i, 1) * (h / n) * 0.9 + 9 * Math.sin(x / (80 + 60 * (rand(i, 2) + 0.5)) + i * 2.1 + t * 0.5));
 }
 
-export default function ContourPattern({ variant = 1, frozen = false, amp = 4.5, speed = 2, lines = 11, chaos = 0, introChaos = null, pulses = 0, interactive = false, dotted = false, lineOpacity = 1, className = '' }) {
+export default function ContourPattern({ variant = 1, frozen = false, amp = 4.5, speed = 2, lines = 11, wavelength = 1, convergence = 0.45, focusTarget = null, color = null, heartbeat = true, chaos = 0, introChaos = null, pulses = 0, interactive = false, dotted = false, lineOpacity = 1, className = '' }) {
   const svgRef = useRef(null);
   const props = useRef({});
-  props.current = { variant, frozen, amp, speed, lines, chaos };
+  props.current = { variant, frozen, amp, speed, lines, chaos, wavelength, heartbeat, convergence, focusTarget, color };
 
   useEffect(() => {
     const svg = svgRef.current;
@@ -64,6 +64,10 @@ export default function ContourPattern({ variant = 1, frozen = false, amp = 4.5,
 
     const draw = () => {
       const { width: w, height: h } = svg.getBoundingClientRect();
+      const target = props.current.focusTarget && document.querySelector(props.current.focusTarget);
+      const targetRect = target?.getBoundingClientRect();
+      const origin = svg.getBoundingClientRect();
+      const focus = targetRect ? { x: targetRect.left + targetRect.width / 2 - origin.left, y: targetRect.top + targetRect.height / 2 - origin.top } : { x: w / 2, y: h / 2 };
       const { frozen: f, lines: n } = props.current;
       const A = live.amp * (1 + 0.9 * live.boost);
       const m = live.mix * live.mix * (3 - 2 * live.mix);
@@ -76,7 +80,7 @@ export default function ContourPattern({ variant = 1, frozen = false, amp = 4.5,
       // Cursor bends nearby lines away; a heartbeat burst sweeps across every 7 s.
       const beatT = (clock % 14) / 2.6;
       const beatX = beatT * (w + 200) - 100;
-      const beatOn = beatT < 1 && !f ? Math.sin(beatT * Math.PI) : 0;
+      const beatOn = beatT < 1 && !f && props.current.heartbeat ? Math.sin(beatT * Math.PI) : 0;
       // Tiny travelling waves: a short ripple riding along a few lines (data flowing through the water).
       const ripples = packets.map((pk) => ({ li: pk.i % n, x: pk.x * (w + 160) - 80, dir: pk.dir }));
       const bump = (x, y, i) => {
@@ -103,7 +107,7 @@ export default function ContourPattern({ variant = 1, frozen = false, amp = 4.5,
       for (let i = 0; i < n; i++) {
         for (let c = 0; c < cols; c++, k++) {
           const x = -6 + c * STEP;
-          let y = lineY(live.to, x, i, n, w, h, A, t, live.chaos);
+          let y = lineY(live.to, x, i, n, w, h, A, t, live.chaos, props.current.wavelength, props.current.convergence, focus);
           if (from && m < 1) y = from[k] * (1 - m) + y * m;
           y += bump(x, y, i);
           ys[k] = y;
@@ -111,7 +115,7 @@ export default function ContourPattern({ variant = 1, frozen = false, amp = 4.5,
         }
       }
       path.setAttribute('d', d);
-      path.style.stroke = f && live.to !== 5 ? GREY : STROKE[live.to];
+      path.style.stroke = f && live.to !== 5 ? GREY : props.current.color ?? STROKE[live.to];
     };
 
     const frame = (now) => {

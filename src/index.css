@@ -122,6 +122,8 @@ body {
 }
 
 /* /v2 scene keyframes */
+@keyframes v2swell { 0%, 100% { transform: translateX(-20px) translateY(0); } 50% { transform: translateX(20px) translateY(7px); } }
+@keyframes v2dive { 0%, 100% { transform: translateY(-3px); } 50% { transform: translateY(3px); } }
 @keyframes v2spin { to { transform: rotate(360deg); } }
 @keyframes v2bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 @keyframes v2rise { 0% { transform: translateY(0); opacity: 0; } 10% { opacity: .8; } 100% { transform: translateY(-70svh); opacity: 0; } }

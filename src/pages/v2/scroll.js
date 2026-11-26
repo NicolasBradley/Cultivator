@@ -24,17 +24,42 @@ export function useProgress(id, fn) {
 
 const clamp01 = (v) => Math.min(1, Math.max(0, v));
 
+// Match CSS svh rather than the address-bar-dependent window.innerHeight.
+export const viewportHeight = () => document.querySelector('[data-slot="hero"]')?.closest('.sticky')?.clientHeight || window.innerHeight;
+
+// Tall phone scenes scroll fully into view before their bottom edge pins.
+export function useStageSizing() {
+  const ref = useRef(null);
+  useLayoutEffect(() => {
+    const stage = ref.current;
+    const section = stage.closest('[data-scene]');
+    const measure = () => section.style.setProperty('--stage-extra', `${Math.max(0, stage.offsetHeight - viewportHeight())}px`);
+    const observer = new ResizeObserver(measure);
+    observer.observe(stage);
+    window.addEventListener('resize', measure);
+    measure();
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('resize', measure);
+    };
+  }, []);
+  return ref;
+}
+
 export function useScrollEngine() {
   useEffect(() => {
     let raf = 0;
     const update = () => {
       raf = 0;
-      const vh = window.innerHeight;
+      const vh = viewportHeight();
       document.querySelectorAll('section[data-scene]').forEach((el) => {
         const r = el.getBoundingClientRect();
         if (r.bottom < -vh || r.top > vh * 2) return;
         const e = clamp01((vh - r.top) / vh);
-        const p = r.height > vh * 1.05 ? clamp01(-r.top / (r.height - vh)) : e;
+        const stageHeight = el.querySelector('[data-stage]')?.offsetHeight || vh;
+        const extra = Math.max(0, stageHeight - vh);
+        const travel = r.height - stageHeight;
+        const p = travel > vh * 0.05 ? clamp01((-r.top - extra) / travel) : e;
         el.style.setProperty('--e', e.toFixed(4));
         el.style.setProperty('--p', p.toFixed(4));
         subs.get(el.id)?.forEach((cb) => cb(p, e));

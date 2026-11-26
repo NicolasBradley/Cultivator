@@ -3,6 +3,7 @@ import { gsap } from 'gsap';
 import { MorphSVGPlugin } from 'gsap/MorphSVGPlugin';
 import { SHRIMP_PARTS, SHRIMP_VIEWBOX } from '../../components/shrimpParts';
 import { BODY_REAL, WHEEL_BLADES, WHEEL_CENTRE, WHEEL_REAL } from './realShapes';
+import { viewportHeight } from './scroll';
 
 gsap.registerPlugin(MorphSVGPlugin);
 
@@ -15,6 +16,7 @@ gsap.registerPlugin(MorphSVGPlugin);
 const [VX, VY, VW, VH] = SHRIMP_VIEWBOX;
 const C = [VX + VW / 2, VY + VH / 2];
 const WHITE = [255, 255, 255];
+const ORANGE = [255, 128, 46];
 const GREY = [138, 132, 134];
 
 const circle = (x, y, r) => `M${x - r} ${y} a${r} ${r} 0 1 0 ${2 * r} 0 a${r} ${r} 0 1 0 ${-2 * r} 0 Z`;
@@ -70,7 +72,9 @@ const NUM = ['x', 'y', 'size', 'wheel', 'spin', 'grey', 'op', 'flip', 'body', 'r
 const smooth = (t) => t * t * (3 - 2 * t);
 const SPARK_PARTS = SHRIMP_PARTS.filter((p) => ['shellTop', 'shellLeft', 'shellBottom', 'shellRight', 'head', 'tail'].includes(p.id));
 
-export function ShrimpActor({ hidden = false }) {
+export function ShrimpActor({ hidden = false, orangeHero = true }) {
+  const orangeHeroRef = useRef(orangeHero);
+  useEffect(() => { orangeHeroRef.current = orangeHero; }, [orangeHero]);
   const hiddenRef = useRef(hidden);
   useEffect(() => {
     hiddenRef.current = hidden;
@@ -98,14 +102,16 @@ export function ShrimpActor({ hidden = false }) {
 
     let anchors = [];
     const measure = () => {
-      const vh = window.innerHeight;
+      const vh = viewportHeight();
       const vw = window.innerWidth;
       anchors = KF.map((k) => {
         const sec = document.getElementById(k.sec);
         if (!sec) return null;
         const top = sec.offsetTop;
         const h = sec.offsetHeight;
-        const y = h > vh * 1.05 ? top + k.p * (h - vh) : top - vh * 0.5 + k.p * h;
+        const stageHeight = sec.querySelector('[data-stage]')?.offsetHeight || vh;
+        const extra = Math.max(0, stageHeight - vh);
+        const y = h - stageHeight > vh * 0.05 ? top + extra + k.p * (h - stageHeight) : top - vh * 0.5 + k.p * h;
         const out = { ...k, at: y };
         const slotEl = k.slot && document.querySelector(`[data-slot="${k.slot}"]`);
         if (slotEl) {
@@ -113,7 +119,7 @@ export function ShrimpActor({ hidden = false }) {
           const stage = slotEl.closest('.sticky');
           const r = slotEl.getBoundingClientRect();
           out.x = r.left + r.width / 2;
-          out.y = stage ? r.top - stage.getBoundingClientRect().top + r.height / 2 : r.top + window.scrollY - y + r.height / 2;
+          out.y = stage ? r.top - stage.getBoundingClientRect().top - extra + r.height / 2 : r.top + window.scrollY - y + r.height / 2;
           out.size = r.width;
         } else {
           out.x = (k.x ?? 0.5) * vw;
@@ -155,6 +161,26 @@ export function ShrimpActor({ hidden = false }) {
       last = now;
       const y = window.scrollY;
       const s = state(y);
+      // Before a tall scene finishes scrolling into view, its slot hasn't
+      // reached the pinned position used by the keyframes yet.
+      const wheelStage = document.querySelector('#wheel [data-stage]');
+      if (window.innerWidth < 768 && wheelStage) {
+        const section = wheelStage.parentElement;
+        const rect = section.getBoundingClientRect();
+        const travel = rect.height - wheelStage.offsetHeight;
+        if (rect.top <= 0 && rect.bottom >= viewportHeight() && travel > 0) {
+          const p = (-rect.top - Math.max(0, wheelStage.offsetHeight - viewportHeight())) / travel;
+          const photo = Math.min(1, Math.max(0, (p - 0.48) / 0.14)) * (1 - Math.min(1, Math.max(0, (p - 0.92) / 0.08)));
+          s.op *= 1 - photo;
+        }
+      }
+      if (wheelStage && s.body > 0 && y >= document.getElementById('wheel').offsetTop) {
+        const extra = Math.max(0, wheelStage.offsetHeight - viewportHeight());
+        if (extra > 0 && wheelStage.getBoundingClientRect().top > -extra) {
+          const slot = wheelStage.querySelector('[data-slot="wheel"]').getBoundingClientRect();
+          s.y = slot.top + slot.height / 2;
+        }
+      }
       angle += (s.spin * 300 * dt + (y - lastY) * 0.25 * s.wheel) * (reduce ? 0 : 1);
       lastY = y;
       tl.progress(s.wheel);
@@ -177,7 +203,7 @@ export function ShrimpActor({ hidden = false }) {
           el.style.strokeDashoffset = String(-(ct * 1.25 + k * 0.17 + (Math.random() - 0.5) * 0.015));
         });
       }
-      box.style.filter = idle > 0.02 ? `drop-shadow(0 ${(16 * idle).toFixed(1)}px ${(22 * idle).toFixed(1)}px rgba(35,31,32,${(0.28 * idle).toFixed(3)}))` : 'none';
+      box.style.filter = 'none';
       if (idle > 0.001 || idleWas) {
         const P = partRefs.current;
         const flick = Math.sin(sec * 2.4) * 6 * idle;
@@ -190,7 +216,10 @@ export function ShrimpActor({ hidden = false }) {
       }
       // Scroll-linked spin (rot) as the logo travels down into the pond, plus the wheel's own running spin.
       gRef.current.setAttribute('transform', `rotate(${((s.rot + angle * s.wheel) % 360).toFixed(2)} ${C[0]} ${C[1]})`);
-      const c = WHITE.map((w, k) => Math.round(w + (GREY[k] - w) * s.grey));
+      const inHero = orangeHeroRef.current && y < document.getElementById('wheel').offsetTop;
+      const colourBlend = inHero ? Math.min(1, s.wheel * 5) : 1;
+      const base = WHITE.map((w, k) => ORANGE[k] + (w - ORANGE[k]) * colourBlend);
+      const c = base.map((w, k) => Math.round(w + (GREY[k] - w) * s.grey));
       gRef.current.style.fill = `rgb(${c.join(',')})`;
       bodyRef.current.style.opacity = s.body.toFixed(3);
       const real = Math.max(0, Math.min(1, (s.wheel - 0.72) / 0.26));

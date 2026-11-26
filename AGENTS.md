@@ -4,8 +4,8 @@ Instructions for coding agents (Codex etc.) working in this repo.
 
 **Start here:** read `docs/HANDOFF.md`, then `docs/DESIGN_GUIDE.md` and `docs/REDESIGN_CONCEPT.md`.
 
-- The Night Shift redesign is the main homepage at `/`, with `/v2` retained as an alias: `src/pages/V2.jsx` and `src/pages/v2/*`. `src/pages/Home.jsx` is the preserved previous homepage. Don't modify it unless asked.
-- Run with `npm run dev` and open `/` (or `/v2`).
+- The previous homepage (`src/pages/Home.jsx`) serves `/`. The active Night Shift redesign remains at `/v2`: `src/pages/V2.jsx` and `src/pages/v2/*`. Don't modify `Home.jsx` unless asked.
+- Run with `npm run dev` and open `/v2` for redesign work.
 - Brand colours are only orange `#FF802E`, ink `#231F20` and white (grey `#8A8486` for the 02:13 failure state). Text on orange is ink.
 - Prefer CSS transforms/opacity for motion, respect `prefers-reduced-motion`, keep the vector + tone-traced style.
 - Don't use watermarked or unlicensed stock images.

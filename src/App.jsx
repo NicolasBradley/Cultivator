@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route, useLocation } from 'react-router-dom';
 import { useEffect, useRef } from 'react';
+import HomePage from './pages/Home';
 import MediaPage from './pages/Media';
 import BrandPage from './pages/Brand';
 import V2Page from './pages/V2';
@@ -210,11 +211,11 @@ export default function App() {
       <ScrollToTop />
       <SEOManager />
       <Routes>
-        <Route path="/" element={<V2Page />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/media" element={<MediaPage />} />
         <Route path="/brand" element={<BrandPage />} />
         <Route path="/v2" element={<V2Page />} />
-        <Route path="*" element={<V2Page />} />
+        <Route path="*" element={<HomePage />} />
       </Routes>
     </BrowserRouter>
   );

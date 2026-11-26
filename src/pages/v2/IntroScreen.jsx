@@ -52,7 +52,7 @@ export default function IntroScreen({ onDone }) {
       aria-hidden="true"
       className="fixed inset-0 z-50 grid place-items-center"
       style={{
-        backgroundColor: dock ? 'rgba(255,128,46,0)' : '#FF802E',
+        backgroundColor: dock ? 'rgba(255,255,255,0)' : '#FFFFFF',
         transition: 'background-color 450ms ease 300ms',
         animation: leaving ? 'v2introOut 600ms cubic-bezier(.7,0,.3,1) forwards' : undefined,
       }}
@@ -62,7 +62,7 @@ export default function IntroScreen({ onDone }) {
           ref={svgRef}
           viewBox={SHRIMP_VIEWBOX.join(' ')}
           className="h-[min(34svh,58vw)] w-[min(34svh,58vw)] overflow-visible"
-          fill="#FFFFFF"
+          fill="#FF802E"
           fillRule="evenodd"
           style={{ transform: dock ? `translate(${dock.x}px, ${dock.y}px) scale(${dock.s})` : 'none', transition: 'transform 750ms cubic-bezier(.65,0,.35,1)' }}
         >
@@ -71,7 +71,7 @@ export default function IntroScreen({ onDone }) {
           <g>{parts.map((p, i) => part(p, i, 'v2-curl'))}</g>
         </svg>
         <span
-          className="v2-roll block h-[clamp(28px,5svh,44px)] w-[clamp(147px,26svh,231px)] bg-white"
+          className="v2-roll block h-[clamp(28px,5svh,44px)] w-[clamp(147px,26svh,231px)] bg-[#FF802E]"
           style={{
             WebkitMask: `url(${wordmark}) center / contain no-repeat`,
             mask: `url(${wordmark}) center / contain no-repeat`,

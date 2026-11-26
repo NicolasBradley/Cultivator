@@ -121,8 +121,8 @@ export function DeviceOnMotor({ style, calloutStyle }) {
         <path d="M441 304 L500 128 H700" />
         <path d="M441 330 L520 178 H700" />
         <g fill="currentColor" stroke="none" fontSize="18">
-          <text x="504" y="120">Current + vibration sensor</text>
-          <text x="524" y="170">Clips on under the motor</text>
+          <text x="504" y="120">US$10 current sensor</text>
+          <text x="524" y="170">Clamps onto the power cable</text>
         </g>
       </g>
     </>

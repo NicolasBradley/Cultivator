@@ -1,8 +1,9 @@
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
 import ContourPattern from '../components/ContourPattern';
-import { INTRO_MS, useScrollEngine } from './v2/scroll';
+import FarmPonds from './v2/FarmPonds';
+import { INTRO_MS, useScrollEngine, viewportHeight } from './v2/scroll';
 import IntroScreen from './v2/IntroScreen';
-import { AskScene, DeviceScene, FailureScene, FragileScene, GapScene, ImpactScene, LifeScene, MarketScene, ModelScene, ProofScene, TeamScene, WheelScene } from './v2/scenes';
+import { AskScene, DemoScene, DeviceScene, FailureScene, FragileScene, GapScene, ImpactScene, LifeScene, MarketScene, ModelScene, ProofScene, TeamScene, WheelScene } from './v2/scenes';
 import { ShrimpSymbol, WheelIcon } from './v2/art';
 import { ShrimpActor } from './v2/actor';
 import Lenis from 'lenis';
@@ -15,82 +16,115 @@ import wordmark from '../assets/v2/wordmark-white.png';
 const MONO = 'ui-monospace, "JetBrains Mono", Menlo, monospace';
 const EASE = 'cubic-bezier(.16,1,.3,1)';
 const TONES = {
+  pond: { bg: '#FFFFFF', fg: '#231F20', pattern: 1 },
   dusk: { bg: '#FF802E', fg: '#231F20', pattern: 5 },
   night: { bg: '#231F20', fg: '#FFFFFF', pattern: 4 },
   light: { bg: '#FFFFFF', fg: '#231F20', pattern: 1 },
   dawn: { bg: '#FF802E', fg: '#231F20', pattern: 5 },
 };
 
-const CHIPS = ['Problem', 'Product', 'Traction', 'Team', 'Ask'];
-const CHIP_TARGET = ['fragile', 'device', 'market', 'team', 'ask'];
+const CHIPS = ['Problem', 'Product', 'Traction', 'Team', 'Next'];
+const CHIP_TARGET = ['fragile', 'device', 'proof', 'team', 'ask'];
 
 // chip: index into CHIPS (-1 = none). wave: [amplitude, drift speed] for the background water.
 // noise: 0 clean current … 1 raw noise. Page loads as noise and settles clean; the problem chapters get noisy,
 // and the Cultivator chapter resolves it back to a clean signal (plug in → usable data).
 const CHAPTERS = [
-  { id: 'hero', noise: 0, time: '18:00', tone: 'dusk', h: 1.8, chip: -1, wave: [3, 1] },
+  { id: 'hero', noise: 0, time: '18:00', tone: 'pond', h: 3.2, chip: -1, wave: [5, 0.8] },
   { id: 'wheel', noise: 0, time: '19:00', tone: 'dusk', h: 2.2, chip: -1, wave: [6.5, 3.5] },
   { id: 'life', noise: 0, time: '21:00', tone: 'night', h: 1.6, chip: -1, wave: [5, 2.5], blend: 1.0 },
   { id: 'fragile', noise: 0.45, time: '23:00', tone: 'night', h: 1, chip: 0, wave: [2.5, 1] },
   { id: 'failure', noise: 1, time: '02:13', tone: 'night', h: 2.6, chip: 0, wave: [1.5, 0], fail: true },
   { id: 'gap', noise: 1, time: '02:13', tone: 'night', h: 1, chip: 0, wave: [1.5, 0], fail: true },
   { id: 'device', noise: 0, time: '02:14', tone: 'night', h: 3, chip: 1, wave: [4.5, 2] },
-  { id: 'impact', noise: 0, time: '04:00', tone: 'night', h: 1.8, chip: 1, wave: [4, 2] },
-  { id: 'market', noise: 0, time: '05:00', tone: 'light', h: 1, chip: 2, wave: [2.5, 1] },
+  { id: 'demo', noise: 0, time: '03:00', tone: 'night', h: 1, chip: 1, wave: [4, 1.5] },
+  { id: 'impact', noise: 0, time: '04:00', tone: 'night', h: 3, chip: 1, wave: [4, 2] },
+  { id: 'market', noise: 0, time: '05:00', tone: 'light', h: 1, chip: 1, wave: [2.5, 1] },
   { id: 'proof', noise: 0, time: '05:30', tone: 'light', h: 1, chip: 2, wave: [3, 1.2] },
   { id: 'model', noise: 0, time: '05:45', tone: 'light', h: 1, chip: 2, wave: [2.5, 1] },
   { id: 'team', noise: 0, time: '06:00', tone: 'dawn', h: 1, chip: 3, wave: [4, 1.5] },
   { id: 'ask', noise: 0, time: '06:00', tone: 'dawn', h: 1, chip: 4, wave: [4.5, 2] },
 ];
 
+// Hero title in title case, "Shrimp Farms" in italics, an orange scan sweeping over "Smart Aeration".
+function HeroTitle() {
+  return (
+    <h1 className="max-w-[960px] text-[clamp(27px,8.2vw,34px)] font-semibold leading-[1.12] tracking-[-0.035em] [text-wrap:balance] md:text-[clamp(44px,4.6vw,60px)]">
+      {/* A slow orange scan sweeps across "Smart Aeration", like a sensor reading the line. Ink at rest. */}
+      <span className="v2-anim v2-scan" style={{ animationDelay: `${INTRO_MS}ms` }}>Smart Aeration</span> for{' '}
+      <em className="whitespace-nowrap">Shrimp Farms</em>
+    </h1>
+  );
+}
+
 // Hero: shrimp centred over the converging-current background, pond strip at the bottom.
 // Scrolling through the (sticky) hero sinks the shrimp into the pond; the next chapter turns it into the wheel.
-function Hero() {
+function Hero({ style = 'pond' }) {
   const stageRef = useRef(null);
   const copyRef = useRef(null);
+  const stripRef = useRef(null);
 
   useEffect(() => {
     const onScroll = () => {
       const r = stageRef.current.parentElement.getBoundingClientRect();
-      const p = Math.min(1, Math.max(0, -r.top / (r.height - window.innerHeight)));
-      copyRef.current.style.opacity = String(Math.max(0, 1 - p * 2.5));
-      copyRef.current.style.transform = `translateY(${-p * 40}px)`;
+      const p = Math.min(1, Math.max(0, -r.top / Math.max(1, r.height - viewportHeight())));
+      // The hero is pinned for a long camera move (v2/FarmPonds.jsx): the words and the bottom strip clear out first.
+      const fade = style === 'pond' ? 1 - smoothT((p - 0.02) / 0.16) : 1 - smoothT((p - 0.25) / 0.75);
+      copyRef.current.style.opacity = String(fade);
+      copyRef.current.style.transform = `translateY(${-Math.min(p, 0.2) * 100}px)`;
+      if (stripRef.current) stripRef.current.style.opacity = String(style === 'pond' ? fade : 1);
     };
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
-  }, []);
+  }, [style]);
 
   // Stacked in normal flow (nav space → mark → copy → pond) so spacing can't collide at any screen size.
   return (
     <div ref={stageRef} className="sticky top-0 flex h-svh flex-col overflow-hidden">
-      <div className="flex min-h-0 flex-1 items-center justify-center pt-20">
+      <div className="relative flex min-h-0 flex-1 flex-col items-center justify-center gap-4 pt-20 md:gap-5">
         {/* The logo itself is drawn here by the travelling shrimp (v2/actor.jsx), so it can morph on scroll. */}
-        <div data-slot="hero" className="aspect-square h-[min(40svh,64vw)]" />
-      </div>
+        <div data-slot="hero" className="aspect-square h-[min(40svh,70vw)] shrink-0 translate-x-[3%] translate-y-[4%] md:h-[min(40svh,340px)]" />
 
-      <div ref={copyRef} className="flex flex-col items-center px-6 pb-12 pt-8 text-center md:pb-14">
-        <p className="mb-3 text-[12px] uppercase tracking-[0.08em] opacity-75" style={{ fontFamily: MONO }}>
+      <div ref={copyRef} className="relative flex shrink-0 flex-col items-center px-6 pb-4 text-center">
+        <p className="mb-3 text-[9px] uppercase tracking-[0.16em] opacity-55 md:mb-4 md:text-[10px]" style={{ fontFamily: MONO }}>
           Cultivate trust. Empower farmers.
         </p>
-        <h1 className="text-[30px] font-bold leading-[1.02] tracking-[-0.035em] [text-wrap:balance] md:text-[52px]">
-          A smart aeration system for
-          <br className="hidden md:block" /> 3.5 million smallholder farmers.
-        </h1>
+        <HeroTitle />
+        <p className="mt-3 max-w-[40ch] text-[15px] leading-relaxed opacity-80 md:mt-4 md:text-[17px]">
+          Know the moment an aerator stops
+        </p>
+      </div>
       </div>
 
       {/* Pond: no hard horizon. Lines bunch toward the top and fade out, so the water seems to go on forever.
           The water turns opaque further down, so the shrimp fades as it sinks. */}
-      <div className="relative h-[18svh] min-h-[110px] shrink-0 bg-[linear-gradient(to_bottom,transparent_0%,var(--v2-bg,#FF802E)_45%)]">
+      {/* With the pond farm behind it, this strip is just a faint wave (the farm is the water). */}
+      <div ref={stripRef} className={`relative h-[16svh] min-h-[84px] shrink-0 ${style === 'pond' ? '' : 'bg-[linear-gradient(to_bottom,transparent_0%,var(--v2-bg,#FF802E)_65%)]'}`}>
+        <svg viewBox="0 0 1200 100" preserveAspectRatio="none" className={`pointer-events-none absolute inset-x-0 top-0 h-16 w-full overflow-visible ${style === 'pond' ? 'text-[#FF802E] opacity-20' : 'text-white'}`} aria-hidden="true">
+          <g className="v2-anim" style={{ animation: 'v2swell 7s ease-in-out infinite' }}>
+            <path d="M-100 36 Q50 8 200 36 T500 36 T800 36 T1100 36 T1400 36 V120 H-100Z" fill="currentColor" fillOpacity="0.06" />
+            <path d="M-100 36 Q50 8 200 36 T500 36 T800 36 T1100 36 T1400 36" fill="none" stroke="currentColor" strokeOpacity="0.45" strokeWidth="1.25" vectorEffect="non-scaling-stroke" />
+          </g>
+        </svg>
         <ContourPattern
           variant="horizon"
-          introChaos={1}
-          lines={10}
-          amp={4}
-          speed={1.2}
-          className="absolute inset-0 h-full w-full opacity-60 [mask-image:linear-gradient(to_bottom,transparent_0%,#000_30%,#000_55%,transparent_96%)]"
+          color={style === 'pond' ? '#FF802E' : '#FFFFFF'}
+          introChaos={0}
+          lines={6}
+          wavelength={2}
+          heartbeat={false}
+          amp={6}
+          speed={1}
+          className={`absolute inset-0 h-full w-full ${style === 'pond' ? 'opacity-10' : 'opacity-45'} [mask-image:linear-gradient(to_bottom,transparent_0%,#000_25%,#000_70%,transparent_100%)]`}
         />
-        <p className="absolute inset-x-0 bottom-3 text-center text-[11px] uppercase tracking-[0.12em] text-white" style={{ fontFamily: MONO }}>Scroll</p>
+        <a href="#wheel" className="absolute bottom-4 left-1/2 inline-flex min-h-11 -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full px-4 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#231F20] transition-opacity hover:opacity-70" style={{ fontFamily: MONO }}>
+          <span>Scroll to dive</span>
+          <svg viewBox="0 0 24 28" className="v2-anim h-7 w-6" fill="none" aria-hidden="true" style={{ animation: 'v2dive 2.4s ease-in-out infinite' }}>
+            <path d="M12 2 V18 M7 13 L12 18 L17 13" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
+            <path d="M3 23 Q7.5 20 12 23 T21 23" stroke="currentColor" strokeWidth="1" strokeLinecap="round" opacity="0.5" />
+          </svg>
+        </a>
       </div>
     </div>
   );
@@ -103,6 +137,7 @@ const SCENES = {
   failure: FailureScene,
   gap: GapScene,
   device: DeviceScene,
+  demo: DemoScene,
   impact: ImpactScene,
   market: MarketScene,
   proof: ProofScene,
@@ -111,8 +146,8 @@ const SCENES = {
   ask: AskScene,
 };
 
-function Chapter({ c }) {
-  if (c.id === 'hero') return <Hero />;
+function Chapter({ c, heroStyle }) {
+  if (c.id === 'hero') return <Hero style={heroStyle} />;
   const Scene = SCENES[c.id];
   return <Scene />;
 }
@@ -126,11 +161,14 @@ function Chapter({ c }) {
 // (blur + alpha threshold) makes them stick and stretch before they separate. Droplets trail behind.
 // When settled, the goo layer is removed and each group keeps its own pill.
 // Pill colour contrasts with the section: ink pills on orange/white, white pills on ink.
-const T = { pop: 650, left: 550, leftDur: 1150, nav: 1000, navDur: 1000, right: 1350, rightDur: 1150 };
-const SPRING = 'cubic-bezier(.34,1.56,.64,1)';
-const PULL = 'cubic-bezier(.55,0,.2,1)';
+const T = { pop: 500, left: 350, leftDur: 900, nav: 700, navDur: 850, right: 1000, rightDur: 900 };
+const SPRING = 'cubic-bezier(.22,1,.36,1)';
+const PULL = 'cubic-bezier(.65,0,.35,1)';
 
-function NavBar({ chapter, tone, startDelay = 0, onTop }) {
+function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }) {
+  const rowRef = useRef(null);
+  const navWrapRef = useRef(null);
+  const rightWrapRef = useRef(null);
   const wordRef = useRef(null);
   const navRef = useRef(null);
   const rightRef = useRef(null);
@@ -142,21 +180,69 @@ function NavBar({ chapter, tone, startDelay = 0, onTop }) {
   const [settled, setSettled] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [peek, setPeek] = useState(false);
+  const [desktop, setDesktop] = useState(() => window.matchMedia('(min-width: 1024px)').matches);
+  const [collapseOffsets, setCollapseOffsets] = useState({ nav: 0, right: 0 });
   const [ind, setInd] = useState({ x: 0, w: 0 });
   const prevChip = useRef(-1);
   const light = tone.bg === '#231F20';
-  const pill = light ? 'bg-white text-[#231F20] ring-[#231F20]/10' : 'bg-[#231F20] text-white ring-white/10';
-  const [blobColour] = useState(() => (light ? '#FFFFFF' : '#231F20'));
+  const collapsed = scrolled && settled && !menuOpen && !peek;
+  const pill = light ? 'bg-[#231F20]/95 text-white ring-white/20' : 'bg-white/95 text-[#231F20] ring-[#FF802E]/25';
+  const [blobColour] = useState(() => (light ? '#231F20' : '#FFFFFF'));
   // Pill backgrounds switch on instantly when the goo layer is removed (no fade = no flicker);
   // colour transitions are enabled one frame later, for section changes only.
   const pillCls = (extra) =>
-    `${extra} rounded-full ring-1 ${settled ? 'transition-[background-color,color,box-shadow] duration-700' : ''} ${done ? pill : `${pill} !bg-transparent !ring-transparent`} ${scrolled ? 'shadow-[0_6px_20px_rgb(0_0_0/0.18)]' : ''}`;
+    `${extra} rounded-full ring-1 ${settled ? 'backdrop-blur-xl transition-[background-color,color,box-shadow] duration-500' : ''} ${done ? pill : `${pill} !bg-transparent !ring-transparent`} ${scrolled ? 'shadow-[0_3px_12px_rgb(35_31_32/0.06)]' : ''}`;
+
+  useLayoutEffect(() => {
+    const measure = () => {
+      const word = wordRef.current;
+      const center = word.offsetLeft + word.offsetWidth / 2;
+      const offset = (element) => center - element.offsetLeft - element.offsetWidth / 2;
+      const next = { nav: offset(navWrapRef.current), right: offset(rightWrapRef.current) };
+      setCollapseOffsets((previous) => previous.nav === next.nav && previous.right === next.right ? previous : next);
+    };
+    const observer = new ResizeObserver(measure);
+    [rowRef.current, navWrapRef.current, rightWrapRef.current].forEach((element) => observer.observe(element));
+    measure();
+    return () => observer.disconnect();
+  }, []);
+
+  const foldingStyle = (offset) => ({
+    transform: collapsed ? `translateX(${offset}px) scale(.35)` : 'translateX(0) scale(1)',
+    opacity: collapsed ? 0 : 1,
+    visibility: collapsed ? 'hidden' : 'visible',
+    pointerEvents: collapsed ? 'none' : 'auto',
+    transition: reduced ? 'none' : `transform 420ms ${EASE}, opacity 200ms ease, visibility 0s ${collapsed ? '420ms' : '0s'}`,
+  });
 
   useEffect(() => {
     if (!done) return undefined;
     const id = requestAnimationFrame(() => setSettled(true));
     return () => cancelAnimationFrame(id);
   }, [done]);
+
+  useEffect(() => {
+    const mq = window.matchMedia('(min-width: 1024px)');
+    const onChange = () => setDesktop(mq.matches);
+    mq.addEventListener('change', onChange);
+    return () => mq.removeEventListener('change', onChange);
+  }, []);
+
+  // A peeked (re-opened) desktop menu folds away again once the reader scrolls on.
+  useEffect(() => {
+    if (!peek) return undefined;
+    const y0 = window.scrollY;
+    const onScroll = () => Math.abs(window.scrollY - y0) > 240 && setPeek(false);
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => window.removeEventListener('scroll', onScroll);
+  }, [peek]);
+
+  const onLogo = () => {
+    if (!scrolled) onTop?.();
+    else if (desktop) setPeek((p) => !p);
+    else setMenuOpen((open) => !open);
+  };
 
   useEffect(() => {
     if (!menuOpen) return undefined;
@@ -166,7 +252,7 @@ function NavBar({ chapter, tone, startDelay = 0, onTop }) {
   }, [menuOpen]);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 80);
+    const onScroll = () => setScrolled((previous) => window.scrollY > (previous ? 100 : 160));
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
@@ -193,9 +279,47 @@ function NavBar({ chapter, tone, startDelay = 0, onTop }) {
     const go = (el, frames, opts) => anims.push(el.animate(frames, { fill: 'both', ...opts, delay: (opts.delay ?? 0) + startDelay }));
     const tf = (dx, scx = 1, scy = 1) => `translateX(${dx}px) scale(${scx}, ${scy})`;
 
+    // Below the desktop breakpoint there are only two pills. The desktop
+    // centre bubble otherwise survives the split and snaps away at handoff.
+    if (!n.width) {
+      [bC, d1, d2, d3, d4].forEach((el) => { el.style.display = 'none'; });
+      const duration = 1000;
+      const split = (rect) => [
+        { offset: 0, opacity: 0, transform: tf(dxTo(rect), sx(rect) * 0.94, 0.94) },
+        { offset: 0.18, opacity: 1, transform: tf(dxTo(rect), sx(rect)), easing: 'linear' },
+        { offset: 0.3, opacity: 1, transform: tf(dxTo(rect), sx(rect)), easing: EASE },
+        { offset: 1, opacity: 1, transform: tf(0) },
+      ];
+      go(bL, split(w), { duration });
+      go(bR, split(r), { duration });
+      // Keep the wordmark attached to its bubble throughout one timeline.
+      go(wordRef.current, split(w), { duration });
+      go(rightRef.current, [
+        { offset: 0, opacity: 0, transform: `translateX(${dxTo(r)}px)` },
+        { offset: 0.5, opacity: 0, transform: `translateX(${dxTo(r) * 0.15}px)`, easing: EASE },
+        { offset: 1, opacity: 1, transform: 'translateX(0)' },
+      ], { duration });
+      let live = true;
+      const finish = () => { if (live) setDone(true); };
+      const width = window.innerWidth;
+      const onResize = () => {
+        if (window.innerWidth !== width) {
+          anims.forEach((animation) => animation.finish());
+          finish();
+        }
+      };
+      window.addEventListener('resize', onResize);
+      Promise.all(anims.map((animation) => animation.finished)).then(finish).catch(() => {});
+      return () => {
+        live = false;
+        window.removeEventListener('resize', onResize);
+        anims.forEach((animation) => animation.cancel());
+      };
+    }
+
     // 1. Pop in (centre bubble carries the start shape; the side bubbles hide inside it)
     const cStart = tf(dxTo(navRect), sx(navRect));
-    go(bC, [{ transform: tf(dxTo(navRect), sx(navRect) * 0.4, 0.4) }, { transform: cStart }], { duration: T.pop, easing: SPRING });
+    go(bC, [{ transform: tf(dxTo(navRect), sx(navRect) * 0.9, 0.9) }, { transform: cStart }], { duration: T.pop, easing: SPRING });
     go(wordRef.current, [{ opacity: 0, transform: `translateX(${dxTo(w)}px) scale(.85)` }, { opacity: 1, transform: `translateX(${dxTo(w)}px) scale(1)` }], { duration: T.pop, easing: SPRING });
 
     // 2. Wordmark breaks off left: squash (sticks) → stretch → overshoot → settle
@@ -203,15 +327,15 @@ function NavBar({ chapter, tone, startDelay = 0, onTop }) {
     go(bL, [
       { offset: 0, transform: tf(L), easing: 'ease-in-out' },
       { offset: 0.16, transform: tf(L + 6, 0.92, 1.06), easing: PULL },
-      { offset: 0.6, transform: tf(L * 0.25, 1.22, 0.9), easing: 'ease-out' },
-      { offset: 0.84, transform: tf(-9, 0.96, 1.03), easing: 'ease-in-out' },
+      { offset: 0.6, transform: tf(L * 0.25, 1.08, 0.96), easing: 'ease-out' },
+      { offset: 0.84, transform: tf(-3, 0.99, 1.01), easing: 'ease-in-out' },
       { offset: 1, transform: tf(0) },
     ], { duration: T.leftDur, delay: T.left });
     go(wordRef.current, [
       { offset: 0, transform: `translateX(${L}px)`, easing: 'ease-in-out' },
       { offset: 0.16, transform: `translateX(${L + 6}px)`, easing: PULL },
       { offset: 0.6, transform: `translateX(${L * 0.25}px)`, easing: 'ease-out' },
-      { offset: 0.84, transform: 'translateX(-9px)', easing: 'ease-in-out' },
+      { offset: 0.84, transform: 'translateX(-3px)', easing: 'ease-in-out' },
       { offset: 1, transform: 'none' },
     ], { duration: T.leftDur, delay: T.left });
     const drop = (el, toX, dur, delay) =>
@@ -240,14 +364,14 @@ function NavBar({ chapter, tone, startDelay = 0, onTop }) {
     go(bR, [
       { offset: 0, transform: tf(Rx, sx(r)), easing: 'ease-in-out' },
       { offset: 0.16, transform: tf(Rx - 6, sx(r) * 0.92, 1.06), easing: PULL },
-      { offset: 0.6, transform: tf(Rx * 0.25, 1.15, 0.9), easing: 'ease-out' },
-      { offset: 0.84, transform: tf(9, 0.97, 1.03), easing: 'ease-in-out' },
+      { offset: 0.6, transform: tf(Rx * 0.25, 1.06, 0.97), easing: 'ease-out' },
+      { offset: 0.84, transform: tf(3, 0.99, 1.01), easing: 'ease-in-out' },
       { offset: 1, transform: tf(0) },
     ], { duration: T.rightDur, delay: T.right });
     drop(d3, r.left + 14 - cx, T.rightDur + 150, T.right);
     drop(d4, (r.left - cx) * 0.55, T.rightDur + 300, T.right);
     go(rightRef.current, [{ opacity: 0 }, { opacity: 1 }], { duration: 400, delay: T.right + T.rightDur * 0.7, easing: 'ease-out' });
-    go(deckRef.current, [{ transform: 'scale(.4)' }, { transform: 'scale(1)' }], { duration: 600, delay: T.right + T.rightDur * 0.75, easing: SPRING });
+    go(deckRef.current, [{ transform: 'scale(.92)' }, { transform: 'scale(1)' }], { duration: 600, delay: T.right + T.rightDur * 0.75, easing: SPRING });
 
     // Hand over to the static pills only once every bubble has actually finished (robust to slow or hidden tabs).
     let live = true;
@@ -278,7 +402,7 @@ function NavBar({ chapter, tone, startDelay = 0, onTop }) {
   }, [chapter.chip]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-20">
+    <header className="pointer-events-none fixed inset-x-0 top-0 z-20">
       <svg width="0" height="0" className="absolute" aria-hidden="true">
         <filter id="nav-goo">
           <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b" />
@@ -295,18 +419,19 @@ function NavBar({ chapter, tone, startDelay = 0, onTop }) {
       )}
 
       <div
+        ref={rowRef}
         className="relative flex items-center justify-between gap-3 px-4 py-3 md:px-6"
-        style={{ transform: scrolled && settled ? 'scale(.94)' : 'none', transformOrigin: '50% 0', transition: `transform 500ms ${EASE}` }}
       >
-        <a ref={wordRef} href="#hero" aria-label="Cultivator" className={pillCls('inline-flex h-12 items-center px-5')}>
+        <button ref={wordRef} type="button" onClick={onLogo} aria-label={!scrolled ? 'Cultivator' : desktop ? (peek ? 'Hide navigation' : 'Show navigation') : (menuOpen ? 'Close navigation' : 'Open navigation')} aria-expanded={scrolled ? (desktop ? peek : menuOpen) : undefined} aria-controls={scrolled && !desktop ? 'v2-mobile-menu' : undefined} className={pillCls('pointer-events-auto relative z-10 inline-flex h-12 shrink-0 items-center px-4 md:px-5')}>
           {/* Nudged up/right: the wordmark's ink sits low and left of its box (tall letters, shrimp head), so true centring looks off. */}
-          <span className="block h-[22px] w-[115px] translate-x-[0.5px] -translate-y-[1.5px] bg-current" style={{ WebkitMask: `url(${wordmark}) center / contain no-repeat`, mask: `url(${wordmark}) center / contain no-repeat` }} />
-        </a>
+          <span className="block h-[20px] w-[100px] md:h-[22px] md:w-[115px] translate-x-[0.5px] -translate-y-[1.5px] bg-[#FF802E]" style={{ WebkitMask: `url(${wordmark}) center / contain no-repeat`, mask: `url(${wordmark}) center / contain no-repeat` }} />
+        </button>
 
-        <nav ref={navRef} className={pillCls('relative hidden h-12 items-center p-1 md:flex')}>
+        <div ref={navWrapRef} className="hidden lg:block" style={foldingStyle(collapseOffsets.nav)} inert={collapsed}>
+        <nav ref={navRef} className={pillCls('relative hidden h-12 items-center p-1 lg:flex')}>
           <span
             aria-hidden="true"
-            className={`absolute inset-y-1 left-0 rounded-full ${light ? 'bg-[#231F20]/10' : 'bg-white/15'}`}
+            className="absolute inset-y-1 left-0 rounded-full bg-[#FF802E]/15"
             style={{ width: ind.w, transform: `translateX(${ind.x}px)`, opacity: chapter.chip < 0 ? 0 : 1, transition: `transform 420ms ${SPRING}, width 420ms ${SPRING}, opacity 300ms ease, background-color 700ms ease` }}
           />
           {CHIPS.map((label, i) => (
@@ -315,14 +440,16 @@ function NavBar({ chapter, tone, startDelay = 0, onTop }) {
               ref={(el) => { chipRefs.current[i] = el; }}
               href={`#${CHIP_TARGET[i]}`}
               aria-current={chapter.chip === i ? 'true' : undefined}
-              className={`relative inline-flex h-10 items-center rounded-full px-4 text-[14px] font-medium transition-colors duration-300 ${light ? 'hover:bg-[#231F20]/5' : 'hover:bg-white/10'}`}
+              className="relative inline-flex h-10 items-center rounded-full px-4 text-[14px] font-medium transition-colors duration-300 hover:bg-[#FF802E]/10"
             >
               <span style={{ opacity: chapter.chip === i ? 1 : 0.72, transition: 'opacity 300ms ease' }}>{label}</span>
             </a>
           ))}
         </nav>
+        </div>
 
-        <div ref={rightRef} className={pillCls('flex h-12 items-center gap-3 pl-4 pr-1.5')}>
+        <div ref={rightWrapRef} style={foldingStyle(collapseOffsets.right)} inert={collapsed}>
+        <div ref={rightRef} className={pillCls('flex h-12 items-center gap-2 pl-4 pr-1.5 md:gap-3')}>
           <span className="hidden text-[13px] tabular-nums opacity-80 sm:inline" style={{ fontFamily: MONO }}>{chapter.time}</span>
           <button
             type="button"
@@ -330,21 +457,31 @@ function NavBar({ chapter, tone, startDelay = 0, onTop }) {
             aria-expanded={menuOpen}
             aria-controls="v2-mobile-menu"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            className="-ml-1 grid h-9 w-9 place-items-center rounded-full transition-transform active:scale-90 md:hidden"
+            className="-ml-1 grid h-9 w-9 place-items-center rounded-full transition-transform active:scale-90 lg:hidden"
           >
             {menuOpen ? <X size={18} /> : <Menu size={18} />}
           </button>
-          <a ref={deckRef} href="#ask" className="inline-flex h-9 items-center rounded-full bg-[#FF802E] px-5 text-[14px] font-semibold text-[#231F20] transition-transform duration-300 hover:scale-105 active:scale-95">Deck</a>
+          <a ref={deckRef} href="#decks" className="inline-flex h-9 items-center rounded-full bg-[#FF802E] px-5 text-[14px] font-semibold text-[#231F20] transition-transform duration-300 hover:scale-105 active:scale-95">Deck</a>
+        </div>
         </div>
       </div>
 
       {/* Mobile menu sheet: the same chapters as the desktop chips, plus back to top. */}
       <div
         id="v2-mobile-menu"
-        className={`absolute inset-x-3 top-[72px] origin-top rounded-[28px] p-2 shadow-[0_12px_32px_rgb(0_0_0/0.3)] ring-1 md:hidden ${pill}`}
+        className={`absolute inset-x-3 top-[72px] origin-top rounded-[28px] p-2 shadow-[0_8px_28px_rgb(35_31_32/0.12)] ring-1 backdrop-blur-xl md:left-auto md:right-6 md:w-[320px] ${pill}`}
         style={{ opacity: menuOpen ? 1 : 0, transform: menuOpen ? 'none' : 'translateY(-8px) scale(.97)', pointerEvents: menuOpen ? 'auto' : 'none', transition: `opacity 250ms ease, transform 350ms ${EASE}` }}
         aria-hidden={!menuOpen}
       >
+        <div className="mb-2 border-b border-current/15 px-3 pb-4 pt-3">
+          <p className="mb-3 text-[10px] uppercase tracking-[0.12em] opacity-60" style={{ fontFamily: MONO }}>Compare hero</p>
+          <div role="group" aria-label="Compare hero styles" className="flex gap-1 rounded-full bg-current/10 p-1">
+            {[['pond', 'Ponds'], ['dusk', 'Orange']].map(([value, label]) => <button key={value} type="button" tabIndex={menuOpen ? 0 : -1} aria-pressed={heroStyle === value} onClick={() => {
+              onHeroStyle(value);
+              onTop?.();
+            }} className={`h-9 flex-1 rounded-full text-[13px] font-semibold transition-colors ${heroStyle === value ? 'bg-[#FF802E] text-[#231F20]' : 'opacity-70 hover:opacity-100'}`}>{label}</button>)}
+          </div>
+        </div>
         {CHIPS.map((label, i) => (
           <a
             key={label}
@@ -354,7 +491,7 @@ function NavBar({ chapter, tone, startDelay = 0, onTop }) {
             className={`flex h-12 items-center justify-between rounded-[20px] px-4 text-[17px] font-semibold ${chapter.chip === i ? (light ? 'bg-[#231F20]/10' : 'bg-white/15') : ''}`}
           >
             {label}
-            <span className="text-[12px] opacity-60" style={{ fontFamily: MONO }}>{['23:00', '02:14', '05:00', '06:00', '06:00'][i]}</span>
+            <span className="text-[12px] opacity-60" style={{ fontFamily: MONO }}>{['23:00', '02:14', '05:30', '06:00', '06:00'][i]}</span>
           </a>
         ))}
         <button
@@ -392,6 +529,9 @@ const smoothT = (t) => {
 };
 
 export default function V2Page() {
+  const [heroStyle, setHeroStyle] = useState('pond');
+  const [reducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const chapters = useMemo(() => CHAPTERS.map((chapter) => chapter.id === 'hero' ? { ...chapter, tone: heroStyle } : chapter), [heroStyle]);
   const [saved] = useState(readSaved);
   const [active, setActive] = useState(() => saved?.i ?? 0);
   // Intro plays on every load/refresh (skipped only for reduced motion); a restored position waits behind it.
@@ -401,7 +541,7 @@ export default function V2Page() {
   const wheelRef = useRef(null);
   const bgRef = useRef(null);
   const rootRef = useRef(null);
-  const c = CHAPTERS[active];
+  const c = chapters[active];
   const tone = TONES[c.tone];
   useScrollEngine();
   const endIntro = useCallback(() => setIntro(false), []);
@@ -447,7 +587,7 @@ export default function V2Page() {
 
   // Smooth scrolling (Lenis). Skipped for reduced motion. Anchor links glide too.
   useEffect(() => {
-    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return undefined;
+    if (window.matchMedia('(prefers-reduced-motion: reduce), (pointer: coarse)').matches) return undefined;
     const lenis = new Lenis({ lerp: 0.085, anchors: true, wheelMultiplier: 0.9 });
     lenisRef.current = lenis;
     let id = 0;
@@ -481,13 +621,13 @@ export default function V2Page() {
     );
     const secs = [...document.querySelectorAll('[data-i]')];
     secs.forEach((el) => io.observe(el));
-    const cols = CHAPTERS.map((ch) => ({ bg: hex(TONES[ch.tone].bg), fg: TONES[ch.tone].fg }));
+    const cols = chapters.map((ch) => ({ bg: hex(TONES[ch.tone].bg), fg: TONES[ch.tone].fg }));
 
     // Background colour blends continuously across each section boundary (no timed fades),
     // and text colour flips at the midpoint of the blend.
     const onScroll = () => {
       const y = window.scrollY;
-      const vh = window.innerHeight;
+      const vh = viewportHeight();
       const mid = y + vh * 0.5;
       let i = 0;
       while (i < secs.length - 1 && secs[i + 1].offsetTop <= mid) i += 1;
@@ -511,18 +651,23 @@ export default function V2Page() {
       window.removeEventListener('scroll', onScroll);
       window.removeEventListener('resize', onScroll);
     };
-  }, []);
+  }, [chapters]);
 
   return (
     <div ref={rootRef} className="relative" style={{ color: tone.fg, transition: 'color 300ms ease' }}>
       <div ref={bgRef} className="fixed inset-0 -z-10" style={{ background: tone.bg }}>
-        <ContourPattern variant={tone.pattern} frozen={Boolean(c.fail)} amp={c.wave[0]} speed={c.wave[1]} chaos={c.noise} introChaos={1} pulses={4} interactive lineOpacity={0.3} className="h-full w-full" />
+        <div className="h-full w-full" style={{ opacity: c.id === 'hero' && heroStyle === 'pond' ? 0 : 1 }}>
+          <ContourPattern variant={tone.pattern} frozen={Boolean(c.fail)} amp={c.wave[0]} speed={c.wave[1]} lines={c.id === 'hero' ? 5 : 8} wavelength={2.5} convergence={c.id === 'hero' ? 0.78 : 0.45} focusTarget={c.id === 'hero' ? '[data-slot="hero"]' : null} heartbeat={c.id !== 'hero'} chaos={c.noise} introChaos={0} pulses={0} lineOpacity={0.18} className="h-full w-full" />
+        </div>
+        {/* Hero farm lives in the fixed background so it stays under the shrimp; it follows the hero as it scrolls away. */}
+        {heroStyle === 'pond' && <FarmPonds reduced={reducedMotion} />}
       </div>
 
       <ShrimpSymbol />
-      <ShrimpActor hidden={intro} />
+      <ShrimpActor hidden={intro} orangeHero={heroStyle === 'pond'} />
       {intro && <IntroScreen onDone={endIntro} />}
-      <NavBar chapter={c} tone={tone} startDelay={introDelay} onTop={toTop} />
+      <NavBar chapter={c} tone={tone} startDelay={introDelay} onTop={toTop} heroStyle={heroStyle} onHeroStyle={setHeroStyle} />
+
 
       {/* Back to top: the little paddlewheel turns as you scroll; tap it to glide back up. */}
       <button
@@ -541,9 +686,9 @@ export default function V2Page() {
       </button>
 
       <main>
-        {CHAPTERS.map((ch, i) => (
-          <section key={ch.id} id={ch.id} data-i={i} data-scene className="relative" style={{ minHeight: `${ch.h * 100}svh` }}>
-            <Chapter c={ch} />
+        {chapters.map((ch, i) => (
+          <section key={ch.id} id={ch.id} data-i={i} data-scene className="relative" style={{ minHeight: `calc(${ch.h * 100}svh + var(--stage-extra, 0px))` }}>
+            <Chapter c={ch} heroStyle={heroStyle} />
           </section>
         ))}
       </main>

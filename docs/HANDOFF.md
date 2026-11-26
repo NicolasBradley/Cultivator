@@ -59,7 +59,8 @@ Redesign files:
 ### Documents and data (outside the repo, on the owner's Mac)
 | What | Path |
 |---|---|
-| Pitch deck (22 slides): source for all numbers, story, team | `~/Downloads/Cultivator.pdf` |
+| **Company deck, Nov 2026 (source for copy, NOT public yet)**: EN / zh-CN / zh-TW | `~/Downloads/Cultivator_Company_Deck_2026-11*.pdf`. Don't put these on the site until the owner says so. |
+| Older pitch deck (22 slides, superseded) | `~/Downloads/Cultivator.pdf` |
 | Sponsor proposal V5 (16 pages): traction, roadmap, team names, contacts | `~/Downloads/Projects/Cultivator Content/Cultivator Project Proposal V5-B9uZfaa1.pdf` |
 | Official logo files (orange/white/black variants, wordmark, team-by-pond photo) | `~/Downloads/Projects/Cultivator Content/Cultivator Assets/` |
 | Original logo-animation reference video | `~/Downloads/original-2969b52cc0b6ce4d78b287558fac3800.mp4` |
@@ -74,14 +75,17 @@ PDF tip: the PDFs are image-heavy. Text was extracted on macOS with JXA + PDFKit
 | `docs/REDESIGN_CONCEPT.md` | The "Night Shift" concept, chapter table mapped to deck slides, image-speed plan, decisions |
 | `docs/HANDOFF.md` | This file |
 
-### Key facts for copy (from the deck/proposal)
-- $300 aerator → −$10,000 of shrimp in 1 hour; −$1.8M/day industry-wide
-- 27.6% energy saved; 1.8 t more shrimp/crop; $10,000 back per harvest
-- Market: $7B → $1.6B → $115M → $3M (TAM/SAM/SOM ladder)
-- Traction: 50+ farmers, 4 countries (Taiwan, Indonesia, Malaysia, China), 9 signed pilots, 3 paid, 2 company partners; idea → sales in 2 months; Hult Prize national winner
-- Model: hardware ~$100 (40% margin) + software $120/yr; year 1: 90 ponds, $58,500 revenue
-- Ask: deploying $1M (R&D 35%, operations 30%, manufacturing 20%, sales/marketing 15%)
-- Team: Frans (CEO), Jason (COO), Daniel/Delon (CMO), Jai-Jai (CTO). Advisors: Jenny Ou (Sankina Aquaculture), Bagas Pramana Putra Fadhila (Sinarmas), Prof. Yu Wei Hsu (NTHU IMBA)
+### Key facts for copy (November 2026 deck: the source of truth)
+See `docs/DECK_ALIGNMENT.md` for the full section-by-section mapping. The site's deck download is the old pitch deck (`src/assets/Cultivator Project Proposal.pdf`, same as the live homepage). The Nov 2026 decks aren't public yet.
+- Hero: title **Smart aeration for shrimp farms**, one line "Know the moment an aerator stops" (no full stops, keep it this short). Tagline: **Cultivate trust. Empower farmers.**
+- US$300 aerator protects up to **US$50,000** of shrimp in one pond; lost in **about 1 hour**. ~90% of farmers are smallholders.
+- Product: **US$10 current sensor** on the aerator's cable (electrical box), DO + pH probe, sealed field box (RS-485), alerts on **LINE / WhatsApp**, daily/weekly/monthly/per-harvest reports. Control from oxygen readings is in development.
+- Farm proof: aerator at **3×** normal current → **US$200/yr** wasted, **US$15** fix; **<10 min** to fit.
+- Traction: **15+ signed pilots, 5 paid, 4 countries** (Indonesia, Taiwan, Malaysia, China), **~5,000 aerators** pipeline. Partners: Maxmar (test agreed, not signed), Crustea, Sankina Aquaculture, LanCore System.
+- Pricing: **Buy** US$750/pond + US$10/aerator, then US$10/mo; **lease-to-own** US$99 setup + US$45/mo.
+- Milestones: started Feb 2026 · NTHU Garage Mar 2026 · **Hult Prize Taiwan 2026 champion** · first paid pilots May–Jul · DeployAI 2nd (Nov) · LITEON "Boldness" film (Nov) · Techathon+ finals 25 Jan 2027 if selected.
+- Team: **Fransiskus Guntur** (overall architecture), **Daniel Ieong** (software and business), **Jason Nababan** (partnerships and product development). Advisors: Jenny Ou, Bagas Pramana Putra Fadhila, Prof. Yu Wei Hsu.
+- No funding ask in the current deck. Don't reintroduce the old $1M split.
 
 ---
 

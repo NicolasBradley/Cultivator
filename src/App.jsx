@@ -59,7 +59,7 @@ const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: 'Cultivator',
-    description: 'Real-time IoT monitoring system for shrimp farm aerators. Detects electrical current anomalies and mechanical vibrations to prevent equipment failure and protect harvest value.',
+    description: 'Smart aeration for shrimp farms. A US$10 current sensor on each aerator\'s cable, in the farm\'s existing electrical box, tells the farmer on LINE or WhatsApp the moment an aerator stops. Dissolved oxygen and pH probes read the water.',
     brand: {
       '@type': 'Organization',
       name: 'Cultivator'
@@ -80,17 +80,17 @@ const structuredData = {
       {
         '@type': 'PropertyValue',
         name: 'Monitoring Type',
-        value: 'Electrical Current & Mechanical Vibration'
+        value: 'Aerator current (clamp in the electrical box), dissolved oxygen and pH'
       },
       {
         '@type': 'PropertyValue',
         name: 'Installation',
-        value: 'Plug-and-Play Retrofit'
+        value: 'Clamps onto existing cables; no cable cut, nothing in the pond replaced'
       },
       {
         '@type': 'PropertyValue',
         name: 'Alerts',
-        value: 'Real-time SMS & Push Notifications'
+        value: 'LINE or WhatsApp alerts; daily, weekly, monthly and per-harvest reports'
       }
     ]
   },
@@ -103,7 +103,7 @@ const structuredData = {
         name: 'What is Cultivator?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Cultivator is an IoT monitoring device that attaches to paddlewheel aerators on shrimp farms. It tracks electrical current and mechanical vibration to detect failures early, preventing crop loss.'
+          text: 'Cultivator watches the aerators that keep shrimp alive and tells the farmer on LINE or WhatsApp the moment one stops. A US$10 current sensor clamps onto each aerator\'s cable inside the farm\'s existing electrical box.'
         }
       },
       {
@@ -111,23 +111,15 @@ const structuredData = {
         name: 'How does the installation work?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Cultivator is plug-and-play. Our team installs the sensor directly onto your existing aerator equipment. No modification to your farm infrastructure is required.'
+          text: 'The current sensor clamps onto the aerator\'s cable inside the existing electrical box. No cable is cut and nothing in the pond is replaced. In our tests it took under 10 minutes per aerator. A sealed field box holds the electronics, and a dissolved oxygen probe and pH sensor sit in the pond.'
         }
       },
       {
         '@type': 'Question',
-        name: 'What is the market opportunity?',
+        name: 'Where are your pilots?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'The global aquaculture hardware market is ~$800M. Asia represents ~$300M of this market. We are initially targeting Taiwan ($50M) with expansion plans across Southeast Asia targeting 5,000 farms by 2030.'
-        }
-      },
-      {
-        '@type': 'Question',
-        name: 'What regions do you serve?',
-        acceptedAnswer: {
-          '@type': 'Answer',
-          text: 'We are currently piloting in Taiwan with plans to expand across Southeast Asia including Indonesia, Thailand, Vietnam, and the Philippines.'
+          text: 'We have 15+ signed pilots, 5 of them paid, in 4 countries: Indonesia, Taiwan, Malaysia and China.'
         }
       }
     ]

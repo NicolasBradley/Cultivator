@@ -8,8 +8,8 @@ export const CONTACT = {
   email: 'ddieong04@gmail.com',
   conversation: 'mailto:ddieong04@gmail.com?subject=Partner%20conversation%20with%20Cultivator',
   phones: [
-    { name: 'Daniel', number: '+886 95380908', href: 'tel:+88695380908' },
-    { name: 'Jason', number: '+886 97072303', href: 'tel:+88697072303' },
+    { name: 'Daniel', number: '+886 955 380 908', href: 'tel:+886955380908' },
+    { name: 'Jason', number: '+886 970 072 303', href: 'tel:+886970072303' },
   ],
   socials: [
     { name: 'Website', href: 'https://cultivatortech.com' },

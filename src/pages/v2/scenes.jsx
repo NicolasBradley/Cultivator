@@ -21,6 +21,11 @@ import aeratorPic from '../../assets/v2/aerator-real.webp';
 import clampPic from '../../assets/v2/setup-clamp.jpg';
 import fieldBoxPic from '../../assets/v2/setup-field-box.jpg';
 import probePic from '../../assets/v2/setup-do-probe.jpg';
+import farmAeratorPic from '../../assets/v2/photo-farm-aerator.jpg';
+import hultWinPic from '../../assets/v2/photo-hult-win.jpg';
+import garageBuildPic from '../../assets/v2/photo-garage-build.jpg';
+import liteonFilmingPic from '../../assets/v2/photo-liteon-filming.jpg';
+import { MAP_COUNTRY, MAP_LAND } from './asiaMap';
 import { smooth, useProgress, useStageSizing } from './scroll';
 import { CONTACT } from './contact';
 
@@ -319,7 +324,7 @@ export function DeviceScene() {
         <div>
           <Eyebrow>02:14 Cultivator</Eyebrow>
           <H2 className="md:!text-[48px]">We watch the machine and tell the farmer straight away.</H2>
-          <p className="mt-4 max-w-[40ch] text-[16px] leading-relaxed opacity-90 md:text-[17px]">Nothing is mounted on the aerator. A US$10 sensor sits on its cable in the farm’s electrical box. No cable is cut, and in our tests it took under 10 minutes to fit.</p>
+          <p className="mt-4 max-w-[40ch] text-[16px] leading-relaxed opacity-90 md:text-[17px]">Nothing is mounted on the aerator. A small clip-on sensor sits on its cable in the farm’s electrical box. No cable is cut, and in our tests it took under 10 minutes to fit.</p>
           <ol className="mt-6 divide-y divide-current/15 border-y border-current/15 md:mt-8">
             {STEPS.map(([title, text, pic, at], i) => (
               <li key={title} className="flex items-center gap-4 py-3" style={{ opacity: `calc(0.6 + 0.4 * ${seg(at, at + 0.06)})` }}>
@@ -503,8 +508,8 @@ export function ImpactScene() {
               </div>
               {i === FAULTY && (
                 <>
-                  <span className="pointer-events-none absolute -inset-2 rounded-[16px] ring-2 ring-[#FF802E]" style={{ opacity: seg(0.15, 0.3), boxShadow: '0 0 24px rgba(255,128,46,0.55)' }} />
-                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#FF802E] px-2 py-0.5 text-[11px] font-bold text-[#231F20]" style={{ opacity: seg(0.2, 0.32) }}>3×</span>
+                  <span className="pointer-events-none absolute -inset-2 rounded-[16px] bg-[#D92D20]/15 ring-[3px] ring-[#D92D20]" style={{ opacity: seg(0.15, 0.3), boxShadow: '0 0 28px rgba(217,45,32,0.7)' }} />
+                  <span className="absolute -top-3 left-1/2 -translate-x-1/2 rounded-full bg-[#D92D20] px-2 py-0.5 text-[11px] font-bold text-white" style={{ opacity: seg(0.2, 0.32) }}>3×</span>
                 </>
               )}
             </div>
@@ -518,13 +523,14 @@ export function ImpactScene() {
   );
 }
 
-// 05:00 — how we compare (Nov 2026 deck p.11, word for word) ---------------------------------------------
-const COMPARE_ROWS = ['Focus', 'Hardware', 'What it controls', 'How it is sold'];
+// 05:00 — how we compare. Other products are described by type, never by brand name, and no prices are shown
+// (team decision, Nov 2026). The facts follow the Nov 2026 deck p.11.
+const COMPARE_ROWS = ['Focus', 'Hardware', 'What it controls'];
 const COMPARE = [
-  { name: 'Aqua Exchange', cells: ['Farm operations and power visibility', 'Its own platform equipment', 'Farm-level visibility', 'Lease'] },
-  { name: 'Eruvaka', cells: ['Water quality and feeding', 'A full system for each pond', 'Pond conditions', 'Lease, US$15 to 35 per pond a month'] },
-  { name: 'HydroNeo', cells: ['Dissolved oxygen automation', 'A full system for each pond', 'Aeration from oxygen readings', 'Lease, US$300 per pond a month'] },
-  { name: 'Cultivator', us: true, cells: ['The aerator itself', 'On the cables of the aerators farmers already own, any brand', 'Each aerator, with a check that it responded (in development)', 'Buy: US$750 per pond + US$10 per aerator, then US$10 a month. Lease-to-own: US$99 setup + US$45 a month'] },
+  { name: 'Farm management platforms', cells: ['Farm operations and power visibility', 'Their own platform equipment', 'Farm-level visibility'] },
+  { name: 'Water quality systems', cells: ['Water quality and feeding', 'A full system for each pond', 'Pond conditions'] },
+  { name: 'Oxygen automation systems', cells: ['Dissolved oxygen automation', 'A full system for each pond', 'Aeration from oxygen readings'] },
+  { name: 'Cultivator', us: true, cells: ['The aerator itself', 'On the cables of the aerators farmers already own, any brand', 'Each aerator, with a check that it responded (in development)'] },
 ];
 
 export function MarketScene() {
@@ -573,18 +579,37 @@ export function MarketScene() {
           </dl>
         ))}
       </div>
-      <p className="mt-4 text-[12px] opacity-65">Competitor details are from public information gathered for our pitch deck and may have changed.</p>
+      <p className="mt-4 text-[12px] opacity-65">Based on public information about other products on the market, which may have changed.</p>
     </div>
   );
 }
 
 // 05:30 — proof: sticky country list, cards scroll past ------------------------------------------------
 const PROOF = [
-  { country: 'Indonesia', note: 'Maxmar and Crustea', body: 'Maxmar, a large shrimp farmer, has agreed to test our finished product on a 10-pond farm in Madura (nothing is signed yet). Crustea is our aquaculture guide and launch partner.' },
-  { country: 'Taiwan', note: 'Farm tests and LanCore System', body: 'Farm visits, tests and our first paid pilots. LanCore System is our technical partner for aerator control and motor drives.' },
-  { country: 'Malaysia', note: 'Sankina Aquaculture', body: 'Partner and advisor on shrimp farming, through Managing Director Jenny Ou.' },
-  { country: 'China', note: 'Signed pilots', body: 'Pilot farms signed up to test Cultivator.' },
+  { country: 'Indonesia', box: '170 420 570 280', note: 'Maxmar and Crustea', body: 'Maxmar, a large shrimp farmer, has agreed to test our finished product on a 10-pond farm in Madura (nothing is signed yet). Crustea is our aquaculture guide and launch partner.' },
+  { country: 'Taiwan', photo: farmAeratorPic, alt: 'A paddlewheel aerator running in a shrimp pond in Taiwan', note: 'Farm tests and LanCore System', body: 'Farm visits, tests and our first paid pilots. LanCore System is our technical partner for aerator control and motor drives.' },
+  { country: 'Malaysia', box: '215 410 310 190', note: 'Sankina Aquaculture', body: 'Partner and advisor on shrimp farming, through Managing Director Jenny Ou.' },
+  { country: 'China', box: '0 0 660 400', note: 'Signed pilots', body: 'Pilot farms signed up to test Cultivator.' },
 ];
+// Photos from the team's shared Drive ("CULTIVATOR Content"), the same ones the Nov 2026 company deck uses.
+const MOMENTS = [
+  [hultWinPic, 'Apr 2026', 'Winning Hult Prize Taiwan', 'The team cheering in the audience as Cultivator is announced the winner'],
+  [garageBuildPic, 'Nov 2026', 'Working on our test aerator at NTHU Garage', 'Team members adjusting a paddlewheel aerator on a workbench'],
+  [liteonFilmingPic, 'Nov 2026', 'Fitting the pond probe during LITEON’s filming', 'Two team members lowering a probe into a pond while a camera films'],
+];
+
+// Locator map: the region in a faint tint, the card's country in orange. `box` zooms to the country.
+function CountryMap({ country, box }) {
+  return (
+    <svg viewBox={box} preserveAspectRatio="xMidYMid meet" className="h-full w-full" role="img" aria-label={`Map showing ${country}`}>
+      <path d={MAP_LAND} fill="currentColor" opacity="0.14" />
+      {Object.entries(MAP_COUNTRY).map(([name, d]) => (
+        <path key={name} d={d} fill={name === country ? '#FF802E' : 'currentColor'} opacity={name === country ? 1 : 0.14} />
+      ))}
+    </svg>
+  );
+}
+
 const STATS = [['15+', 'signed pilots'], ['5', 'paid pilots'], ['4', 'countries'], ['~5,000', 'aerators across our pilots and partners']];
 // Nov 2026 deck p.3
 const MILESTONES = [
@@ -658,13 +683,23 @@ export function ProofScene() {
               key={p.country}
               ref={(el) => { cards.current[i] = el; }}
               data-k={i}
-              className="mb-4 flex flex-col gap-6 rounded-[18px] p-6 md:sticky md:mb-8 md:min-h-[min(52svh,420px)] md:justify-between md:gap-16 md:rounded-[28px] md:p-8"
+              className="mb-4 flex flex-col gap-5 rounded-[18px] p-6 md:sticky md:mb-8 md:min-h-[min(52svh,420px)] md:flex-row md:items-stretch md:gap-8 md:rounded-[28px] md:p-8"
               style={{ '--top': `calc(88px + ${i * 14}px)`, top: 'var(--top)', zIndex: i + 1, background: i % 2 ? '#231F20' : '#FFFFFF', color: i % 2 ? '#FFFFFF' : '#231F20', border: '1px solid rgb(35 31 32 / 0.12)' }}
             >
-              <p className="text-[11px] opacity-75" data-label="">{p.note}</p>
-              <div>
-                <h3 className="text-[32px] font-bold tracking-[-0.035em] md:text-[64px]">{p.country}</h3>
-                <p className="mt-2 max-w-[44ch] text-[15px] leading-relaxed opacity-85 md:mt-3 md:text-[16px]">{p.body}</p>
+              <div className="flex min-w-0 flex-1 flex-col gap-6 md:justify-between md:gap-16">
+                <p className="text-[11px] opacity-75" data-label="">{p.note}</p>
+                <div>
+                  <h3 className="text-[32px] font-bold tracking-[-0.035em] md:text-[56px]">{p.country}</h3>
+                  <p className="mt-2 max-w-[44ch] text-[15px] leading-relaxed opacity-85 md:mt-3 md:text-[16px]">{p.body}</p>
+                </div>
+              </div>
+              {/* A photo where we have one; otherwise a map of where the country is. */}
+              <div className="aspect-[16/10] shrink-0 overflow-hidden rounded-[14px] md:aspect-auto md:w-[40%]" style={p.photo ? undefined : tint(6)}>
+                {p.photo ? (
+                  <img src={p.photo} alt={p.alt} loading="lazy" decoding="async" className="h-full w-full object-cover" />
+                ) : (
+                  <div className="h-full w-full p-4"><CountryMap country={p.country} box={p.box} /></div>
+                )}
               </div>
             </article>
           ))}
@@ -689,6 +724,16 @@ export function ProofScene() {
         ))}
       </ol>
 
+      <ul className="mt-12 grid gap-4 sm:grid-cols-3" aria-label="Photos">
+        {MOMENTS.map(([src, when, what, alt]) => (
+          <li key={what}>
+            <img src={src} alt={alt} loading="lazy" decoding="async" className="aspect-[4/3] w-full rounded-[14px] object-cover" />
+            <p className="mt-3 text-[11px] opacity-70" data-label="">{when}</p>
+            <p className="mt-1 text-[14px] font-semibold leading-snug">{what}</p>
+          </li>
+        ))}
+      </ul>
+
       <div className="mt-16 overflow-hidden border-y border-current/15 py-5 [mask-image:linear-gradient(to_right,transparent,#000_10%,#000_90%,transparent)]">
         <div className="v2-anim flex w-max items-center gap-14" style={{ animation: 'v2marquee 36s linear infinite' }}>
           {[...PARTNERS, ...PARTNERS].map(([name, src], i) => (
@@ -697,31 +742,6 @@ export function ProofScene() {
         </div>
       </div>
       <p className="mt-4 text-center text-[11px] opacity-70" data-label="">Featured in LITEON&apos;s “Boldness” campaign, November 2026</p>
-    </div>
-  );
-}
-
-// 05:45 — pricing (deck p.11) -----------------------------------------------------------------------
-export function ModelScene() {
-  return (
-    <div className="mx-auto flex min-h-svh max-w-6xl flex-col justify-center px-6 py-24">
-      <div style={rv()}>
-        <Eyebrow>05:45 Pricing</Eyebrow>
-        <H2>Buy it, or lease it to own.</H2>
-        <p className="mt-4 max-w-[44ch] text-[18px] opacity-90">A US$10 sensor on each aerator’s cable, in the electrical box the farm already has. Works with any brand.</p>
-      </div>
-      <div className="mt-10 grid gap-4 md:grid-cols-2">
-        {[
-          ['Buy', 'US$750', 'per pond, + US$10 per aerator, then US$10 a month'],
-          ['Lease-to-own', 'US$45 / mo', 'after a US$99 setup'],
-        ].map(([k, v, d], i) => (
-          <div key={k} className="rounded-[18px] p-7 md:p-8" style={{ ...rv(0.1 + i * 0.1), background: i ? ORANGE : '#231F20', color: i ? '#231F20' : '#FFFFFF' }}>
-            <p className="text-[11px] opacity-80" data-label="">{k}</p>
-            <p className="v2-display mt-6 text-[48px] font-extrabold tracking-[-0.04em] md:text-[72px]">{v}</p>
-            <p className="mt-2 opacity-90">{d}</p>
-          </div>
-        ))}
-      </div>
     </div>
   );
 }
@@ -814,10 +834,14 @@ export function AskScene() {
           </div>
           <address id="contact" className="mt-10 scroll-mt-28 border-t border-[#231F20]/20 pt-6 not-italic">
             <h3 className="text-[11px] opacity-75" data-label="">Let’s connect</h3>
-            <a href={`mailto:${CONTACT.email}`} className="mt-2 inline-flex min-h-11 items-center gap-2 text-[16px] font-semibold underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current">
-              <Mail size={18} aria-hidden="true" />
-              {CONTACT.email}
-            </a>
+            <div className="mt-2 flex flex-col items-start">
+              {CONTACT.emails.map((email) => (
+                <a key={email} href={`mailto:${email}`} className="inline-flex min-h-11 items-center gap-2 text-[16px] font-semibold underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current">
+                  <Mail size={18} aria-hidden="true" />
+                  {email}
+                </a>
+              ))}
+            </div>
             <div className="mt-2 grid grid-cols-2 gap-x-4">
               {CONTACT.phones.map(({ name, number, href }) => (
                 <a key={name} href={href} className="flex min-h-14 flex-col justify-center text-[14px] underline decoration-transparent underline-offset-4 transition-colors hover:decoration-current">

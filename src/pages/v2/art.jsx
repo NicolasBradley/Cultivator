@@ -1,6 +1,7 @@
 import { useEffect, useRef } from 'react';
 import { SHRIMP_PARTS, SHRIMP_VIEWBOX } from '../../components/shrimpParts';
 import { AERATOR } from './realShapes';
+import { DEVICE_POINTS } from './devicePoints';
 
 // Vector art kit for /v2. Flat, 1.25–2px lines, brand colours only (currentColor where possible).
 
@@ -95,37 +96,113 @@ export function WheelIcon({ className = '', style }) {
 
 // Aerator, front view, traced from a real 2-wheel paddlewheel aerator:
 // motor housing + floats as outlines, shaft/frame in white, the paddlewheels in brand orange.
-// Children render inside (the device clips on under the motor).
+// Children render inside (cable, electrical box, probe).
+
+// One wavy line across the drawing, two wave periods wider than it so it can drift sideways and loop seamlessly.
+const WAVE_PERIOD = 64;
+const wavePath = (y, amp) => {
+  let d = `M-33 ${y}`;
+  for (let x = -33; x < 841; x += WAVE_PERIOD) d += ` q${WAVE_PERIOD / 4} ${-amp} ${WAVE_PERIOD / 2} 0 t${WAVE_PERIOD / 2} 0`;
+  return d;
+};
+// [y, amplitude, opacity, seconds per period, direction]
+const WATER = [
+  [466, 6, 0.75, 3.2, 1],
+  [486, 5, 0.45, 4.6, -1],
+  [506, 4, 0.25, 6.4, 1],
+];
+
+// The pond surface under the aerator: three wave lines drifting at different speeds (still under reduced motion).
+// The floats sit in it, so it is drawn on top of them; a light fill below the top line reads as water.
+function Water() {
+  return (
+    <g clipPath="url(#v2-water-clip)" fill="none" stroke="currentColor" strokeLinecap="round">
+      <defs>
+        <clipPath id="v2-water-clip"><rect x="31" y="440" width="746" height="100" /></clipPath>
+      </defs>
+      {WATER.map(([y, amp, op, dur, dir], i) => (
+        <g key={y} className="v2-anim" style={{ animation: `v2waterdrift ${dur}s linear infinite`, animationDirection: dir > 0 ? 'normal' : 'reverse' }}>
+          {i === 0 && <path d={`${wavePath(y, amp)} V540 H-33 Z`} fill="currentColor" fillOpacity="0.07" stroke="none" />}
+          <path d={wavePath(y, amp)} strokeWidth={i === 0 ? 2.5 : 2} opacity={op} />
+        </g>
+      ))}
+    </g>
+  );
+}
+
 export function AeratorFront({ className = '', style, children }) {
   return (
-    <svg viewBox={AERATOR.viewBox.join(' ')} className={className} style={style} aria-hidden="true">
-      <path d="M31 468 H777" fill="none" stroke="currentColor" strokeWidth="2" strokeDasharray="3 10" opacity="0.45" />
+    <svg viewBox={AERATOR.viewBox.join(' ')} className={`overflow-visible ${className}`} style={style} aria-hidden="true">
       <path d={AERATOR.body} fill="currentColor" fillOpacity="0.07" stroke="currentColor" strokeWidth="2.4" strokeLinejoin="round" />
       <path d={AERATOR.metal} fill="currentColor" fillOpacity="0.8" />
       <path d={AERATOR.wheels} fill="#FF802E" fillRule="evenodd" />
+      <Water />
       {children}
     </svg>
   );
 }
 
-// Cultivator device, clipped on under the motor (AeratorFront coordinates).
-export function DeviceOnMotor({ style, calloutStyle }) {
+// Where the Cultivator sensor really goes (Nov 2026 deck p.8): nothing is mounted on the aerator.
+// The aerator's power cable runs back to the farm's existing electrical box on the bank, and a
+// US$10 current clamp sits around that cable inside the box. (AeratorFront coordinates.)
+// The sealed field box (electronics) sits inside the same electrical box, and one RS-485 cable runs from it
+// down to the dissolved oxygen / pH probe in the pond.
+// cableStyle draws the power cable in; boxStyle shows the electrical box; clampStyle / fieldBoxStyle / probeStyle
+// show each part; leaders[i] shows the arrow for numbered label i+1 (labels are HTML, see DEVICE_LABELS in scenes.jsx).
+export function CableToBox({ cableStyle, boxStyle, clampStyle, fieldBoxStyle, probeStyle, leaderStyles = [] }) {
+  const leader = (p, style) => (
+    <g style={style}>
+      <path d={`M${p.from[0]} ${p.from[1]} L${p.to[0]} ${p.to[1]}`} stroke="#FFFFFF" strokeWidth="2" markerEnd="url(#v2-arrow)" />
+    </g>
+  );
   return (
-    <>
-      <g style={style}>
-        <rect x="389" y="296" width="52" height="42" rx="7" fill="#FF802E" stroke="#231F20" strokeWidth="2" />
-        <circle cx="428" cy="309" r="4" fill="#FFFFFF" />
-        <path d="M400 326 H420" stroke="#231F20" strokeWidth="3" strokeLinecap="round" />
+    <g fill="none" strokeLinecap="round" strokeLinejoin="round">
+      <defs>
+        <marker id="v2-arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+          <path d="M1 1 L9 5 L1 9 Z" fill="#FFFFFF" />
+        </marker>
+      </defs>
+      {/* power cable: motor → electrical box */}
+      <path d="M463 132 C520 132 560 150 612 150 C660 150 690 150 711 150" stroke="currentColor" strokeWidth="5" pathLength="1" strokeDasharray="1" style={cableStyle} />
+      {/* the farm's existing electrical box, on the bank behind the aerator */}
+      <g style={boxStyle}>
+        <rect x="690" y="72" width="84" height="96" rx="6" fill="#231F20" stroke="currentColor" strokeWidth="3" />
+        <path d="M711 150 V96" stroke="currentColor" strokeWidth="5" />
       </g>
-      <g style={calloutStyle} fill="none" stroke="currentColor" strokeWidth="1.6">
-        <path d="M441 304 L500 128 H700" />
-        <path d="M441 330 L520 178 H700" />
-        <g fill="currentColor" stroke="none" fontSize="18">
-          <text x="504" y="120">US$10 current sensor</text>
-          <text x="524" y="170">Clamps onto the power cable</text>
-        </g>
+      {/* 1. the current clamp around the cable, inside the box */}
+      <g style={clampStyle}>
+        <rect x="700" y="124" width="22" height="18" rx="4" fill="#FF802E" stroke="#231F20" strokeWidth="2" />
       </g>
-    </>
+      {/* 3. the sealed field box, also inside the electrical box, with its cable connectors underneath */}
+      <g style={fieldBoxStyle}>
+        <rect x="731" y="88" width="34" height="46" rx="4" fill="#E8E4E0" stroke="#231F20" strokeWidth="2" />
+        <path d="M739 98 H757" stroke="#231F20" strokeWidth="2" opacity="0.35" />
+        <path d="M740 134 V142 M748 134 V142 M756 134 V142" stroke="#FF802E" strokeWidth="4" />
+      </g>
+      {/* 2. RS-485 cable from the field box down into the pond. It leaves the bottom of the drawing at x 767;
+          DeviceScene continues it as a long line down the right side to the probe at the very bottom
+          (the probe reads the water near the pond floor). */}
+      <g style={probeStyle}>
+        <path d="M756 142 V172 C756 182 767 182 767 194 V505" stroke="currentColor" strokeWidth="3" strokeDasharray="6 5" opacity="0.85" />
+      </g>
+      {leader(DEVICE_POINTS.clamp, leaderStyles[0])}
+      {leader(DEVICE_POINTS.fieldBox, leaderStyles[2])}
+    </g>
+  );
+}
+
+// The dissolved oxygen / pH probe, drawn large: dark body, orange band, sensor tip down, bubbles at the tip.
+export function ProbeGlyph({ className = '', style }) {
+  return (
+    <svg viewBox="-20 -4 40 128" className={`overflow-visible ${className}`} style={style} aria-hidden="true" fill="none" strokeLinecap="round">
+      <rect x="-17" y="0" width="34" height="104" rx="13" fill="#231F20" stroke="currentColor" strokeWidth="3.5" />
+      <path d="M-13 22 H13" stroke="#FF802E" strokeWidth="7" />
+      <path d="M-11 86 H11" stroke="#FF802E" strokeWidth="4" opacity="0.7" />
+      <path d="M0 104 V116" stroke="currentColor" strokeWidth="4" />
+      {[0, 1, 2].map((i) => (
+        <circle key={i} cx={-10 + i * 10} cy="108" r={3 + (i % 2)} stroke="currentColor" strokeWidth="1.8" opacity="0.8" className="v2-anim" style={{ animation: `v2probebubble 2.4s ease-in ${i * 0.8}s infinite`, transformBox: 'fill-box' }} />
+      ))}
+    </svg>
   );
 }
 

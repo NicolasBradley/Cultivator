@@ -348,7 +348,7 @@ export default function FarmPonds({ reduced }) {
       </svg>}
       <div ref={horizonRef} className="absolute inset-x-0" style={{ top: `${(HORIZON * 100).toFixed(2)}%`, opacity: 0 }}>
         <div className="h-px bg-[#FF802E]/30" />
-        <p className="mx-auto mt-3 max-w-6xl px-6 text-[10px] uppercase tracking-[0.16em] text-[#231F20]/45" style={{ fontFamily: 'ui-monospace, "JetBrains Mono", Menlo, monospace' }}>A landscape of shrimp ponds</p>
+        <p className="mx-auto mt-3 max-w-6xl px-6 text-[10px] uppercase tracking-[0.16em] text-[#231F20]/45" data-label="">A landscape of shrimp ponds</p>
       </div>
     </div>
     <div ref={mountRef} className="absolute inset-x-0" style={{ top: `${((HORIZON - 0.3) * 100).toFixed(2)}%`, height: '30%', opacity: 0 }}>

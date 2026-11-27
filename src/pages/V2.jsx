@@ -1,7 +1,8 @@
-import { useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import ContourPattern from '../components/ContourPattern';
 import FarmPonds from './v2/FarmPonds';
 import { INTRO_MS, useScrollEngine, viewportHeight } from './v2/scroll';
+
 import IntroScreen from './v2/IntroScreen';
 import { AskScene, DemoScene, DeviceScene, FailureScene, FragileScene, GapScene, ImpactScene, LifeScene, MarketScene, ModelScene, ProofScene, TeamScene, WheelScene } from './v2/scenes';
 import { ShrimpSymbol, WheelIcon } from './v2/art';
@@ -9,11 +10,17 @@ import { ShrimpActor } from './v2/actor';
 import Lenis from 'lenis';
 import { ArrowUp, Menu, X } from 'lucide-react';
 import 'lenis/dist/lenis.css';
+// Cultivator fonts (design spec): Manrope for headings and numbers, DM Sans for body. Self-hosted, no Google Fonts call.
+import '@fontsource/manrope/600.css';
+import '@fontsource/manrope/700.css';
+import '@fontsource/manrope/800.css';
+import '@fontsource/dm-sans/400.css';
+import '@fontsource/dm-sans/500.css';
+import '@fontsource/dm-sans/700.css';
 import wordmark from '../assets/v2/wordmark-white.png';
 
 // "Night Shift" redesign (docs/REDESIGN_CONCEPT.md). Scroll engine: ./v2/scroll.js · scenes: ./v2/scenes.jsx · art: ./v2/art.jsx
 
-const MONO = 'ui-monospace, "JetBrains Mono", Menlo, monospace';
 const EASE = 'cubic-bezier(.16,1,.3,1)';
 const TONES = {
   pond: { bg: '#FFFFFF', fg: '#231F20', pattern: 1 },
@@ -29,16 +36,18 @@ const CHIP_TARGET = ['fragile', 'device', 'proof', 'team', 'ask'];
 // chip: index into CHIPS (-1 = none). wave: [amplitude, drift speed] for the background water.
 // noise: 0 clean current … 1 raw noise. Page loads as noise and settles clean; the problem chapters get noisy,
 // and the Cultivator chapter resolves it back to a clean signal (plug in → usable data).
+// h: section height in screens. play: seconds; the scene's animation plays once on a timer when it comes into
+// view (see scroll.js), so scrolling stays free and no scene needs extra scrolling to finish.
 const CHAPTERS = [
-  { id: 'hero', noise: 0, time: '18:00', tone: 'pond', h: 3.2, chip: -1, wave: [5, 0.8] },
-  { id: 'wheel', noise: 0, time: '19:00', tone: 'dusk', h: 2.2, chip: -1, wave: [6.5, 3.5] },
-  { id: 'life', noise: 0, time: '21:00', tone: 'night', h: 1.6, chip: -1, wave: [5, 2.5], blend: 1.0 },
+  { id: 'hero', noise: 0, time: '18:00', tone: 'pond', h: 2.2, chip: -1, wave: [5, 0.8] },
+  { id: 'wheel', noise: 0, time: '19:00', tone: 'dusk', h: 1, play: 2.5, chip: -1, wave: [6.5, 3.5] },
+  { id: 'life', noise: 0, time: '21:00', tone: 'night', h: 1, play: 1.5, chip: -1, wave: [5, 2.5], blend: 1.0 },
   { id: 'fragile', noise: 0.45, time: '23:00', tone: 'night', h: 1, chip: 0, wave: [2.5, 1] },
-  { id: 'failure', noise: 1, time: '02:13', tone: 'night', h: 2.6, chip: 0, wave: [1.5, 0], fail: true },
+  { id: 'failure', noise: 1, time: '02:13', tone: 'night', h: 1, play: 5, chip: 0, wave: [1.5, 0], fail: true },
   { id: 'gap', noise: 1, time: '02:13', tone: 'night', h: 1, chip: 0, wave: [1.5, 0], fail: true },
-  { id: 'device', noise: 0, time: '02:14', tone: 'night', h: 3, chip: 1, wave: [4.5, 2] },
+  { id: 'device', noise: 0, time: '02:14', tone: 'night', h: 1, play: 5, chip: 1, wave: [4.5, 2] },
   { id: 'demo', noise: 0, time: '03:00', tone: 'night', h: 1, chip: 1, wave: [4, 1.5] },
-  { id: 'impact', noise: 0, time: '04:00', tone: 'night', h: 3, chip: 1, wave: [4, 2] },
+  { id: 'impact', noise: 0, time: '04:00', tone: 'night', h: 1, play: 2, chip: 1, wave: [4, 2] },
   { id: 'market', noise: 0, time: '05:00', tone: 'light', h: 1, chip: 1, wave: [2.5, 1] },
   { id: 'proof', noise: 0, time: '05:30', tone: 'light', h: 1, chip: 2, wave: [3, 1.2] },
   { id: 'model', noise: 0, time: '05:45', tone: 'light', h: 1, chip: 2, wave: [2.5, 1] },
@@ -46,12 +55,13 @@ const CHAPTERS = [
   { id: 'ask', noise: 0, time: '06:00', tone: 'dawn', h: 1, chip: 4, wave: [4.5, 2] },
 ];
 
-// Hero title in title case, "Shrimp Farms" in italics, an orange scan sweeping over "Smart Aeration".
+// Hero title in title case, "Shrimp Farms" in italics, an orange scan sweeping over the first words.
+// Says what Cultivator does: watches the aerators and the pond water (DO and pH), not just the category.
 function HeroTitle() {
   return (
     <h1 className="max-w-[960px] text-[clamp(27px,8.2vw,34px)] font-semibold leading-[1.12] tracking-[-0.035em] [text-wrap:balance] md:text-[clamp(44px,4.6vw,60px)]">
-      {/* A slow orange scan sweeps across "Smart Aeration", like a sensor reading the line. Ink at rest. */}
-      <span className="v2-anim v2-scan" style={{ animationDelay: `${INTRO_MS}ms` }}>Smart Aeration</span> for{' '}
+      {/* A slow orange scan sweeps across "Aerator Alerts", like a sensor reading the line. Ink at rest. */}
+      <span className="v2-anim v2-scan" style={{ animationDelay: `${INTRO_MS}ms` }}>Smarter Ponds</span> for{' '}
       <em className="whitespace-nowrap">Shrimp Farms</em>
     </h1>
   );
@@ -87,12 +97,12 @@ function Hero({ style = 'pond' }) {
         <div data-slot="hero" className="aspect-square h-[min(40svh,70vw)] shrink-0 translate-x-[3%] translate-y-[4%] md:h-[min(40svh,340px)]" />
 
       <div ref={copyRef} className="relative flex shrink-0 flex-col items-center px-6 pb-4 text-center">
-        <p className="mb-3 text-[9px] uppercase tracking-[0.16em] opacity-55 md:mb-4 md:text-[10px]" style={{ fontFamily: MONO }}>
+        <p className="mb-3 text-[9px] uppercase tracking-[0.16em] opacity-55 md:mb-4 md:text-[10px]" data-label="">
           Cultivate trust. Empower farmers.
         </p>
         <HeroTitle />
-        <p className="mt-3 max-w-[40ch] text-[15px] leading-relaxed opacity-80 md:mt-4 md:text-[17px]">
-          Know the moment an aerator stops
+        <p className="mt-3 max-w-[40ch] text-[15px] leading-relaxed opacity-80 [text-wrap:balance] md:mt-4 md:max-w-[60ch] md:text-[17px]">
+          Aerator and pond monitoring: know the moment an aerator stops, and see oxygen and pH in every pond
         </p>
       </div>
       </div>
@@ -118,7 +128,7 @@ function Hero({ style = 'pond' }) {
           speed={1}
           className={`absolute inset-0 h-full w-full ${style === 'pond' ? 'opacity-10' : 'opacity-45'} [mask-image:linear-gradient(to_bottom,transparent_0%,#000_25%,#000_70%,transparent_100%)]`}
         />
-        <a href="#wheel" className="absolute bottom-4 left-1/2 inline-flex min-h-11 -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full px-4 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#231F20] transition-opacity hover:opacity-70" style={{ fontFamily: MONO }}>
+        <a href="#wheel" className="absolute bottom-4 left-1/2 inline-flex min-h-11 -translate-x-1/2 items-center gap-3 whitespace-nowrap rounded-full px-4 text-[10px] font-semibold uppercase tracking-[0.16em] text-[#231F20] transition-opacity hover:opacity-70" data-label="">
           <span>Scroll to dive</span>
           <svg viewBox="0 0 24 28" className="v2-anim h-7 w-6" fill="none" aria-hidden="true" style={{ animation: 'v2dive 2.4s ease-in-out infinite' }}>
             <path d="M12 2 V18 M7 13 L12 18 L17 13" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round" />
@@ -165,7 +175,7 @@ const T = { pop: 500, left: 350, leftDur: 900, nav: 700, navDur: 850, right: 100
 const SPRING = 'cubic-bezier(.22,1,.36,1)';
 const PULL = 'cubic-bezier(.65,0,.35,1)';
 
-function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }) {
+function NavBar({ chapter, tone, startDelay = 0, onTop, away = false }) {
   const rowRef = useRef(null);
   const navWrapRef = useRef(null);
   const rightWrapRef = useRef(null);
@@ -186,7 +196,10 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
   const [ind, setInd] = useState({ x: 0, w: 0 });
   const prevChip = useRef(-1);
   const light = tone.bg === '#231F20';
-  const collapsed = scrolled && settled && !menuOpen && !peek;
+  // Desktop folds the menu into the logo while reading. Phones always keep the menu button visible.
+  const collapsed = desktop && scrolled && settled && !menuOpen && !peek;
+  // The whole header slides away while the reader scrolls down and comes back on scroll up (never while a menu is open).
+  const tucked = away && settled && !menuOpen && !peek;
   const pill = light ? 'bg-[#231F20]/95 text-white ring-white/20' : 'bg-white/95 text-[#231F20] ring-[#FF802E]/25';
   const [blobColour] = useState(() => (light ? '#231F20' : '#FFFFFF'));
   // Pill backgrounds switch on instantly when the goo layer is removed (no fade = no flicker);
@@ -239,9 +252,8 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
   }, [peek]);
 
   const onLogo = () => {
-    if (!scrolled) onTop?.();
-    else if (desktop) setPeek((p) => !p);
-    else setMenuOpen((open) => !open);
+    if (scrolled && desktop) setPeek((p) => !p);
+    else onTop?.();
   };
 
   useEffect(() => {
@@ -402,7 +414,10 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
   }, [chapter.chip]);
 
   return (
-    <header className="pointer-events-none fixed inset-x-0 top-0 z-20">
+    <header
+      className="pointer-events-none fixed inset-x-0 top-0 z-20 pt-[env(safe-area-inset-top)]"
+      style={{ transform: tucked ? 'translateY(-110%)' : 'none', transition: reduced ? 'none' : `transform 240ms ${EASE}` }}
+    >
       <svg width="0" height="0" className="absolute" aria-hidden="true">
         <filter id="nav-goo">
           <feGaussianBlur in="SourceGraphic" stdDeviation="6" result="b" />
@@ -422,7 +437,7 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
         ref={rowRef}
         className="relative flex items-center justify-between gap-3 px-4 py-3 md:px-6"
       >
-        <button ref={wordRef} type="button" onClick={onLogo} aria-label={!scrolled ? 'Cultivator' : desktop ? (peek ? 'Hide navigation' : 'Show navigation') : (menuOpen ? 'Close navigation' : 'Open navigation')} aria-expanded={scrolled ? (desktop ? peek : menuOpen) : undefined} aria-controls={scrolled && !desktop ? 'v2-mobile-menu' : undefined} className={pillCls('pointer-events-auto relative z-10 inline-flex h-12 shrink-0 items-center px-4 md:px-5')}>
+        <button ref={wordRef} type="button" onClick={onLogo} aria-label={scrolled && desktop ? (peek ? 'Hide navigation' : 'Show navigation') : 'Cultivator, back to top'} aria-expanded={scrolled && desktop ? peek : undefined} className={pillCls('pointer-events-auto relative z-10 inline-flex h-12 shrink-0 items-center px-4 md:px-5')}>
           {/* Nudged up/right: the wordmark's ink sits low and left of its box (tall letters, shrimp head), so true centring looks off. */}
           <span className="block h-[20px] w-[100px] md:h-[22px] md:w-[115px] translate-x-[0.5px] -translate-y-[1.5px] bg-[#FF802E]" style={{ WebkitMask: `url(${wordmark}) center / contain no-repeat`, mask: `url(${wordmark}) center / contain no-repeat` }} />
         </button>
@@ -450,18 +465,18 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
 
         <div ref={rightWrapRef} style={foldingStyle(collapseOffsets.right)} inert={collapsed}>
         <div ref={rightRef} className={pillCls('flex h-12 items-center gap-2 pl-4 pr-1.5 md:gap-3')}>
-          <span className="hidden text-[13px] tabular-nums opacity-80 sm:inline" style={{ fontFamily: MONO }}>{chapter.time}</span>
+          <span className="hidden text-[13px] tabular-nums opacity-80 sm:inline" data-label="">{chapter.time}</span>
           <button
             type="button"
             onClick={() => setMenuOpen((o) => !o)}
             aria-expanded={menuOpen}
             aria-controls="v2-mobile-menu"
             aria-label={menuOpen ? 'Close menu' : 'Open menu'}
-            className="-ml-1 grid h-9 w-9 place-items-center rounded-full transition-transform active:scale-90 lg:hidden"
+            className="-ml-1 grid h-10 w-10 place-items-center rounded-full transition-transform active:scale-90 lg:hidden"
           >
-            {menuOpen ? <X size={18} /> : <Menu size={18} />}
+            {menuOpen ? <X size={20} /> : <Menu size={20} />}
           </button>
-          <a ref={deckRef} href="#decks" className="inline-flex h-9 items-center rounded-full bg-[#FF802E] px-5 text-[14px] font-semibold text-[#231F20] transition-transform duration-300 hover:scale-105 active:scale-95">Deck</a>
+          <a ref={deckRef} href="#contact" className="v2-btn v2-btn-primary v2-btn-sm !min-h-9 !rounded-full">Contact</a>
         </div>
         </div>
       </div>
@@ -473,25 +488,16 @@ function NavBar({ chapter, tone, startDelay = 0, onTop, heroStyle, onHeroStyle }
         style={{ opacity: menuOpen ? 1 : 0, transform: menuOpen ? 'none' : 'translateY(-8px) scale(.97)', pointerEvents: menuOpen ? 'auto' : 'none', transition: `opacity 250ms ease, transform 350ms ${EASE}` }}
         aria-hidden={!menuOpen}
       >
-        <div className="mb-2 border-b border-current/15 px-3 pb-4 pt-3">
-          <p className="mb-3 text-[10px] uppercase tracking-[0.12em] opacity-60" style={{ fontFamily: MONO }}>Compare hero</p>
-          <div role="group" aria-label="Compare hero styles" className="flex gap-1 rounded-full bg-current/10 p-1">
-            {[['pond', 'Ponds'], ['dusk', 'Orange']].map(([value, label]) => <button key={value} type="button" tabIndex={menuOpen ? 0 : -1} aria-pressed={heroStyle === value} onClick={() => {
-              onHeroStyle(value);
-              onTop?.();
-            }} className={`h-9 flex-1 rounded-full text-[13px] font-semibold transition-colors ${heroStyle === value ? 'bg-[#FF802E] text-[#231F20]' : 'opacity-70 hover:opacity-100'}`}>{label}</button>)}
-          </div>
-        </div>
         {CHIPS.map((label, i) => (
           <a
             key={label}
             href={`#${CHIP_TARGET[i]}`}
             tabIndex={menuOpen ? 0 : -1}
             onClick={() => setMenuOpen(false)}
-            className={`flex h-12 items-center justify-between rounded-[20px] px-4 text-[17px] font-semibold ${chapter.chip === i ? (light ? 'bg-[#231F20]/10' : 'bg-white/15') : ''}`}
+            className={`v2-display flex h-12 items-center justify-between rounded-[20px] px-4 text-[17px] font-bold ${chapter.chip === i ? (light ? 'bg-[#231F20]/10' : 'bg-white/15') : ''}`}
           >
             {label}
-            <span className="text-[12px] opacity-60" style={{ fontFamily: MONO }}>{['23:00', '02:14', '05:30', '06:00', '06:00'][i]}</span>
+            <span className="text-[12px] opacity-60" data-label="">{['23:00', '02:14', '05:30', '06:00', '06:00'][i]}</span>
           </a>
         ))}
         <button
@@ -528,14 +534,53 @@ const smoothT = (t) => {
   return c * c * (3 - 2 * c);
 };
 
+// The intro plays once per visit (browser tab session), not on every refresh.
+const INTRO_KEY = 'cultivator-v2-intro-seen';
+const introSeen = () => {
+  try {
+    return sessionStorage.getItem(INTRO_KEY) === '1';
+  } catch {
+    return false;
+  }
+};
+
+// Header and back-to-top follow the scroll direction: away while reading down, back on any scroll up.
+// Only two booleans are kept, so the page re-renders only when one of them flips (not while scrolling).
+function useScrollDirection() {
+  const [state, setState] = useState({ headerAway: false, showTop: false });
+  useEffect(() => {
+    let last = window.scrollY;
+    let id = 0;
+    const onScroll = () => {
+      cancelAnimationFrame(id);
+      id = requestAnimationFrame(() => {
+        const y = window.scrollY;
+        const d = y - last;
+        if (Math.abs(d) < 8) return;
+        last = y;
+        const vh = window.innerHeight;
+        const next = { headerAway: d > 0 && y > vh * 0.5, showTop: d < 0 && y > vh * 2 };
+        setState((s) => (s.headerAway === next.headerAway && s.showTop === next.showTop ? s : next));
+      });
+    };
+    window.addEventListener('scroll', onScroll, { passive: true });
+    return () => {
+      cancelAnimationFrame(id);
+      window.removeEventListener('scroll', onScroll);
+    };
+  }, []);
+  return state;
+}
+
 export default function V2Page() {
-  const [heroStyle, setHeroStyle] = useState('pond');
+  const heroStyle = 'pond';
   const [reducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches);
-  const chapters = useMemo(() => CHAPTERS.map((chapter) => chapter.id === 'hero' ? { ...chapter, tone: heroStyle } : chapter), [heroStyle]);
+  const chapters = CHAPTERS;
   const [saved] = useState(readSaved);
   const [active, setActive] = useState(() => saved?.i ?? 0);
-  // Intro plays on every load/refresh (skipped only for reduced motion); a restored position waits behind it.
-  const [intro, setIntro] = useState(() => !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+  const { headerAway, showTop } = useScrollDirection();
+  // Intro plays once per visit (skipped for reduced motion); a restored position waits behind it.
+  const [intro, setIntro] = useState(() => !introSeen() && !window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   const [introDelay] = useState(() => (intro ? INTRO_MS - 450 : 0));
   const lenisRef = useRef(null);
   const wheelRef = useRef(null);
@@ -544,7 +589,14 @@ export default function V2Page() {
   const c = chapters[active];
   const tone = TONES[c.tone];
   useScrollEngine();
-  const endIntro = useCallback(() => setIntro(false), []);
+  const endIntro = useCallback(() => {
+    try {
+      sessionStorage.setItem(INTRO_KEY, '1');
+    } catch {
+      // private mode: the intro just plays again next time
+    }
+    setIntro(false);
+  }, []);
   const toTop = useCallback(() => {
     if (lenisRef.current) lenisRef.current.scrollTo(0, { duration: 1.6 });
     else window.scrollTo({ top: 0, behavior: 'smooth' });
@@ -654,7 +706,7 @@ export default function V2Page() {
   }, [chapters]);
 
   return (
-    <div ref={rootRef} className="relative" style={{ color: tone.fg, transition: 'color 300ms ease' }}>
+    <div ref={rootRef} className="v2-root relative" style={{ color: tone.fg, transition: 'color 300ms ease' }}>
       <div ref={bgRef} className="fixed inset-0 -z-10" style={{ background: tone.bg }}>
         <div className="h-full w-full" style={{ opacity: c.id === 'hero' && heroStyle === 'pond' ? 0 : 1 }}>
           <ContourPattern variant={tone.pattern} frozen={Boolean(c.fail)} amp={c.wave[0]} speed={c.wave[1]} lines={c.id === 'hero' ? 5 : 8} wavelength={2.5} convergence={c.id === 'hero' ? 0.78 : 0.45} focusTarget={c.id === 'hero' ? '[data-slot="hero"]' : null} heartbeat={c.id !== 'hero'} chaos={c.noise} introChaos={0} pulses={0} lineOpacity={0.18} className="h-full w-full" />
@@ -666,16 +718,17 @@ export default function V2Page() {
       <ShrimpSymbol />
       <ShrimpActor hidden={intro} orangeHero={heroStyle === 'pond'} />
       {intro && <IntroScreen onDone={endIntro} />}
-      <NavBar chapter={c} tone={tone} startDelay={introDelay} onTop={toTop} heroStyle={heroStyle} onHeroStyle={setHeroStyle} />
+      <NavBar chapter={c} tone={tone} startDelay={introDelay} onTop={toTop} away={headerAway} />
 
-
-      {/* Back to top: the little paddlewheel turns as you scroll; tap it to glide back up. */}
+      {/* Back to top: the little paddlewheel turns as you scroll. Shown only when the reader scrolls back up,
+          so it never sits over text while reading. */}
       <button
         type="button"
         onClick={toTop}
         aria-label="Back to top"
-        className="group fixed bottom-5 right-5 z-20 grid h-12 w-12 place-items-center rounded-full transition-[opacity,transform] duration-300 hover:scale-110 active:scale-95"
-        style={{ opacity: c.id === 'hero' ? 0 : 0.85, pointerEvents: c.id === 'hero' ? 'none' : 'auto' }}
+        tabIndex={showTop ? 0 : -1}
+        className="group fixed bottom-[calc(1.25rem+env(safe-area-inset-bottom))] right-5 z-20 grid h-12 w-12 place-items-center rounded-full transition-[opacity,transform] duration-300 active:scale-95"
+        style={{ opacity: showTop ? 0.9 : 0, transform: showTop ? 'none' : 'translateY(8px)', pointerEvents: showTop ? 'auto' : 'none' }}
       >
         <span ref={wheelRef} className="absolute inset-0">
           <WheelIcon className="h-full w-full" />
@@ -687,13 +740,16 @@ export default function V2Page() {
 
       <main>
         {chapters.map((ch, i) => (
-          <section key={ch.id} id={ch.id} data-i={i} data-scene className="relative" style={{ minHeight: `calc(${ch.h * 100}svh + var(--stage-extra, 0px))` }}>
+          <section key={ch.id} id={ch.id} data-i={i} data-scene data-play={ch.play} className="relative" style={{ minHeight: `calc(${ch.h * 100}svh + var(--stage-extra, 0px))` }}>
             <Chapter c={ch} heroStyle={heroStyle} />
           </section>
         ))}
       </main>
 
-      <footer className="px-6 pb-16 text-center text-[14px] opacity-70">Cultivate Trust. Empower Farmers. · © 2026 Cultivator</footer>
+      <footer className="px-6 pb-16 text-center text-[14px] opacity-70">
+        <p className="v2-display font-bold">Cultivate trust. Empower farmers.</p>
+        <p className="mt-1">© 2026 Cultivator</p>
+      </footer>
     </div>
   );
 }

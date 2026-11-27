@@ -121,6 +121,37 @@ body {
   }
 }
 
+/* /v2 type: Cultivator design spec (2 Design/Cultivator_Design_Spec.md).
+   Manrope for headings and numbers, DM Sans for body; Noto Sans TC/SC after them for Chinese. */
+.v2-root {
+  --font-display: 'Manrope', 'Noto Sans TC', 'Noto Sans SC', system-ui, sans-serif;
+  --font-body: 'DM Sans', 'Noto Sans TC', 'Noto Sans SC', system-ui, sans-serif;
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+.v2-root :is(h1, h2, h3, .v2-display) { font-family: var(--font-display); }
+/* Small caps labels: Manrope 800, uppercase, wide tracking. Unlayered, so it wins over Tailwind's tracking utilities. */
+.v2-root [data-label] {
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+/* One button system: primary (orange), secondary (outline). Radius 12px, press feedback only, no hover grow. */
+.v2-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: .5rem;
+  min-height: 48px; padding: 0 1.4rem; border-radius: 12px;
+  font-family: var(--font-display); font-weight: 700; font-size: 15px; letter-spacing: -0.01em;
+  transition: scale 150ms ease-out, background-color 200ms ease, border-color 200ms ease;
+}
+.v2-btn:active { scale: .97; }
+.v2-btn:focus-visible { outline: 2px solid currentColor; outline-offset: 3px; }
+.v2-btn-primary { background: #FF802E; color: #231F20; }
+.v2-btn-primary:hover { background: #ff9450; }
+.v2-btn-secondary { border: 1px solid color-mix(in srgb, currentColor 25%, transparent); }
+.v2-btn-secondary:hover { border-color: currentColor; }
+.v2-btn-sm { min-height: 40px; padding: 0 1rem; font-size: 14px; border-radius: 10px; }
+
 /* /v2 scene keyframes */
 @keyframes v2swell { 0%, 100% { transform: translateX(-20px) translateY(0); } 50% { transform: translateX(20px) translateY(7px); } }
 @keyframes v2dive { 0%, 100% { transform: translateY(-3px); } 50% { transform: translateY(3px); } }
@@ -133,6 +164,9 @@ body {
 @keyframes v2swimL { from { transform: translateX(105vw); } to { transform: translateX(-20vw); } }
 @keyframes v2swimR { from { transform: translateX(-20vw); } to { transform: translateX(105vw); } }
 @keyframes v2marquee { to { transform: translateX(-50%); } }
+/* 02:14 drawing: water drifts one wave period (64 drawing units, see art.jsx WAVE_PERIOD); probe bubbles rise and fade */
+@keyframes v2waterdrift { to { transform: translateX(-64px); } }
+@keyframes v2probebubble { 0% { transform: translateY(0); opacity: 0; } 20% { opacity: .8; } 100% { transform: translateY(-40px); opacity: 0; } }
 @media (prefers-reduced-motion: reduce) { .v2-anim { animation: none !important; } }
 
 /* /v2 intro screen */

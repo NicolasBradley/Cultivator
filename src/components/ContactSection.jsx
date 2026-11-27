@@ -59,8 +59,8 @@ export const ContactSection = () => {
                     <Smartphone className="w-5 h-5 text-sunset-orange" />
                   </div>
                   <div>
-                    <p className="text-white font-medium">+886 95380908 (Daniel)</p>
-                    <p className="text-white font-medium">+886 97072303 (Jason)</p>
+                    <p className="text-white font-medium">+886 955 380 908 (Daniel)</p>
+                    <p className="text-white font-medium">+886 970 072 303 (Jason)</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">

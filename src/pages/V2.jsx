@@ -4,7 +4,7 @@ import FarmPonds from './v2/FarmPonds';
 import { INTRO_MS, useScrollEngine, viewportHeight } from './v2/scroll';
 
 import IntroScreen from './v2/IntroScreen';
-import { AskScene, DemoScene, DeviceScene, FailureScene, FragileScene, GapScene, ImpactScene, LifeScene, MarketScene, ModelScene, ProofScene, TeamScene, WheelScene } from './v2/scenes';
+import { AskScene, DemoScene, DeviceScene, FailureScene, FragileScene, GapScene, ImpactScene, LifeScene, MarketScene, ProofScene, TeamScene, WheelScene } from './v2/scenes';
 import { ShrimpSymbol, WheelIcon } from './v2/art';
 import { ShrimpActor } from './v2/actor';
 import Lenis from 'lenis';
@@ -50,7 +50,6 @@ const CHAPTERS = [
   { id: 'impact', noise: 0, time: '04:00', tone: 'night', h: 1, play: 2, chip: 1, wave: [4, 2] },
   { id: 'market', noise: 0, time: '05:00', tone: 'light', h: 1, chip: 1, wave: [2.5, 1] },
   { id: 'proof', noise: 0, time: '05:30', tone: 'light', h: 1, chip: 2, wave: [3, 1.2] },
-  { id: 'model', noise: 0, time: '05:45', tone: 'light', h: 1, chip: 2, wave: [2.5, 1] },
   { id: 'team', noise: 0, time: '06:00', tone: 'dawn', h: 1, chip: 3, wave: [4, 1.5] },
   { id: 'ask', noise: 0, time: '06:00', tone: 'dawn', h: 1, chip: 4, wave: [4.5, 2] },
 ];
@@ -151,7 +150,6 @@ const SCENES = {
   impact: ImpactScene,
   market: MarketScene,
   proof: ProofScene,
-  model: ModelScene,
   team: TeamScene,
   ask: AskScene,
 };

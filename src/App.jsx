@@ -59,7 +59,7 @@ const structuredData = {
     '@context': 'https://schema.org',
     '@type': 'Product',
     name: 'Cultivator',
-    description: 'Smart aeration for shrimp farms. A US$10 current sensor on each aerator\'s cable, in the farm\'s existing electrical box, tells the farmer on LINE or WhatsApp the moment an aerator stops. Dissolved oxygen and pH probes read the water.',
+    description: 'Smart aeration for shrimp farms. A clip-on current sensor on each aerator\'s cable, in the farm\'s existing electrical box, tells the farmer on LINE or WhatsApp the moment an aerator stops. Dissolved oxygen and pH probes read the water.',
     brand: {
       '@type': 'Organization',
       name: 'Cultivator'
@@ -103,7 +103,7 @@ const structuredData = {
         name: 'What is Cultivator?',
         acceptedAnswer: {
           '@type': 'Answer',
-          text: 'Cultivator watches the aerators that keep shrimp alive and tells the farmer on LINE or WhatsApp the moment one stops. A US$10 current sensor clamps onto each aerator\'s cable inside the farm\'s existing electrical box.'
+          text: 'Cultivator watches the aerators that keep shrimp alive and tells the farmer on LINE or WhatsApp the moment one stops. A clip-on current sensor clamps onto each aerator\'s cable inside the farm\'s existing electrical box.'
         }
       },
       {
